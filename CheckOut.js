@@ -9,6 +9,8 @@ import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import {Row, Col} from 'react-bootstrap';
 
+import UserView from './UserView';
+
 const propTypes = {
   onChangeMode: React.PropTypes.func,
   modeSelector: React.PropTypes.element,
@@ -17,13 +19,13 @@ const propTypes = {
 }
 
 class CheckOut extends React.Component{
+
   constructor(props) {
     super(props);
   }
 
   render() {
-    
-    
+
     const containerStyle = {
       display: 'flex',
       flexDirection:'column',
@@ -47,13 +49,14 @@ class CheckOut extends React.Component{
           <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={this.props.modeSelector}>
             <Row>
               <Col xs={9}>
-                <TextField placeholder='Enter Patron ID' aria-label='Patron ID' fullWidth/>
+                <TextField placeholder='Enter Patron ID' aria-label='Patron ID' fullWidth id="patronid" />
               </Col>
               <Col xs={3}>
-                <Button buttonStyle="primary noRadius" fullWidth >Find Patron</Button>
+                <Button buttonStyle="primary noRadius" fullWidth onClick={this.props.onClickFindPatron}>Find Patron</Button>
               </Col>
             </Row>
-            <div style={{width: '100%', textAlign:'center', padding: '2rem 1rem'}}><em>No patron selected</em></div>
+            <div style={{width: '100%', textAlign:'center', padding: '2rem 1rem'}}>
+            {(this.props.patron && this.props.patron.id ) ? <UserView user={this.props.patron} /> : <em>No patron selected</em>}</div>
           </Pane>
           <Pane defaultWidth="50%" paneTitle="Scanned Items">
           <Row>
