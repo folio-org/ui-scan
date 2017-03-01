@@ -1,4 +1,7 @@
+import _ from 'lodash';
 import React, { PropTypes } from 'react';
+
+import { connect } from '@folio/stripes-connect';
 
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Select from '@folio/stripes-components/lib/Select';
@@ -13,6 +16,12 @@ class Scan extends React.Component{
     store: PropTypes.object,
   }
 
+  static manifest = Object.freeze ({
+    items: {},
+    mode: {},
+    patron: {},
+  });
+
   constructor(props, context){
     super(props);
 
@@ -20,12 +29,6 @@ class Scan extends React.Component{
     this.sys = require('stripes-loader'); // eslint-disable-line
     this.okapiUrl = this.sys.okapi.url;
     this.tenant = this.sys.okapi.tenant;
-
-    this.state = {
-      mode : 'CheckOut',
-      items: [{id: '01', name:'item1', 'due date': '2/28/2017' },{id: '02', name:'item2', 'due date': '2/28/2017'}],
-      patron: {},
-    }
 
     this.componentMap = {
       'CheckOut': CheckOut,
@@ -37,11 +40,20 @@ class Scan extends React.Component{
     this.onClickFindPatron = this.onClickFindPatron.bind(this);
   }
 
+  componentWillMount () {    
+    const { data: { items, mode }, mutator } = this.props;
+
+    if (_.isEmpty(items)) {
+      mutator.items.replace( [{id: '01', name:'item1', 'due date': '2/28/2017' },{id: '02', name:'item2', 'due date': '2/28/2017'}] );
+    }
+    if (_.isEmpty(mode)) {
+      mutator.mode.replace('CheckOut');
+    }
+  }
+
   onChangeMode(e){
     const nextMode = e.target.value;
-    this.setState({
-      mode: nextMode,
-    });
+    this.props.mutator.mode.replace(nextMode);
   }
 
   onClickFindPatron(e) {
@@ -54,15 +66,15 @@ class Scan extends React.Component{
       } else {
         response.json().then((json) => {
           console.log("user json", json.users[0]);
-          this.setState({
-            patron: json.users[0],
-          })
+          this.props.mutator.patron.replace(json.users[0]);
         });
       }
     });
   }
 
   render() {
+    const { data: { mode, items, patron } } = this.props;
+    if (!mode) return <div/>;
     const modeOptions = [
       { label: 'Check items out', value: 'CheckOut' },
       { label: 'Automatic Mode', value: 'Automatic' },
@@ -70,12 +82,17 @@ class Scan extends React.Component{
     ];
     
     const modeMenu = (
-      <PaneMenu><Select marginBottom0 dataOptions={modeOptions} value={this.state.mode} onChange={this.onChangeMode}></Select></PaneMenu>
+      <PaneMenu><Select marginBottom0 dataOptions={modeOptions} value={mode} onChange={this.onChangeMode}></Select></PaneMenu>
     );
     
-    return React.createElement(this.componentMap[this.state.mode], {onChangeMode: this.onChangeMode, modeSelector: modeMenu, onClickFindPatron: this.onClickFindPatron, patron: this.state.patron, items: this.state.items});
+    return React.createElement(this.componentMap[mode],
+                               {onChangeMode: this.onChangeMode,
+                                modeSelector: modeMenu,
+                                onClickFindPatron: this.onClickFindPatron,
+                                patron,
+                                items});
   }
   
 }
 
-export default Scan;
+export default connect(Scan,'@folio/scan');
