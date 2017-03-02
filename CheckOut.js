@@ -57,7 +57,7 @@ class CheckOut extends React.Component{
           <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={this.props.modeSelector}>
             <Row>
               <Col xs={9}>
-                <TextField placeholder='Enter Patron ID' aria-label='Patron ID' fullWidth id="patronid" />
+                <TextField placeholder="Enter Patron's username" aria-label='Patron ID' fullWidth id="patronid" />
               </Col>
               <Col xs={3}>
                 <Button buttonStyle="primary noRadius" fullWidth onClick={this.props.onClickFindPatron}>Find Patron</Button>

@@ -83,19 +83,21 @@ class Scan extends React.Component{
 
   onClickAddItem(e) {
     if (e) e.preventDefault();
-    let barcode= document.getElementById('barcode').value;
-    fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token }) })
-    .then((response) => {
-      if (response.status >= 400) {
-        console.log("Error fetching user");
-      } else {
-        response.json().then((json) => {
-          let items = [].concat(this.props.data.items).concat(json.items);
-          this.props.mutator.items.replace(items);
-        });
-      }
-    });
-    document.getElementById('barcode').value = '';
+    let barcode= document.getElementById('barcode').value.trim();
+    if (barcode) {
+      fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token }) })
+      .then((response) => {
+        if (response.status >= 400) {
+          console.log("Error fetching user");
+        } else {
+          response.json().then((json) => {
+            let items = [].concat(this.props.data.items).concat(json.items);
+            this.props.mutator.items.replace(items);
+          });
+        }
+      });
+      document.getElementById('barcode').value = '';
+    }
   }
 
   onClickRemoveItem(itemid) {
