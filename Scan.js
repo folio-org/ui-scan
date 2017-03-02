@@ -83,8 +83,8 @@ class Scan extends React.Component{
 
   onClickAddItem(e) {
     if (e) e.preventDefault();
-    let itemid = document.getElementById('itemid').value;
-    fetch(`${this.okapiUrl}/item-storage/items?query=(id="${itemid}")`, { headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token }) })
+    let barcode= document.getElementById('barcode').value;
+    fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token }) })
     .then((response) => {
       if (response.status >= 400) {
         console.log("Error fetching user");
@@ -95,7 +95,7 @@ class Scan extends React.Component{
         });
       }
     });
-    document.getElementById('itemid').value = '';
+    document.getElementById('barcode').value = '';
   }
 
   onClickRemoveItem(itemid) {
