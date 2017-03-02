@@ -44,6 +44,7 @@ class Scan extends React.Component{
     this.onChangeMode = this.onChangeMode.bind(this);
     this.onClickFindPatron = this.onClickFindPatron.bind(this);
     this.onClickAddItem = this.onClickAddItem.bind(this);
+    this.onClickRemoveItem = this.onClickRemoveItem.bind(this);
   }
 
   componentWillMount() {
@@ -94,7 +95,13 @@ class Scan extends React.Component{
         });
       }
     });
+  }
 
+  onClickRemoveItem(itemid) {
+    const index = this.props.data.items.findIndex((item) => { return (item.id === itemid); })
+    let items = [].concat(this.props.data.items);
+    items.splice(index,1);
+    this.props.mutator.items.replace(items);
   }
 
   render() {
@@ -115,6 +122,7 @@ class Scan extends React.Component{
                                 modeSelector: modeMenu,
                                 onClickFindPatron: this.onClickFindPatron,
                                 onClickAddItem: this.onClickAddItem,
+                                onClickRemoveItem: this.onClickRemoveItem,
                                 patrons,
                                 items});
   }

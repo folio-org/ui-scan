@@ -41,7 +41,7 @@ class CheckOut extends React.Component{
     
     const itemListFormatter = {
       status: item => `${_.get(item, ['status', 'name'], '')}`,
-      '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 >Cancel</Button></td>,
+      '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 onClick={()=> {this.props.onClickRemoveItem(item.id);}}>Cancel</Button></td>,
     }
 
     const patronsListFormatter = {
@@ -50,8 +50,6 @@ class CheckOut extends React.Component{
       Username: user => user.username,
       Email: user => _.get(user, ['personal', 'email']),
     };
-
-
 
     return(
       <div style={containerStyle}>
