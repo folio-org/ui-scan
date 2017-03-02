@@ -112,7 +112,7 @@ class Scan extends React.Component{
     if (!mode) return <div/>;
     const modeOptions = [
       { label: 'Check items out', value: 'CheckOut' },
-      { label: 'Automatic Mode', value: 'Automatic' },
+      /* { label: 'Automatic Mode', value: 'Automatic' }, */
       { label: 'Check items in', value: 'CheckIn' }
     ];
     
