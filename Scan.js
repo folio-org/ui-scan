@@ -95,6 +95,7 @@ class Scan extends React.Component{
         });
       }
     });
+    document.getElementById('itemid').value = '';
   }
 
   onClickRemoveItem(itemid) {
