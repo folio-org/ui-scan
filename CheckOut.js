@@ -15,7 +15,7 @@ const propTypes = {
   onChangeMode: React.PropTypes.func,
   modeSelector: React.PropTypes.element,
   items: React.PropTypes.arrayOf(React.PropTypes.object),
-  patron: React.PropTypes.object,   // eslint-disable-line
+  patrons: React.PropTypes.arrayOf(React.PropTypes.object),
 }
 
 class CheckOut extends React.Component{
@@ -40,9 +40,19 @@ class CheckOut extends React.Component{
     }
     
     const itemListFormatter = {
-      '': item => <td key={item.name}><Button buttonStyle="negative hollow" align="end" marginBottom0 >Cancel</Button></td>,
+      status: item => `${_.get(item, ['status', 'name'], '')}`,
+      '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 >Cancel</Button></td>,
     }
-    
+
+    const patronsListFormatter = {
+      Active: user => user.active,
+      Name: user => `${_.get(user, ['personal', 'last_name'], '')}, ${_.get(user, ['personal', 'first_name'], '')}`,
+      Username: user => user.username,
+      Email: user => _.get(user, ['personal', 'email']),
+    };
+
+
+
     return(
       <div style={containerStyle}>
         <Paneset static>
@@ -56,19 +66,27 @@ class CheckOut extends React.Component{
               </Col>
             </Row>
             <div style={{width: '100%', textAlign:'center', padding: '2rem 1rem'}}>
-            {(this.props.patron && this.props.patron.id ) ? <UserView user={this.props.patron} /> : <em>No patron selected</em>}</div>
+              <MultiColumnList
+                contentData={this.props.patrons}
+                rowMetadata={['id', 'username']}
+                formatter={patronsListFormatter}
+                visibleColumns={['Active', 'Name', 'Username', 'Email']}
+                fullWidth
+                isEmptyMessage={`No patron selected`}
+              />
+            </div>
           </Pane>
           <Pane defaultWidth="50%" paneTitle="Scanned Items">
           <Row>
             <Col xs={9}>
-              <TextField placeholder='Enter Item ID' aria-label='Item ID' fullWidth/>
+              <TextField placeholder='Enter Item ID' aria-label='Item ID' fullWidth id="itemid" />
             </Col>
             <Col xs={3}>
-              <Button buttonStyle="primary noRadius" fullWidth >+ Add item</Button>
+              <Button buttonStyle="primary noRadius" fullWidth onClick={this.props.onClickAddItem}>+ Add item</Button>
             </Col>
           </Row>
-          <MultiColumnList 
-            visibleColumns={['id', 'name', 'due date', '']} 
+          <MultiColumnList
+            visibleColumns={['barcode', 'status', '']}
             contentData={this.props.items} 
             formatter={itemListFormatter} 
             isEmptyMessage="No items have been entered yet."

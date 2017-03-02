@@ -17,9 +17,14 @@ class Scan extends React.Component{
   }
 
   static manifest = Object.freeze ({
-    items: {},
     mode: {},
-    patron: {},
+    patrons: {},
+    items: {},
+    itemsx: {
+      type: 'okapi',
+      path: 'item-storage/items/:{itemid}',
+      clear: false,
+    },
   });
 
   constructor(props, context){
@@ -38,16 +43,20 @@ class Scan extends React.Component{
     
     this.onChangeMode = this.onChangeMode.bind(this);
     this.onClickFindPatron = this.onClickFindPatron.bind(this);
+    this.onClickAddItem = this.onClickAddItem.bind(this);
   }
 
-  componentWillMount () {    
-    const { data: { items, mode }, mutator } = this.props;
+  componentWillMount() {
+    const { data: { items, mode, patrons }, mutator } = this.props;
 
-    if (_.isEmpty(items)) {
-      mutator.items.replace( [{id: '01', name:'item1', 'due date': '2/28/2017' },{id: '02', name:'item2', 'due date': '2/28/2017'}] );
-    }
     if (_.isEmpty(mode)) {
       mutator.mode.replace('CheckOut');
+    }
+    if (_.isEmpty(items)) {
+      mutator.items.replace([]);
+    }
+    if (_.isEmpty(patrons)) {
+      mutator.patrons.replace([]);
     }
   }
 
@@ -65,15 +74,31 @@ class Scan extends React.Component{
         console.log("Error fetching user");
       } else {
         response.json().then((json) => {
-          console.log("user json", json.users[0]);
-          this.props.mutator.patron.replace(json.users[0]);
+          this.props.mutator.patrons.replace(json.users);
         });
       }
     });
   }
 
+  onClickAddItem(e) {
+    if (e) e.preventDefault();
+    let itemid = document.getElementById('itemid').value;
+    fetch(`${this.okapiUrl}/item-storage/items?query=(id="${itemid}")`, { headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token }) })
+    .then((response) => {
+      if (response.status >= 400) {
+        console.log("Error fetching user");
+      } else {
+        response.json().then((json) => {
+          let items = [].concat(this.props.data.items).concat(json.items);
+          this.props.mutator.items.replace(items);
+        });
+      }
+    });
+
+  }
+
   render() {
-    const { data: { mode, items, patron } } = this.props;
+    const { data: { mode, items, patrons } } = this.props;
     if (!mode) return <div/>;
     const modeOptions = [
       { label: 'Check items out', value: 'CheckOut' },
@@ -89,7 +114,8 @@ class Scan extends React.Component{
                                {onChangeMode: this.onChangeMode,
                                 modeSelector: modeMenu,
                                 onClickFindPatron: this.onClickFindPatron,
-                                patron,
+                                onClickAddItem: this.onClickAddItem,
+                                patrons,
                                 items});
   }
   
