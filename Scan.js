@@ -45,6 +45,7 @@ class Scan extends React.Component{
     this.onClickFindPatron = this.onClickFindPatron.bind(this);
     this.onClickAddItem = this.onClickAddItem.bind(this);
     this.onClickRemoveItem = this.onClickRemoveItem.bind(this);
+    this.onClickCheckout = this.onClickCheckout.bind(this);
   }
 
   componentWillMount() {
@@ -101,9 +102,17 @@ class Scan extends React.Component{
   }
 
   onClickRemoveItem(itemid) {
-    const index = this.props.data.items.findIndex((item) => { return (item.id === itemid); })
-    let items = [].concat(this.props.data.items);
+    let items = JSON.parse(JSON.stringify(this.props.data.items));
+    const index = items.findIndex((item) => { return (item.id === itemid); })
     items.splice(index,1);
+    this.props.mutator.items.replace(items);
+  }
+
+  onClickCheckout () {
+    let items = JSON.parse(JSON.stringify(this.props.data.items));
+    for (var i = 0; i < items.length ; i++) {
+      items[i].status.name = 'Checked Out';
+    }
     this.props.mutator.items.replace(items);
   }
 
@@ -126,6 +135,7 @@ class Scan extends React.Component{
                                 onClickFindPatron: this.onClickFindPatron,
                                 onClickAddItem: this.onClickAddItem,
                                 onClickRemoveItem: this.onClickRemoveItem,
+                                onClickCheckout: this.onClickCheckout,
                                 patrons,
                                 items});
   }

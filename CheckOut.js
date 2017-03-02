@@ -92,8 +92,8 @@ class CheckOut extends React.Component{
           </Pane>
 
         </Paneset>
-        {this.props.patrons.length !== 0 && this.props.items.length !== 0 ?
-          <Button buttonStyle="primary mega" >Done</Button> : null
+        {this.props.patrons && this.props.patrons.length !== 0 && this.props.items && this.props.items.length !== 0 ?
+          <Button buttonStyle="primary mega" onClick={this.props.onClickCheckout} >Done</Button> : null
         }
       </div>
     );
