@@ -77,6 +77,9 @@ class Scan extends React.Component{
   onChangeMode(e){
     const nextMode = e.target.value;
     this.props.mutator.mode.replace(nextMode);
+    this.props.mutator.pendingScan.replace({state: false});
+    this.props.mutator.items.replace([]);
+    this.props.mutator.patrons.replace([]);
   }
 
   onClickFindPatron(e) {
