@@ -155,7 +155,7 @@ class Scan extends React.Component{
   }
 
   putItem(items, i) {
-    fetch(`${this.okapiUrl}/item-storage/items/${items[0].id}`, {
+    fetch(`${this.okapiUrl}/item-storage/items/${items[i].id}`, {
       method: 'PUT',
       headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
       body: JSON.stringify(items[i]),
