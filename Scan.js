@@ -47,6 +47,7 @@ class Scan extends React.Component{
     this.onClickAddItem = this.onClickAddItem.bind(this);
     this.onClickRemoveItem = this.onClickRemoveItem.bind(this);
     this.onClickCheckout = this.onClickCheckout.bind(this);
+    this.onClickCheckin = this.onClickCheckin.bind(this);
   }
 
   componentWillMount() {
@@ -135,10 +136,19 @@ class Scan extends React.Component{
     if (items.length==0) this.props.mutator.pendingScan.replace({state: false});
   }
 
-  onClickCheckout () {
+  onClickCheckout() {
     let items = JSON.parse(JSON.stringify(this.props.data.items));
     for (var i = 0; i < items.length ; i++) {
       items[i].status.name = 'Checked Out';
+      this.putItem(items,i);
+    }
+    this.props.mutator.pendingScan.replace({state: false});
+  }
+
+  onClickCheckin() {
+    let items = JSON.parse(JSON.stringify(this.props.data.items));
+    for (var i = 0; i < items.length ; i++) {
+      items[i].status.name = 'Available';
       this.putItem(items,i);
     }
     this.props.mutator.pendingScan.replace({state: false});
@@ -181,6 +191,7 @@ class Scan extends React.Component{
                                 onClickAddItem: this.onClickAddItem,
                                 onClickRemoveItem: this.onClickRemoveItem,
                                 onClickCheckout: this.onClickCheckout,
+                                onClickCheckin: this.onClickCheckin,
                                 patrons,
                                 items});
   }
