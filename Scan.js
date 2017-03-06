@@ -139,28 +139,27 @@ class Scan extends React.Component{
     let items = JSON.parse(JSON.stringify(this.props.data.items));
     for (var i = 0; i < items.length ; i++) {
       items[i].status.name = 'Checked Out';
-      if (this.putItem(items[i])) {
-        this.props.mutator.items.replace(items);
-      }
+      this.putItem(items,i);
     }
     this.props.mutator.pendingScan.replace({state: false});
   }
 
-  putItem(item) {
-    fetch(`${this.okapiUrl}/item-storage/items/${item.id}`, {
+  putItem(items, i) {
+    fetch(`${this.okapiUrl}/item-storage/items/${items[0].id}`, {
       method: 'PUT',
       headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
-      body: JSON.stringify(item),
+      body: JSON.stringify(items[i]),
     }).then((response) => {
-      if (response.status >= 400) {
-        console.log(`Users. POST of item ${item.barcode} failed.`);
-        return false;
-      } else {
-        return true;
+      if (!response.ok) {
+        throw Error(response.statusText);
       }
+      return response;
+    }).then((response) => {
+     this.props.mutator.items.replace(items);
+    }).catch((error) => {
+      console.log(error);
     });
   }
-
 
   render() {
     const { data: { mode, items, patrons } } = this.props;
