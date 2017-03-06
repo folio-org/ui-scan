@@ -9,7 +9,6 @@ import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import {Row, Col} from 'react-bootstrap';
 
-import UserView from './UserView';
 
 const propTypes = {
   onChangeMode: React.PropTypes.func,
