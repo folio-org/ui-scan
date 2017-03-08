@@ -2,12 +2,12 @@ import React from 'react';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
-import KeyValue from '@folio/stripes-components/lib/KeyValue' // eslint-disable-line
+import KeyValue from '@folio/stripes-components/lib/KeyValue'
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import {Row, Col} from 'react-bootstrap';
 
 const propTypes = {
-  user: React.PropTypes.object,   // eslint-disable-line
+  user: React.PropTypes.object,
 }
 
 export default class UserView extends React.Component{
