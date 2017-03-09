@@ -27,9 +27,10 @@ function CheckIn(props) {
     position: 'absolute',
   };
 
+  const { onClickRemoveItem } = props;
   const itemListFormatter = {
     status: item => `${_.get(item, ['status', 'name'], '')}`,
-    '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 onClick={() => { props.onClickRemoveItem(item.id); }}>Cancel</Button></td>,
+    '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 onClick={() => { onClickRemoveItem(item.id); }}>Cancel</Button></td>,
   };
 
   return (
