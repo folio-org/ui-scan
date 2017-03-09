@@ -145,7 +145,7 @@ class Scan extends React.Component {
           } else {
             response.json().then((json) => {
               const itemid = json.items[0].id;
-              if (this.props.data.items.findIndex((item) => { return (item.id === itemid); }) < 0) {
+              if (this.props.data.items.findIndex(item => item.id === itemid) < 0) {
                 const items = [].concat(this.props.data.items).concat(json.items);
                 this.props.mutator.items.replace(items);
               }
@@ -159,7 +159,7 @@ class Scan extends React.Component {
 
   onClickRemoveItem(itemid) {
     const items = JSON.parse(JSON.stringify(this.props.data.items));
-    const index = items.findIndex((item) => { return (item.id === itemid); });
+    const index = items.findIndex(item => item.id === itemid);
     items.splice(index, 1);
     this.props.mutator.items.replace(items);
     if (items.length === 0) this.props.mutator.pendingScan.replace({ state: false });
