@@ -12,10 +12,31 @@ import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
 
 class Scan extends React.Component {
-
   static contextTypes = {
     store: PropTypes.object,
   }
+
+  static propTypes = {
+    data: PropTypes.shape({
+      items: PropTypes.shape({
+        findIndex: PropTypes.string,
+      }),
+    }),
+    mutator: PropTypes.shape({
+      mode: PropTypes.shape({
+        replace: PropTypes.func,
+      }),
+      patrons: PropTypes.shape({
+        replace: PropTypes.func,
+      }),
+      items: PropTypes.shape({
+        replace: PropTypes.func,
+      }),
+      pendingScan: PropTypes.shape({
+        replace: PropTypes.func,
+      }),
+    }),
+  };
 
   static manifest = Object.freeze({
     mode: {},
