@@ -141,7 +141,7 @@ class Scan extends React.Component {
           }) })
         .then((response) => {
           if (response.status >= 400) {
-            console.log('Error fetching user');
+            console.log('Error fetching item');
           } else {
             response.json().then((json) => {
               const itemid = json.items[0].id;
