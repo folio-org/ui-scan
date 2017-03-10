@@ -6,7 +6,6 @@ import Miss from 'react-router/Miss';
 import Scan from './Scan';
 
 class ScanRouting extends Component {
-
   static propTypes = {
     connect: PropTypes.func.isRequired,
     location: PropTypes.object.isRequired,
@@ -15,7 +14,7 @@ class ScanRouting extends Component {
 
   constructor(props) {
     super(props);
-    this.connectedScan = props.connect(Scan);
+    this.connectedApp = props.connect(Scan);
   }
 
   NoMatch() {
@@ -31,7 +30,10 @@ class ScanRouting extends Component {
     const { pathname } = this.props;
     return (
       <div>
-        <Match pattern={`${pathname}`} component={this.connectedScan} />
+        <Match
+          pattern={`${pathname}`}
+          component={this.connectedApp}
+        />
         <Miss component={() => { this.NoMatch(); }} />
       </div>
     );
