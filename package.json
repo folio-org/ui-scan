@@ -40,7 +40,9 @@
     "lodash": "^4.17.4",
     "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",
-    "react-router": "4.0.0-alpha.6",
+    "react-router": "4.0.0-alpha.6"
+  },
+  "devDependencies": {
     "@folio/stripes-connect": "^0.0.9"
   }
 }
