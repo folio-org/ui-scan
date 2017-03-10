@@ -3,7 +3,6 @@ import _ from 'lodash';
 // eslint-disable-next-line import/no-unresolved
 import React, { PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
-import { connect } from '@folio/stripes-connect';
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Select from '@folio/stripes-components/lib/Select';
 
@@ -18,9 +17,11 @@ class Scan extends React.Component {
 
   static propTypes = {
     data: PropTypes.shape({
-      items: PropTypes.shape({
-        findIndex: PropTypes.string,
-      }),
+      items: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+        }),
+      ),
     }),
     mutator: PropTypes.shape({
       mode: PropTypes.shape({
@@ -227,4 +228,4 @@ class Scan extends React.Component {
   }
 }
 
-export default connect(Scan, '@folio/scan');
+export default Scan;
