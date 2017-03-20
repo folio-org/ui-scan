@@ -3,6 +3,9 @@ import _ from 'lodash';
 // eslint-disable-next-line import/no-unresolved
 import React, { PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
+import dateFormat from 'dateformat';
+import uuid from 'uuid';
+
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Select from '@folio/stripes-components/lib/Select';
 
@@ -18,6 +21,11 @@ class Scan extends React.Component {
   static propTypes = {
     data: PropTypes.shape({
       items: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+        }),
+      ),
+      patrons: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string,
         }),
@@ -171,6 +179,7 @@ class Scan extends React.Component {
     for (let i = 0; i < items.length; i++) {
       items[i].status.name = 'Checked Out';
       this.putItem(items, i);
+      this.postLoan(this.props.data.patrons[0].id, items[i].id);
     }
     this.props.mutator.pendingScan.replace({ state: false });
   }
@@ -180,8 +189,58 @@ class Scan extends React.Component {
     for (let i = 0; i < items.length; i++) {
       items[i].status.name = 'Available';
       this.putItem(items, i);
+      this.putReturn(items[i].id);
     }
     this.props.mutator.pendingScan.replace({ state: false });
+  }
+
+  postLoan(userid, itemid) {
+    // today's date, userid, item id
+    const loan = {
+      id: uuid(),
+      userId: userid,
+      itemId: itemid,
+      loanDate: dateFormat(new Date(), "yyyy-dd-mm'T'HH:MM:ss'-01:00'"),
+      status: {
+        name: 'Open',
+      },
+    };
+    fetch(`${this.okapiUrl}/loan-storage/loans`, {
+      method: 'POST',
+      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+      body: JSON.stringify(loan),
+    }).then(() => {
+      console.log('Loan posted.');
+    });
+  }
+
+  putReturn(itemid) {
+    // find loan id by itemid and status ('Open')
+    fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemid} AND status="Open")`, {
+      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+    }).then((response) => {
+      if (response.status >= 400) {
+        console.log('Error fetching item');
+      } else {
+        response.json().then((json) => {
+          const loan = json.loans[0];
+          const now = new Date();
+          loan.returnDate = dateFormat(now, "yyyy-dd-mm'T'HH:MM:ss'-01:00'");
+          loan.status = 'Closed';
+          fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
+            method: 'PUT',
+            headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+            body: JSON.stringify(loan),
+          }).then((loanresponse) => {
+            if (!loanresponse.ok) {
+              throw Error(loanresponse.statusText);
+            }
+          }).catch((error) => {
+            console.log(error);
+          });
+        });
+      }
+    });
   }
 
   putItem(items, i) {
