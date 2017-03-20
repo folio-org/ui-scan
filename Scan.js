@@ -200,7 +200,7 @@ class Scan extends React.Component {
       id: uuid(),
       userId: userid,
       itemId: itemid,
-      loanDate: dateFormat(new Date(), "yyyy-dd-mm'T'HH:MM:ss'-01:00'"),
+      loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'-01:00'"),
       status: {
         name: 'Open',
       },
@@ -225,8 +225,8 @@ class Scan extends React.Component {
         response.json().then((json) => {
           const loan = json.loans[0];
           const now = new Date();
-          loan.returnDate = dateFormat(now, "yyyy-dd-mm'T'HH:MM:ss'-01:00'");
-          loan.status = 'Closed';
+          loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'-01:00'");
+          loan.status = { name: 'Closed' };
           fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
             method: 'PUT',
             headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
