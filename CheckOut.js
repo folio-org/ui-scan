@@ -13,13 +13,12 @@ import { Row, Col } from 'react-bootstrap';
 
 const propTypes = {
   modeSelector: React.PropTypes.element,
-  items: React.PropTypes.arrayOf(React.PropTypes.object),
+  scannedItems: React.PropTypes.arrayOf(React.PropTypes.object),
   patrons: React.PropTypes.arrayOf(React.PropTypes.object),
   patron: React.PropTypes.object,
-  onClickRemoveItem: React.PropTypes.func,
   onClickFindPatron: React.PropTypes.func,
-  onClickAddItem: React.PropTypes.func,
   onClickCheckout: React.PropTypes.func,
+  onClickDone: React.PropTypes.func,
 };
 
 function CheckOut(props) {
@@ -32,14 +31,14 @@ function CheckOut(props) {
     position: 'absolute',
   };
 
-  if (props.patron !== null && props.items.length !== 0) {
+  if (props.patron !== null && props.scannedItems.length !== 0) {
     containerStyle.height = '98.6%';
   }
 
-  const { onClickRemoveItem } = props;
   const itemListFormatter = {
-    status: item => `${_.get(item, ['status', 'name'], '')}`,
-    '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 onClick={() => { onClickRemoveItem(item.id); }}>Cancel</Button></td>,
+    title: loan => `${_.get(loan, ['item', 'title'])}`,
+    barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
+    loanDate: loan => loan.loanDate.substr(0, 10),
   };
 
   const patronsListFormatter = {
@@ -76,13 +75,13 @@ function CheckOut(props) {
               <TextField placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" />
             </Col>
             <Col xs={3}>
-              <Button buttonStyle="primary noRadius" fullWidth onClick={props.onClickAddItem}>+ Add item</Button>
+              <Button buttonStyle="primary noRadius" fullWidth onClick={props.onClickCheckout}>+ Add item</Button>
             </Col>
           </Row>
           <MultiColumnList
-            visibleColumns={['barcode', 'status', '']}
+            visibleColumns={['title', 'barcode', 'loanDate']}
             rowMetadata={['id']}
-            contentData={props.items}
+            contentData={props.scannedItems}
             formatter={itemListFormatter}
             isEmptyMessage="No items have been entered yet."
             fullWidth
@@ -90,8 +89,8 @@ function CheckOut(props) {
         </Pane>
 
       </Paneset>
-      {props.patrons && props.patrons.length !== 0 && props.items && props.items.length !== 0 ?
-        <Button buttonStyle="primary mega" onClick={props.onClickCheckout} >Done</Button> : null
+      {props.patrons && props.patrons.length !== 0 ?
+        <Button buttonStyle="primary mega" onClick={props.onClickDone} >Done</Button> : null
       }
     </div>
   );

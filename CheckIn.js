@@ -11,9 +11,7 @@ import TextField from '@folio/stripes-components/lib/TextField';
 
 const propTypes = {
   modeSelector: React.PropTypes.element,
-  items: React.PropTypes.arrayOf(React.PropTypes.object),
-  onClickAddItem: React.PropTypes.func,
-  onClickRemoveItem: React.PropTypes.func,
+  scannedItems: React.PropTypes.arrayOf(React.PropTypes.object),
   onClickCheckin: React.PropTypes.func,
 };
 
@@ -27,10 +25,11 @@ function CheckIn(props) {
     position: 'absolute',
   };
 
-  const { onClickRemoveItem } = props;
   const itemListFormatter = {
-    status: item => `${_.get(item, ['status', 'name'], '')}`,
-    '': item => <td key={item.id}><Button buttonStyle="negative hollow" align="end" marginBottom0 onClick={() => { onClickRemoveItem(item.id); }}>Cancel</Button></td>,
+    title: loan => `${_.get(loan, ['item', 'title'])}`,
+    barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
+    loanDate: loan => loan.loanDate.substr(0, 10),
+    returnDate: loan => loan.returnDate.substr(0, 10),
   };
 
   return (
@@ -43,13 +42,13 @@ function CheckIn(props) {
                 <TextField placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" />
               </Col>
               <Col xs={3}>
-                <Button buttonStyle="primary noRadius" fullWidth onClick={props.onClickAddItem}>+ Add item</Button>
+                <Button buttonStyle="primary noRadius" fullWidth onClick={props.onClickCheckin}>+ Add item</Button>
               </Col>
             </Row>
             <MultiColumnList
-              visibleColumns={['barcode', 'status', '']}
+              visibleColumns={['title', 'barcode', 'loanDate', 'returnDate']}
               rowMetadata={['id']}
-              contentData={props.items}
+              contentData={props.scannedItems}
               formatter={itemListFormatter}
               isEmptyMessage="No items have been entered yet."
               fullWidth
@@ -57,9 +56,6 @@ function CheckIn(props) {
           </div>
         </Pane>
       </Paneset>
-      {props.items && props.items.length !== 0 &&
-        <Button buttonStyle="primary mega" onClick={props.onClickCheckin}>Done</Button>
-      }
     </div>
   );
 }

@@ -25,6 +25,11 @@ class Scan extends React.Component {
           id: PropTypes.string,
         }),
       ),
+      scannedItems: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+        }),
+      ),
       patrons: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string,
@@ -41,7 +46,7 @@ class Scan extends React.Component {
       items: PropTypes.shape({
         replace: PropTypes.func,
       }),
-      pendingScan: PropTypes.shape({
+      scannedItems: PropTypes.shape({
         replace: PropTypes.func,
       }),
     }),
@@ -51,12 +56,7 @@ class Scan extends React.Component {
     mode: {},
     patrons: {},
     items: {},
-    pendingScan: {},
-    itemsx: {
-      type: 'okapi',
-      path: 'item-storage/items/:{itemid}',
-      clear: false,
-    },
+    scannedItems: {},
   });
 
   constructor(props, context) {
@@ -75,41 +75,38 @@ class Scan extends React.Component {
 
     this.onChangeMode = this.onChangeMode.bind(this);
     this.onClickFindPatron = this.onClickFindPatron.bind(this);
-    this.onClickAddItem = this.onClickAddItem.bind(this);
-    this.onClickRemoveItem = this.onClickRemoveItem.bind(this);
     this.onClickCheckout = this.onClickCheckout.bind(this);
+    this.onClickDone = this.onClickDone.bind(this);
     this.onClickCheckin = this.onClickCheckin.bind(this);
   }
 
   componentWillMount() {
-    const { data: { items, mode, patrons, pendingScan }, mutator } = this.props;
-
-    if (_.isEmpty(pendingScan)) {
-      mutator.pendingScan.replace({ state: false });
-    }
+    const { data: { items, scannedItems, mode, patrons }, mutator } = this.props;
 
     if (_.isEmpty(mode)) {
       mutator.mode.replace('CheckOut');
     }
-
-    if (!pendingScan || !pendingScan.state) {
+    if (_.isEmpty(items)) {
       mutator.items.replace([]);
+    }
+    if (_.isEmpty(scannedItems)) {
+      mutator.scannedItems.replace([]);
+    }
+    if (_.isEmpty(patrons)) {
       mutator.patrons.replace([]);
-    } else {
-      if (_.isEmpty(items)) {
-        mutator.items.replace([]);
-      }
-      if (_.isEmpty(patrons)) {
-        mutator.patrons.replace([]);
-      }
     }
   }
 
   onChangeMode(e) {
     const nextMode = e.target.value;
     this.props.mutator.mode.replace(nextMode);
-    this.props.mutator.pendingScan.replace({ state: false });
     this.props.mutator.items.replace([]);
+    this.props.mutator.scannedItems.replace([]);
+    this.props.mutator.patrons.replace([]);
+  }
+
+  onClickDone() {
+    this.props.mutator.scannedItems.replace([]);
     this.props.mutator.patrons.replace([]);
   }
 
@@ -134,14 +131,14 @@ class Scan extends React.Component {
     });
   }
 
-  onClickAddItem(e) {
+  onClickCheckout(e) {
     if (e) e.preventDefault();
-    this.props.mutator.pendingScan.replace({ state: true });
     const barcodeValue = document.getElementById('barcode').value;
     const barcodes = barcodeValue.split(' ');
     for (let i = 0; i < barcodes.length; i++) {
       const barcode = barcodes[i].trim();
       if (barcode) {
+        // fetch item by barcode to get item id
         fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`,
           { headers: Object.assign({}, {
             'X-Okapi-Tenant': this.tenant,
@@ -152,12 +149,15 @@ class Scan extends React.Component {
           if (response.status >= 400) {
             console.log('Error fetching item');
           } else {
-            response.json().then((json) => {
-              const itemid = json.items[0].id;
-              if (this.props.data.items.findIndex(item => item.id === itemid) < 0) {
-                const items = [].concat(this.props.data.items).concat(json.items);
-                this.props.mutator.items.replace(items);
-              }
+            response.json().then((itemsJson) => {
+              const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
+              item.status = { name: 'Checked out' };
+              // PUT the item with status 'Checked out'
+              this.putItem(item);
+              // PUT the loan with a loanDate and status 'Open'
+              this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
+                this.fetchLoan(loansJson.id);
+              });
             });
           }
         });
@@ -166,33 +166,47 @@ class Scan extends React.Component {
     }
   }
 
-  onClickRemoveItem(itemid) {
-    const items = JSON.parse(JSON.stringify(this.props.data.items));
-    const index = items.findIndex(item => item.id === itemid);
-    items.splice(index, 1);
-    this.props.mutator.items.replace(items);
-    if (items.length === 0) this.props.mutator.pendingScan.replace({ state: false });
+  onClickCheckin(e) {
+    if (e) e.preventDefault();
+    const barcodeValue = document.getElementById('barcode').value;
+    const barcodes = barcodeValue.split(' ');
+    for (let i = 0; i < barcodes.length; i++) {
+      const barcode = barcodes[i].trim();
+      if (barcode) {
+        // fetch item by barcode to get item id
+        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`,
+          { headers: Object.assign({}, {
+            'X-Okapi-Tenant': this.tenant,
+            'X-Okapi-Token': this.store.getState().okapi.token,
+            'Content-Type': 'application/json',
+          }) })
+        .then((itemsResponse) => {
+          if (itemsResponse.status >= 400) {
+            console.log('Error fetching item');
+          } else {
+            itemsResponse.json().then((itemsJson) => {
+              const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
+              item.status = { name: 'Available' };
+              // PUT the item with status 'Available'
+              this.putItem(item);
+              // PUT the loan with a returnDate and status 'Closed'
+              this.fetchLoanByItemId(item.id).then((loansResponse) => {
+                loansResponse.json().then((loansJson) => {
+                  const loan = loansJson.loans[0];
+                  const now = new Date();
+                  loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'Z'");
+                  loan.status = { name: 'Closed' };
+                  this.putReturn(loan).then(() => this.fetchLoan(loan.id));
+                });
+              });
+            });
+          }
+        });
+      }
+      document.getElementById('barcode').value = '';
+    }
   }
 
-  onClickCheckout() {
-    const items = JSON.parse(JSON.stringify(this.props.data.items));
-    for (let i = 0; i < items.length; i++) {
-      items[i].status.name = 'Checked Out';
-      this.putItem(items, i);
-      this.postLoan(this.props.data.patrons[0].id, items[i].id);
-    }
-    this.props.mutator.pendingScan.replace({ state: false });
-  }
-
-  onClickCheckin() {
-    const items = JSON.parse(JSON.stringify(this.props.data.items));
-    for (let i = 0; i < items.length; i++) {
-      items[i].status.name = 'Available';
-      this.putItem(items, i);
-      this.putReturn(items[i].id);
-    }
-    this.props.mutator.pendingScan.replace({ state: false });
-  }
 
   postLoan(userid, itemid) {
     // today's date, userid, item id
@@ -200,68 +214,62 @@ class Scan extends React.Component {
       id: uuid(),
       userId: userid,
       itemId: itemid,
-      loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'-01:00'"),
+      loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
       status: {
         name: 'Open',
       },
     };
-    fetch(`${this.okapiUrl}/loan-storage/loans`, {
+    return fetch(`${this.okapiUrl}/loan-storage/loans`, {
       method: 'POST',
       headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
       body: JSON.stringify(loan),
-    }).then(() => {
-      console.log('Loan posted.');
-    });
+    }).then(response => response.json());
   }
 
-  putReturn(itemid) {
-    // find loan id by itemid and status ('Open')
-    fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemid} AND status="Open")`, {
-      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        console.log('Error fetching item');
-      } else {
-        response.json().then((json) => {
-          const loan = json.loans[0];
-          const now = new Date();
-          loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'-01:00'");
-          loan.status = { name: 'Closed' };
-          fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
-            method: 'PUT',
-            headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
-            body: JSON.stringify(loan),
-          }).then((loanresponse) => {
-            if (!loanresponse.ok) {
-              throw Error(loanresponse.statusText);
-            }
-          }).catch((error) => {
-            console.log(error);
-          });
-        });
-      }
-    });
-  }
-
-  putItem(items, i) {
-    fetch(`${this.okapiUrl}/item-storage/items/${items[i].id}`, {
+  putReturn(loan) {
+    return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
       method: 'PUT',
       headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
-      body: JSON.stringify(items[i]),
+      body: JSON.stringify(loan),
+    });
+  }
+
+  putItem(item) {
+    fetch(`${this.okapiUrl}/item-storage/items/${item.id}`, {
+      method: 'PUT',
+      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+      body: JSON.stringify(item),
     }).then((response) => {
       if (!response.ok) {
         throw Error(response.statusText);
       }
       return response;
     }).then(() => {
-      this.props.mutator.items.replace(items);
+      // do nothing
     }).catch((error) => {
       console.log(error);
     });
   }
 
+  fetchLoan(loanid) {
+    fetch(`${this.okapiUrl}/circulation/loans?query=(id=${loanid})`, {
+      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+    }).then((response) => {
+      response.json().then((json) => {
+        const scannedItems = [].concat(this.props.data.scannedItems).concat(json.loans);
+        this.props.mutator.scannedItems.replace(scannedItems);
+      });
+    });
+  }
+
+  fetchLoanByItemId(itemid) {
+    return fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemid} AND status="Open")`, {
+      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+    });
+  }
+
   render() {
-    const { data: { mode, items, patrons } } = this.props;
+    const { data: { mode, scannedItems, patrons } } = this.props;
     if (!mode) return <div />;
     const modeOptions = [
       { label: 'Check items out', value: 'CheckOut' },
@@ -277,12 +285,11 @@ class Scan extends React.Component {
       onChangeMode: this.onChangeMode,
       modeSelector: modeMenu,
       onClickFindPatron: this.onClickFindPatron,
-      onClickAddItem: this.onClickAddItem,
-      onClickRemoveItem: this.onClickRemoveItem,
-      onClickCheckout: this.onClickCheckout,
+      onClickDone: this.onClickDone,
       onClickCheckin: this.onClickCheckin,
+      onClickCheckout: this.onClickCheckout,
       patrons,
-      items,
+      scannedItems,
     });
   }
 }
