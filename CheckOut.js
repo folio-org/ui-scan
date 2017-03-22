@@ -38,7 +38,7 @@ function CheckOut(props) {
   const itemListFormatter = {
     title: loan => `${_.get(loan, ['item', 'title'])}`,
     barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
-    loanDate: loan => loan.loanDate.substr(0, 10),
+    loanDate: loan => <td style={{width:"18em"}}>{loan.loanDate.substr(0, 10)}</td>,
   };
 
   const patronsListFormatter = {
