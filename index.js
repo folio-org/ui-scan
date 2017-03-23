@@ -7,14 +7,16 @@ import Scan from './Scan';
 
 class ScanRouting extends Component {
   static propTypes = {
-    connect: PropTypes.func.isRequired,
+    stripes: PropTypes.shape({
+      connect: PropTypes.func.isRequired,
+    }).isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
   }
 
   constructor(props) {
     super(props);
-    this.connectedApp = props.connect(Scan);
+    this.connectedApp = props.stripes.connect(Scan);
   }
 
   NoMatch() {
