@@ -1,6 +1,6 @@
 {
   "name": "@folio/scan",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Item Check-in/Check-out",
   "publishConfig" : {
     "registry" : "https://repository.folio.org/repository/npm-folio/"
