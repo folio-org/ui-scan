@@ -14,11 +14,14 @@ import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
 
 class Scan extends React.Component {
-  static contextTypes = {
-    store: PropTypes.object,
-  }
-
   static propTypes = {
+    stripes: PropTypes.shape({
+      okapi: PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        tenant: PropTypes.string.isRequired,
+      }).isRequired,
+      store: PropTypes.object.isRequired,
+    }).isRequired,
     data: PropTypes.shape({
       items: PropTypes.arrayOf(
         PropTypes.shape({
@@ -59,13 +62,12 @@ class Scan extends React.Component {
     scannedItems: {},
   });
 
-  constructor(props, context) {
+  constructor(props) {
     super(props);
 
-    this.store = context.store;
-    this.sys = require('stripes-loader'); // eslint-disable-line
-    this.okapiUrl = this.sys.okapi.url;
-    this.tenant = this.sys.okapi.tenant;
+    this.store = props.stripes.store;
+    this.okapiUrl = props.stripes.okapi.url;
+    this.tenant = props.stripes.okapi.tenant;
 
     this.componentMap = {
       CheckOut,
