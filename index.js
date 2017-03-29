@@ -6,6 +6,11 @@ import Switch from 'react-router-dom/Switch';
 import Scan from './Scan';
 
 class ScanRouting extends Component {
+
+  static childContextTypes = {
+    stripes: React.PropTypes.object,
+  };
+
   static propTypes = {
     stripes: PropTypes.shape({
       connect: PropTypes.func.isRequired,
@@ -14,9 +19,8 @@ class ScanRouting extends Component {
     match: PropTypes.object.isRequired,
   }
 
-  constructor(props) {
-    super(props);
-    this.connectedApp = props.stripes.connect(Scan);
+  getChildContext() {
+    return { stripes: this.props.stripes };
   }
 
   NoMatch() {
@@ -29,12 +33,12 @@ class ScanRouting extends Component {
   }
 
   render() {
-    const pathname = this.props.match.path;
+    const { match: { path }, stripes: { connect } } = this.props;
     return (
       <Switch>
         <Route
-          path={`${pathname}`}
-          render={() => <this.connectedApp {...this.props} />}
+          path={`${path}`}
+          render={() => React.createElement(connect(Scan))}
         />
         <Route component={() => { this.NoMatch(); }} />
       </Switch>

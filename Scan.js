@@ -14,14 +14,11 @@ import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
 
 class Scan extends React.Component {
+  static contextTypes = {
+    stripes: PropTypes.object,
+  }
+
   static propTypes = {
-    stripes: PropTypes.shape({
-      okapi: PropTypes.shape({
-        url: PropTypes.string.isRequired,
-        tenant: PropTypes.string.isRequired,
-      }).isRequired,
-      store: PropTypes.object.isRequired,
-    }).isRequired,
     data: PropTypes.shape({
       items: PropTypes.arrayOf(
         PropTypes.shape({
@@ -62,12 +59,11 @@ class Scan extends React.Component {
     scannedItems: {},
   });
 
-  constructor(props) {
+  constructor(props, context) {
     super(props);
-
-    this.store = props.stripes.store;
-    this.okapiUrl = props.stripes.okapi.url;
-    this.tenant = props.stripes.okapi.tenant;
+    this.okapiUrl = context.stripes.okapi.url;
+    this.httpHeaders = Object.assign({},
+      { 'X-Okapi-Tenant': context.stripes.okapi.tenant, 'X-Okapi-Token': context.stripes.store.getState().okapi.token, 'Content-Type': 'application/json' });
 
     this.componentMap = {
       CheckOut,
@@ -116,12 +112,7 @@ class Scan extends React.Component {
     if (e) e.preventDefault();
     this.props.mutator.items.replace([]);
     const username = document.getElementById('patronid').value;
-    fetch(`${this.okapiUrl}/users?query=(username="${username}")`,
-      { headers: Object.assign({}, {
-        'X-Okapi-Tenant': this.tenant,
-        'X-Okapi-Token': this.store.getState().okapi.token,
-        'Content-Type': 'application/json' }),
-      })
+    fetch(`${this.okapiUrl}/users?query=(username="${username}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
         console.log('Error fetching user');
@@ -141,12 +132,7 @@ class Scan extends React.Component {
       const barcode = barcodes[i].trim();
       if (barcode) {
         // fetch item by barcode to get item id
-        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`,
-          { headers: Object.assign({}, {
-            'X-Okapi-Tenant': this.tenant,
-            'X-Okapi-Token': this.store.getState().okapi.token,
-            'Content-Type': 'application/json',
-          }) })
+        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
         .then((response) => {
           if (response.status >= 400) {
             console.log('Error fetching item');
@@ -176,12 +162,7 @@ class Scan extends React.Component {
       const barcode = barcodes[i].trim();
       if (barcode) {
         // fetch item by barcode to get item id
-        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`,
-          { headers: Object.assign({}, {
-            'X-Okapi-Tenant': this.tenant,
-            'X-Okapi-Token': this.store.getState().okapi.token,
-            'Content-Type': 'application/json',
-          }) })
+        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
         .then((itemsResponse) => {
           if (itemsResponse.status >= 400) {
             console.log('Error fetching item');
@@ -223,7 +204,7 @@ class Scan extends React.Component {
     };
     return fetch(`${this.okapiUrl}/loan-storage/loans`, {
       method: 'POST',
-      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+      headers: this.httpHeaders,
       body: JSON.stringify(loan),
     }).then(response => response.json());
   }
@@ -231,7 +212,7 @@ class Scan extends React.Component {
   putReturn(loan) {
     return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
       method: 'PUT',
-      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+      headers: this.httpHeaders,
       body: JSON.stringify(loan),
     });
   }
@@ -239,7 +220,7 @@ class Scan extends React.Component {
   putItem(item) {
     fetch(`${this.okapiUrl}/item-storage/items/${item.id}`, {
       method: 'PUT',
-      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+      headers: this.httpHeaders,
       body: JSON.stringify(item),
     }).then((response) => {
       if (!response.ok) {
@@ -255,7 +236,7 @@ class Scan extends React.Component {
 
   fetchLoan(loanid) {
     fetch(`${this.okapiUrl}/circulation/loans?query=(id=${loanid})`, {
-      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
+      headers: this.httpHeaders,
     }).then((response) => {
       response.json().then((json) => {
         const scannedItems = [].concat(this.props.data.scannedItems).concat(json.loans);
@@ -265,9 +246,7 @@ class Scan extends React.Component {
   }
 
   fetchLoanByItemId(itemid) {
-    return fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemid} AND status="Open")`, {
-      headers: Object.assign({}, { 'X-Okapi-Tenant': this.tenant, 'X-Okapi-Token': this.store.getState().okapi.token, 'Content-Type': 'application/json' }),
-    });
+    return fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemid} AND status="Open")`, { headers: this.httpHeaders });
   }
 
   render() {
