@@ -5,7 +5,7 @@ import React, { PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
 import dateFormat from 'dateformat';
 import uuid from 'uuid';
-import { SubmissionError } from 'redux-form'
+import { SubmissionError } from 'redux-form';
 
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Select from '@folio/stripes-components/lib/Select';
@@ -117,8 +117,8 @@ class Scan extends React.Component {
   }
 
   checkout(barcode) {
-    if (this.props.data.patrons.length === 0 ) {
-      throw new SubmissionError({ patron: { username: 'Please fill this out to continue'}});
+    if (this.props.data.patrons.length === 0) {
+      throw new SubmissionError({ patron: { username: 'Please fill this out to continue' } });
     }
     return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
     .then((response) => {
@@ -136,11 +136,11 @@ class Scan extends React.Component {
             // PUT the loan with a loanDate and status 'Open'
             this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
               this.fetchLoan(loansJson.id);
-            })
+            });
           }
-        })
+        });
       }
-    })
+    });
   }
 
   onClickCheckin(data) {
