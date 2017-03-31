@@ -117,6 +117,9 @@ class Scan extends React.Component {
   }
 
   checkout(barcode) {
+    if (this.props.data.patrons.length === 0 ) {
+      throw new SubmissionError({ patron: { username: 'Please fill this out to continue'}});
+    }
     return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
