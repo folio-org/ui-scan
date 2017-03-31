@@ -72,8 +72,7 @@ class Scan extends React.Component {
     };
 
     this.onChangeMode = this.onChangeMode.bind(this);
-    this.onClickFindPatron = this.onClickFindPatron.bind(this);
-    this.onClickCheckout = this.onClickCheckout.bind(this);
+    this.onSubmitInCheckOutForm = this.onSubmitInCheckOutForm.bind(this);
     this.onClickDone = this.onClickDone.bind(this);
     this.onClickCheckin = this.onClickCheckin.bind(this);
   }
@@ -108,31 +107,21 @@ class Scan extends React.Component {
     this.props.mutator.patrons.replace([]);
   }
 
-  onClickFindPatron(e) {
-    if (e) e.preventDefault();
-    this.props.mutator.items.replace([]);
-    const username = document.getElementById('patronid').value;
-    fetch(`${this.okapiUrl}/users?query=(username="${username}")`, { headers: this.httpHeaders })
-    .then((response) => {
-      if (response.status >= 400) {
-        console.log('Error fetching user');
-      } else {
-        response.json().then((json) => {
-          this.props.mutator.patrons.replace(json.users);
-        });
-      }
-    });
+  onSubmitInCheckOutForm(data) {
+    if (data.SubmitMeta.button === 'find_patron') {
+      this.findPatron(data.patron.username);
+    } else if (data.SubmitMeta.button === 'add_item') {
+      this.checkout(data.item.barcode);
+    }
   }
 
-  onClickCheckout(e) {
-    if (e) e.preventDefault();
-    const barcodeValue = document.getElementById('barcode').value;
-    const barcodes = barcodeValue.split(' ');
+  checkout(barcode) {
+    const barcodes = barcode.split(' ');
     for (let i = 0; i < barcodes.length; i++) {
-      const barcode = barcodes[i].trim();
-      if (barcode) {
+      const bc = barcodes[i].trim();
+      if (bc) {
         // fetch item by barcode to get item id
-        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
+        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${bc}")`, { headers: this.httpHeaders })
         .then((response) => {
           if (response.status >= 400) {
             console.log('Error fetching item');
@@ -154,8 +143,7 @@ class Scan extends React.Component {
     }
   }
 
-  onClickCheckin(e) {
-    if (e) e.preventDefault();
+  onClickCheckin(data) {
     const barcodeValue = document.getElementById('barcode').value;
     const barcodes = barcodeValue.split(' ');
     for (let i = 0; i < barcodes.length; i++) {
@@ -190,6 +178,19 @@ class Scan extends React.Component {
     }
   }
 
+  findPatron(username) {
+    this.props.mutator.items.replace([]);
+    fetch(`${this.okapiUrl}/users?query=(username="${username}")`, { headers: this.httpHeaders })
+    .then((response) => {
+      if (response.status >= 400) {
+        console.log('Error fetching user');
+      } else {
+        response.json().then((json) => {
+          this.props.mutator.patrons.replace(json.users);
+        });
+      }
+    });
+  }
 
   postLoan(userid, itemid) {
     // today's date, userid, item id
@@ -262,13 +263,14 @@ class Scan extends React.Component {
       <PaneMenu><Select marginBottom0 dataOptions={modeOptions} value={mode} onChange={this.onChangeMode} /></PaneMenu>
     );
 
+    const submithandler = (mode === 'CheckOut' ? this.onSubmitInCheckOutForm : this.onClickCheckin);
+
     return React.createElement(this.componentMap[mode], {
       onChangeMode: this.onChangeMode,
       modeSelector: modeMenu,
-      onClickFindPatron: this.onClickFindPatron,
       onClickDone: this.onClickDone,
-      onClickCheckin: this.onClickCheckin,
-      onClickCheckout: this.onClickCheckout,
+      onSubmit: submithandler,
+      initialValues: {},
       patrons,
       scannedItems,
     });

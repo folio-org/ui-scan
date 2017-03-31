@@ -42,7 +42,8 @@
     "react-bootstrap": "^0.30.7",
     "react-router-dom": "^4.0.0",
     "dateformat": "^2.0.0",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "redux-form": "^6.1.1"
   },
   "peerDependencies": {
     "@folio/stripes-core": "^0.4.0",
