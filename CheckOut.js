@@ -17,7 +17,7 @@ const propTypes = {
   scannedItems: React.PropTypes.arrayOf(React.PropTypes.object),
   patrons: React.PropTypes.arrayOf(React.PropTypes.object),
   handleSubmit: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  submithandler: PropTypes.func.isRequired,
   reset: PropTypes.func,
   pristine: PropTypes.bool,
   submitting: PropTypes.bool,
@@ -58,7 +58,7 @@ function CheckOut(props) {
       pristine, // eslint-disable-line no-unused-vars
       submitting, // eslint-disable-line no-unused-vars
       onCancel, // eslint-disable-line no-unused-vars
-      onSubmit,
+      submithandler,
   } = props;
 
   return (
@@ -75,7 +75,7 @@ function CheckOut(props) {
                   buttonStyle="primary noRadius"
                   fullWidth
                   onClick={handleSubmit(values =>
-                    onSubmit({
+                    submithandler({
                       ...values,
                       SubmitMeta: { button: 'find_patron' },
                     }))
@@ -102,7 +102,7 @@ function CheckOut(props) {
                   buttonStyle="primary noRadius"
                   fullWidth
                   onClick={handleSubmit(values =>
-                    onSubmit({
+                    submithandler({
                       ...values,
                       SubmitMeta: { button: 'add_item' },
                     }))

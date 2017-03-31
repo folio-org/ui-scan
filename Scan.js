@@ -5,6 +5,7 @@ import React, { PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
 import dateFormat from 'dateformat';
 import uuid from 'uuid';
+import { SubmissionError } from 'redux-form'
 
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Select from '@folio/stripes-components/lib/Select';
@@ -109,38 +110,34 @@ class Scan extends React.Component {
 
   onSubmitInCheckOutForm(data) {
     if (data.SubmitMeta.button === 'find_patron') {
-      this.findPatron(data.patron.username);
+      return this.findPatron(data.patron.username);
     } else if (data.SubmitMeta.button === 'add_item') {
-      this.checkout(data.item.barcode);
+      return this.checkout(data.item.barcode);
     }
   }
 
   checkout(barcode) {
-    const barcodes = barcode.split(' ');
-    for (let i = 0; i < barcodes.length; i++) {
-      const bc = barcodes[i].trim();
-      if (bc) {
-        // fetch item by barcode to get item id
-        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${bc}")`, { headers: this.httpHeaders })
-        .then((response) => {
-          if (response.status >= 400) {
-            console.log('Error fetching item');
+    return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
+    .then((response) => {
+      if (response.status >= 400) {
+        console.log('Error fetching item');
+      } else {
+        return response.json().then((itemsJson) => {
+          if (itemsJson.items.length === 0) {
+            throw new SubmissionError({ item: { barcode: 'Item with this barcode does not exist', _error: 'Scan failed' } });
           } else {
-            response.json().then((itemsJson) => {
-              const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
-              item.status = { name: 'Checked out' };
-              // PUT the item with status 'Checked out'
-              this.putItem(item);
-              // PUT the loan with a loanDate and status 'Open'
-              this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
-                this.fetchLoan(loansJson.id);
-              });
-            });
+            const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
+            item.status = { name: 'Checked out' };
+            // PUT the item with status 'Checked out'
+            this.putItem(item);
+            // PUT the loan with a loanDate and status 'Open'
+            this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
+              this.fetchLoan(loansJson.id);
+            })
           }
-        });
+        })
       }
-      document.getElementById('barcode').value = '';
-    }
+    })
   }
 
   onClickCheckin(data) {
@@ -150,7 +147,7 @@ class Scan extends React.Component {
       const barcode = barcodes[i].trim();
       if (barcode) {
         // fetch item by barcode to get item id
-        fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
+        return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
         .then((itemsResponse) => {
           if (itemsResponse.status >= 400) {
             console.log('Error fetching item');
@@ -180,13 +177,16 @@ class Scan extends React.Component {
 
   findPatron(username) {
     this.props.mutator.items.replace([]);
-    fetch(`${this.okapiUrl}/users?query=(username="${username}")`, { headers: this.httpHeaders })
+    return fetch(`${this.okapiUrl}/users?query=(username="${username}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
         console.log('Error fetching user');
       } else {
-        response.json().then((json) => {
-          this.props.mutator.patrons.replace(json.users);
+        return response.json().then((json) => {
+          if (json.users.length === 0) {
+            throw new SubmissionError({ patron: { username: 'User with this ID does not exist', _error: 'Scan failed' } });
+          }
+          return this.props.mutator.patrons.replace(json.users);
         });
       }
     });
@@ -269,7 +269,7 @@ class Scan extends React.Component {
       onChangeMode: this.onChangeMode,
       modeSelector: modeMenu,
       onClickDone: this.onClickDone,
-      onSubmit: submithandler,
+      submithandler,
       initialValues: {},
       patrons,
       scannedItems,
