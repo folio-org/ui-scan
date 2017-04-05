@@ -106,6 +106,7 @@ class Scan extends React.Component {
   onClickDone() {
     this.props.mutator.scannedItems.replace([]);
     this.props.mutator.patrons.replace([]);
+    document.getElementById('patronid').value = '';
   }
 
   onSubmitInCheckOutForm(data) {
