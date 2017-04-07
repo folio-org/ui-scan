@@ -1,7 +1,7 @@
 # Change history for ui-scan
 
 ## [0.1.0](https://github.com/folio-org/ui-scan/tree/v0.1.0) (2017-04-07)
-[Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.0.2...0.1.0)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.0.2...v0.1.0)
 
 * Depend on v0.5.0 of stripes-components: needed so that `<IfPermission>` works correctly. See FOLIO-548.
 
