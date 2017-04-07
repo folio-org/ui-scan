@@ -45,6 +45,7 @@ function CheckIn(props) {
     pristine, // eslint-disable-line no-unused-vars
     submitting, // eslint-disable-line no-unused-vars
     onCancel, // eslint-disable-line no-unused-vars
+    submithandler,
   } = props;
 
   return (
@@ -58,7 +59,7 @@ function CheckIn(props) {
                   <Field name="item.barcode" placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" component={TextField} />
                 </Col>
                 <Col xs={3}>
-                  <Button buttonStyle="primary noRadius" fullWidth onClick={handleSubmit}>+ Add item</Button>
+                  <Button buttonStyle="primary noRadius" fullWidth onClick={handleSubmit(submithandler)}>+ Add item</Button>
                 </Col>
               </Row>
               <MultiColumnList
