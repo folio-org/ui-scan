@@ -1,5 +1,10 @@
 # Change history for ui-scan
 
+## [0.2.0](https://github.com/folio-org/ui-scan/tree/v0.2.0) (2017-04-12)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.1.0...v0.2.0)
+
+* Upgrade dependencies; stripes-core v0.6.0, stripes-connect v0.3.0, and stripes-components v0.6.0.
+
 ## [0.1.0](https://github.com/folio-org/ui-scan/tree/v0.1.0) (2017-04-07)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.0.2...v0.1.0)
 

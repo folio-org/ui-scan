@@ -1,6 +1,6 @@
 {
   "name": "@folio/scan",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Item Check-in/Check-out",
   "repository": "folio-org/ui-scan",
   "publishConfig" : {
@@ -35,7 +35,7 @@
     "eslint-plugin-react": "^6.4.1"
   },
   "dependencies": {
-    "@folio/stripes-components": "^0.5.0",
+    "@folio/stripes-components": "^0.6.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "query-string": "^4.3.2",
@@ -46,7 +46,7 @@
     "uuid": "^3.0.1"
   },
   "peerDependencies": {
-    "@folio/stripes-core": "^0.4.0",
-    "@folio/stripes-connect": "^0.0.9"
+    "@folio/stripes-core": "^0.6.0",
+    "@folio/stripes-connect": "^0.3.0"
   }
 }
