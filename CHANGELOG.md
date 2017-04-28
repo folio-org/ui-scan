@@ -1,5 +1,8 @@
 # Change history for ui-scan
 
+## [0.3.0]
+* Add validations to check-in and check-out forms
+
 ## [0.2.0](https://github.com/folio-org/ui-scan/tree/v0.2.0) (2017-04-12)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.1.0...v0.2.0)
 
