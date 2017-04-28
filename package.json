@@ -14,7 +14,8 @@
   "stripes": {
     "type": "app",
     "displayName": "Scan",
-    "route": "/scan"
+    "route": "/scan",
+    "hasSettings": true
   },
   "scripts": {
     "lint": "eslint *.js || true"
