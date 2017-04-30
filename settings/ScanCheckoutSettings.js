@@ -16,8 +16,11 @@ class ScanCheckoutSettings extends React.Component {
       type: 'okapi',
       records: 'configs',
       path: 'configurations/entries?query=(module=SCAN and config_name=pref_patron_identifier)',
+      POST: {
+        path: 'configurations/entries',
+      },
       PUT: {
-        path: 'configurations/entries/${userIdentifierPrefRecordId}'
+        path: 'configurations/entries/${userIdentifierPrefRecordId}',
       }
     }
   });
@@ -36,9 +39,22 @@ class ScanCheckoutSettings extends React.Component {
   onChangeIdentifier(e) {
     console.log("ID type selected", e.target.value);
     let prefRecord = this.props.data.userIdentifierPref[0];
-    this.props.mutator.userIdentifierPrefRecordId.replace( prefRecord.id);
-    prefRecord.value = e.target.value;
-    this.props.mutator.userIdentifierPref.PUT(prefRecord);
+    if (prefRecord) {
+      // preference has been set previously, can proceed with update here
+      this.props.mutator.userIdentifierPrefRecordId.replace(prefRecord.id);
+      prefRecord.value = e.target.value;
+      this.props.mutator.userIdentifierPref.PUT(prefRecord);
+    }
+    else {
+      // no preference exists, so create a new one
+      this.props.mutator.userIdentifierPref.POST(
+        {
+          "module": "SCAN",
+          "config_name": "pref_patron_identifier",
+          "value": e.target.value,
+        }
+      );
+    }
   }
 
   render() {
@@ -67,6 +83,7 @@ class ScanCheckoutSettings extends React.Component {
             <label>Scan ID for patron check-out</label>
             <br/>
             <Select
+              placeholder="---"
               value={selectedIdentifier}
               dataOptions={identifierTypeOptions}
               onChange={this.onChangeIdentifier}
