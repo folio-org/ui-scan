@@ -53,7 +53,6 @@ class ScanCheckoutSettings extends React.Component {
     ];
 
     const identifierTypeOptions = identifierTypes.map(i => {
-      let selectedValue;
       return {
         label: i.label,
         value: i.key
@@ -64,6 +63,7 @@ class ScanCheckoutSettings extends React.Component {
       <div>
         <p>Current identifier preference is {selectedIdentifier}</p>
         <Select
+          value={selectedIdentifier}
           dataOptions={identifierTypeOptions}
           onChange={this.onChangeIdentifier}
         />
