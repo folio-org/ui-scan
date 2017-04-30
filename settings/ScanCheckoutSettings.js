@@ -1,5 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
+import { Row, Col } from 'react-bootstrap';
 import { connect } from '@folio/stripes-connect';
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -60,14 +61,19 @@ class ScanCheckoutSettings extends React.Component {
     });
 
     return (
-      <div>
-        <p>Current identifier preference is {selectedIdentifier}</p>
-        <Select
-          value={selectedIdentifier}
-          dataOptions={identifierTypeOptions}
-          onChange={this.onChangeIdentifier}
-        />
-      </div>
+      <Pane defaultWidth={this.props.paneWidth} paneTitle="Check-out">
+        <Row>
+          <Col xs={12}>
+            <label>Scan ID for patron check-out</label>
+            <br/>
+            <Select
+              value={selectedIdentifier}
+              dataOptions={identifierTypeOptions}
+              onChange={this.onChangeIdentifier}
+            />
+          </Col>
+        </Row>
+      </Pane>
     );
   }
 
