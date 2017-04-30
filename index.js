@@ -4,6 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import Route from 'react-router-dom/Route';
 import Switch from 'react-router-dom/Switch';
 import Scan from './Scan';
+import Settings from './settings';
 
 class ScanRouting extends Component {
 
@@ -33,6 +34,11 @@ class ScanRouting extends Component {
   }
 
   render() {
+
+    if (this.props.showSettings) {
+      return <Settings {...this.props} />
+    }
+
     const { match: { path }, stripes: { connect } } = this.props;
     return (
       <Switch>
