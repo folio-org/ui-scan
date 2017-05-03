@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { connect } from '@folio/stripes-connect'; // eslint-disable-line
 import Pane from '@folio/stripes-components/lib/Pane';
 import Select from '@folio/stripes-components/lib/Select';
 
@@ -106,4 +105,4 @@ class ScanCheckoutSettings extends React.Component {
 
 }
 
-export default connect(ScanCheckoutSettings, '@folio/ui-scan');
+export default ScanCheckoutSettings;
