@@ -64,10 +64,8 @@ class ScanCheckoutSettings extends React.Component {
   }
 
   render() {
-    let selectedIdentifier = this.props.data.userIdentifierPref || [];
-    if (selectedIdentifier.length > 0) {
-      selectedIdentifier = selectedIdentifier[0].value;
-    }
+    const selectedIdentifier = this.props.data.userIdentifierPref || [];
+    const value = (selectedIdentifier.length === 0) ? '' : selectedIdentifier[0].value;
 
     const identifierTypes = [
       { key: 'BARCODE', label: 'Barcode' },
@@ -92,7 +90,7 @@ class ScanCheckoutSettings extends React.Component {
             <Select
               id="patronScanId"
               placeholder="---"
-              value={selectedIdentifier}
+              value={value}
               dataOptions={identifierTypeOptions}
               onChange={this.onChangeIdentifier}
             />
