@@ -4,7 +4,6 @@ import Pane from '@folio/stripes-components/lib/Pane';
 import Select from '@folio/stripes-components/lib/Select';
 
 class ScanCheckoutSettings extends React.Component {
-
   static propTypes = {
     data: PropTypes.object.isRequired,
     mutator: PropTypes.shape({
@@ -35,11 +34,6 @@ class ScanCheckoutSettings extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-      // selectedIdentifier: {}
-    };
-
     this.onChangeIdentifier = this.onChangeIdentifier.bind(this);
   }
 
