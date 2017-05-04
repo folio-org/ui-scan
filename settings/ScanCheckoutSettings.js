@@ -16,7 +16,6 @@ class ScanCheckoutSettings extends React.Component {
         PUT: PropTypes.func,
       }),
     }).isRequired,
-    paneWidth: PropTypes.string.isRequired,
   };
 
   static manifest = Object.freeze({
@@ -85,7 +84,7 @@ class ScanCheckoutSettings extends React.Component {
     ));
 
     return (
-      <Pane defaultWidth={this.props.paneWidth} paneTitle="Check-out">
+      <Pane defaultWidth="fill" fluidContentWidth paneTitle="Check-out">
         <Row>
           <Col xs={12}>
             <label htmlFor="patronScanId">Scan ID for patron check-out</label>
