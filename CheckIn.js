@@ -20,6 +20,7 @@ const propTypes = {
   pristine: PropTypes.bool,
   submitting: PropTypes.bool,
   onCancel: PropTypes.func,
+  submithandler: PropTypes.func,
 };
 
 function CheckIn(props) {
