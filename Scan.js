@@ -217,7 +217,6 @@ class Scan extends React.Component {
 
   findPatron(patron) {
     const patronIdentifier = this.getPatronIdentifier(patron);
-    console.log("finding patron using", patronIdentifier);
     this.props.mutator.items.replace([]);
     return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryType}="${patronIdentifier.queryValue}")`, { headers: this.httpHeaders })
     .then((response) => {
@@ -316,7 +315,6 @@ class Scan extends React.Component {
 
     let identifierPrefName = 'barcode';
     if (this.props.data.userIdentifierPref.length > 0) {
-      console.log('looking for', this.props.data.userIdentifierPref[0].value);
       identifierPrefName = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value }).label;
     }
 
