@@ -1,13 +1,11 @@
 import React, { PropTypes } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { connect } from '@folio/stripes-connect'; // eslint-disable-line
 import Pane from '@folio/stripes-components/lib/Pane';
 import Select from '@folio/stripes-components/lib/Select';
 
 import { patronIdentifierTypes } from '../constants';
 
 class ScanCheckoutSettings extends React.Component {
-
   static propTypes = {
     data: PropTypes.object.isRequired,
     mutator: PropTypes.shape({
@@ -19,7 +17,6 @@ class ScanCheckoutSettings extends React.Component {
         PUT: PropTypes.func,
       }),
     }).isRequired,
-    paneWidth: PropTypes.string.isRequired,
   };
 
   static manifest = Object.freeze({
@@ -39,11 +36,6 @@ class ScanCheckoutSettings extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-      // selectedIdentifier: {}
-    };
-
     this.onChangeIdentifier = this.onChangeIdentifier.bind(this);
   }
 
@@ -68,10 +60,8 @@ class ScanCheckoutSettings extends React.Component {
   }
 
   render() {
-    let selectedIdentifier = this.props.data.userIdentifierPref || [];
-    if (selectedIdentifier.length > 0) {
-      selectedIdentifier = selectedIdentifier[0].value;
-    }
+    const selectedIdentifier = this.props.data.userIdentifierPref || [];
+    const value = (selectedIdentifier.length === 0) ? '' : selectedIdentifier[0].value;
 
     const identifierTypeOptions = patronIdentifierTypes.map(i => (
       {
@@ -81,7 +71,7 @@ class ScanCheckoutSettings extends React.Component {
     ));
 
     return (
-      <Pane defaultWidth={this.props.paneWidth} paneTitle="Check-out">
+      <Pane defaultWidth="fill" fluidContentWidth paneTitle="Check-out">
         <Row>
           <Col xs={12}>
             <label htmlFor="patronScanId">Scan ID for patron check-out</label>
@@ -89,7 +79,7 @@ class ScanCheckoutSettings extends React.Component {
             <Select
               id="patronScanId"
               placeholder="---"
-              value={selectedIdentifier}
+              value={value}
               dataOptions={identifierTypeOptions}
               onChange={this.onChangeIdentifier}
             />
@@ -101,4 +91,4 @@ class ScanCheckoutSettings extends React.Component {
 
 }
 
-export default connect(ScanCheckoutSettings, '@folio/ui-scan');
+export default ScanCheckoutSettings;

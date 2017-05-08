@@ -1,52 +1,16 @@
+// We have to remove node_modules/react to avoid having multiple copies loaded.
+// eslint-disable-next-line import/no-unresolved
 import React from 'react';
-
-import Paneset from '@folio/stripes-components/lib/Paneset';
-import Pane from '@folio/stripes-components/lib/Pane';
-import NavList from '@folio/stripes-components/lib/NavList';
-import NavListSection from '@folio/stripes-components/lib/NavListSection';
+import Settings from '@folio/stripes-components/lib/Settings';
 
 import ScanCheckoutSettings from './ScanCheckoutSettings';
 
-class ScanSettings extends React.Component {
-  constructor(props) {
-    super(props);
+const pages = [
+  {
+    route: 'checkout',
+    label: 'Check-out',
+    component: ScanCheckoutSettings,
+  },
+];
 
-    this.state = {
-      selectedPage: 'Checkout',
-      pages: [
-        { label: 'Check-out', name: 'Checkout', component: ScanCheckoutSettings },
-      ],
-    };
-
-    this.onSelectPage = this.onSelectPage.bind(this);
-  }
-
-  onSelectPage(e) {
-    e.preventDefault();
-    const href = e.target.href;
-    const page = href.substring(href.indexOf('#') + 1);
-    this.setState({ selectedPage: page });
-  }
-
-  getPage() {
-    const result = this.state.pages.filter(obj => obj.name === this.state.selectedPage);
-    return React.createElement(result[0].component);
-  }
-
-  render() {
-    return (
-      <Paneset nested>
-        <Pane defaultWidth="25%" paneTitle="Scan">
-          <NavList>
-            <NavListSection activeLink={`#${this.state.selectedPage}`}>
-              <a href="#Checkout" onClick={this.onSelectPage}>Check-out</a>
-            </NavListSection>
-          </NavList>
-        </Pane>
-        {this.getPage()}
-      </Paneset>
-    );
-  }
-}
-
-export default ScanSettings;
+export default props => <Settings {...props} pages={pages} />;
