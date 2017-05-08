@@ -4,6 +4,8 @@ import { connect } from '@folio/stripes-connect'; // eslint-disable-line
 import Pane from '@folio/stripes-components/lib/Pane';
 import Select from '@folio/stripes-components/lib/Select';
 
+import { patronIdentifierTypes } from '../constants.js';
+
 class ScanCheckoutSettings extends React.Component {
 
   static propTypes = {
@@ -71,14 +73,14 @@ class ScanCheckoutSettings extends React.Component {
       selectedIdentifier = selectedIdentifier[0].value;
     }
 
-    const identifierTypes = [
-      { key: 'BARCODE', label: 'Barcode' },
-      { key: 'EXTERNAL', label: 'External System ID' },
-      { key: 'FOLIO', label: 'FOLIO Record Number' },
-      { key: 'USER', label: 'User ID' },
-    ];
+    // const identifierTypes = [
+    //   { key: 'BARCODE', label: 'Barcode' },
+    //   { key: 'EXTERNAL', label: 'External System ID' },
+    //   { key: 'FOLIO', label: 'FOLIO Record Number' },
+    //   { key: 'USER', label: 'User ID' },
+    // ];
 
-    const identifierTypeOptions = identifierTypes.map(i => (
+    const identifierTypeOptions = patronIdentifierTypes.map(i => (
       {
         label: i.label,
         value: i.key,
