@@ -1,5 +1,11 @@
 # Change history for ui-scan
 
+## [0.4.0](https://github.com/folio-org/ui-scan/tree/v0.4.0)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.3.0...v0.4.0)
+
+* Add settings section, check-in subsection, and preference for user identifier type for user lookups (completes LIBAPP-205)
+* In checkout form, uses preference-selected user identifier to do user lookups (completes LIBAPP-207)
+
 ## [0.3.0]
 * Add validations to check-in and check-out forms
 
