@@ -69,7 +69,7 @@ function CheckOut(props) {
           <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={props.modeSelector}>
             <Row>
               <Col xs={9}>
-                <Field name="patron.username" placeholder={`Enter Patron's ${userIdentifierPrefName}`} aria-label="Patron ID" fullWidth id="patronid" component={TextField} />
+                <Field name="patron.identifier" placeholder={`Enter Patron's ${userIdentifierPrefName}`} aria-label="Patron Identifier" fullWidth id="patron_identifier" component={TextField} />
               </Col>
               <Col xs={3}>
                 <Button

@@ -190,26 +190,22 @@ class Scan extends React.Component {
         // this just uses the record ID number (i.e., same as FOLIO)
         return ({
           queryType: 'id',
-          queryValue: patron.id,
-          queryLabel: 'FOLIO record number'
+          queryLabel: 'external identifier'
         });
       case "FOLIO":
         return ({
           queryType: 'id',
-          queryValue: patron.id,
           queryLabel: 'FOLIO record number'
         });
       case "USER":
         return ({
           queryType: 'username',
-          queryValue: patron.username,
           queryLabel: 'user ID'
         });
       case "BARCODE": // barcode should be the default, so fall through
       default:
         return ({
           queryType: 'barcode',
-          queryValue: patron.barcode,
           queryLabel: 'barcode'
         });
     }
@@ -218,7 +214,7 @@ class Scan extends React.Component {
   findPatron(patron) {
     const patronIdentifier = this.getPatronIdentifier(patron);
     this.props.mutator.items.replace([]);
-    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryType}="${patronIdentifier.queryValue}")`, { headers: this.httpHeaders })
+    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryType}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
         console.log('Error fetching user');
