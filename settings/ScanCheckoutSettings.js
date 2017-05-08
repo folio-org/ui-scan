@@ -73,13 +73,6 @@ class ScanCheckoutSettings extends React.Component {
       selectedIdentifier = selectedIdentifier[0].value;
     }
 
-    // const identifierTypes = [
-    //   { key: 'BARCODE', label: 'Barcode' },
-    //   { key: 'EXTERNAL', label: 'External System ID' },
-    //   { key: 'FOLIO', label: 'FOLIO Record Number' },
-    //   { key: 'USER', label: 'User ID' },
-    // ];
-
     const identifierTypeOptions = patronIdentifierTypes.map(i => (
       {
         label: i.label,

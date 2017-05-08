@@ -13,6 +13,7 @@ import Select from '@folio/stripes-components/lib/Select';
 // import Automatic from './Automatic';
 import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
+import { patronIdentifierTypes } from './constants.js';
 
 class Scan extends React.Component {
   static contextTypes = {
@@ -183,45 +184,17 @@ class Scan extends React.Component {
     }
   }
 
-  getPatronIdentifier(patron) {
-    switch (this.props.data.userIdentifierPref[0].value) {
-      case "EXTERNAL":
-        // TODO: Fix this. There is no external identifier yet, so for now,
-        // this just uses the record ID number (i.e., same as FOLIO)
-        return ({
-          queryType: 'id',
-          queryLabel: 'external identifier'
-        });
-      case "FOLIO":
-        return ({
-          queryType: 'id',
-          queryLabel: 'FOLIO record number'
-        });
-      case "USER":
-        return ({
-          queryType: 'username',
-          queryLabel: 'user ID'
-        });
-      case "BARCODE": // barcode should be the default, so fall through
-      default:
-        return ({
-          queryType: 'barcode',
-          queryLabel: 'barcode'
-        });
-    }
-  }
-
   findPatron(patron) {
-    const patronIdentifier = this.getPatronIdentifier(patron);
+    const patronIdentifier = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value })
     this.props.mutator.items.replace([]);
-    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryType}="${patron.identifier}")`, { headers: this.httpHeaders })
+    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
         console.log('Error fetching user');
       } else {
         return response.json().then((json) => {
           if (json.users.length === 0) {
-            throw new SubmissionError({ patron: { username: `User with this ${patronIdentifier.queryLabel} does not exist`, _error: 'Scan failed' } });
+            throw new SubmissionError({ patron: { username: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
           }
           return this.props.mutator.patrons.replace(json.users);
         });
@@ -301,13 +274,6 @@ class Scan extends React.Component {
     );
 
     const submithandler = (mode === 'CheckOut' ? this.onSubmitInCheckOutForm : this.onClickCheckin);
-
-    const patronIdentifierTypes = [
-      { key: 'BARCODE', label: 'Barcode' },
-      { key: 'EXTERNAL', label: 'External System ID' },
-      { key: 'FOLIO', label: 'FOLIO Record Number' },
-      { key: 'USER', label: 'User ID' },
-    ];
 
     let identifierPrefName = 'barcode';
     if (this.props.data.userIdentifierPref.length > 0) {
