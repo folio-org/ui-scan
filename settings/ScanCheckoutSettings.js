@@ -4,7 +4,7 @@ import { connect } from '@folio/stripes-connect'; // eslint-disable-line
 import Pane from '@folio/stripes-components/lib/Pane';
 import Select from '@folio/stripes-components/lib/Select';
 
-import { patronIdentifierTypes } from '../constants.js';
+import { patronIdentifierTypes } from '../constants';
 
 class ScanCheckoutSettings extends React.Component {
 

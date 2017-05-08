@@ -23,6 +23,7 @@ const propTypes = {
   submitting: PropTypes.bool,
   onCancel: PropTypes.func,
   onClickDone: React.PropTypes.func,
+  userIdentifierPrefName: PropTypes.string,
 };
 
 function CheckOut(props) {
@@ -123,7 +124,7 @@ function CheckOut(props) {
 
         </Paneset>
         {props.patrons && props.patrons.length !== 0 ?
-          <Button buttonStyle="primary mega" onClick={() => {props.onClickDone(); reset();}} >Done</Button> : null
+          <Button buttonStyle="primary mega" onClick={() => { props.onClickDone(); reset(); }} >Done</Button> : null
         }
       </div>
     </form>

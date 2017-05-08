@@ -13,7 +13,7 @@ import Select from '@folio/stripes-components/lib/Select';
 // import Automatic from './Automatic';
 import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
-import { patronIdentifierTypes } from './constants.js';
+import { patronIdentifierTypes } from './constants';
 
 class Scan extends React.Component {
   static contextTypes = {
@@ -37,6 +37,11 @@ class Scan extends React.Component {
           id: PropTypes.string,
         }),
       ),
+      userIdentifierPref: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+        }),
+      ),
     }),
     mutator: PropTypes.shape({
       mode: PropTypes.shape({
@@ -52,6 +57,11 @@ class Scan extends React.Component {
         replace: PropTypes.func,
       }),
     }),
+  };
+
+  static defaultProps = {
+    data: {},
+    mutator: {},
   };
 
   static manifest = Object.freeze({
@@ -122,34 +132,7 @@ class Scan extends React.Component {
     }
   }
 
-  checkout(barcode) {
-    if (this.props.data.patrons.length === 0) {
-      throw new SubmissionError({ patron: { username: 'Please fill this out to continue' } });
-    }
-    return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
-    .then((response) => {
-      if (response.status >= 400) {
-        console.log('Error fetching item');
-      } else {
-        return response.json().then((itemsJson) => {
-          if (itemsJson.items.length === 0) {
-            throw new SubmissionError({ item: { barcode: 'Item with this barcode does not exist', _error: 'Scan failed' } });
-          } else {
-            const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
-            item.status = { name: 'Checked out' };
-            // PUT the item with status 'Checked out'
-            this.putItem(item);
-            // PUT the loan with a loanDate and status 'Open'
-            this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
-              this.fetchLoan(loansJson.id);
-            });
-          }
-        });
-      }
-    });
-  }
-
-  onClickCheckin(data) {
+  onClickCheckin() {
     const barcodeValue = document.getElementById('barcode').value;
     const barcodes = barcodeValue.split(' ');
     for (let i = 0; i < barcodes.length; i++) {
@@ -184,8 +167,35 @@ class Scan extends React.Component {
     }
   }
 
+  checkout(barcode) {
+    if (this.props.data.patrons.length === 0) {
+      throw new SubmissionError({ patron: { username: 'Please fill this out to continue' } });
+    }
+    return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
+    .then((response) => {
+      if (response.status >= 400) {
+        console.log('Error fetching item');
+      } else {
+        return response.json().then((itemsJson) => {
+          if (itemsJson.items.length === 0) {
+            throw new SubmissionError({ item: { barcode: 'Item with this barcode does not exist', _error: 'Scan failed' } });
+          } else {
+            const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
+            item.status = { name: 'Checked out' };
+            // PUT the item with status 'Checked out'
+            this.putItem(item);
+            // PUT the loan with a loanDate and status 'Open'
+            this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
+              this.fetchLoan(loansJson.id);
+            });
+          }
+        });
+      }
+    });
+  }
+
   findPatron(patron) {
-    const patronIdentifier = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value })
+    const patronIdentifier = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value });
     this.props.mutator.items.replace([]);
     return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
