@@ -13,6 +13,7 @@ import Select from '@folio/stripes-components/lib/Select';
 // import Automatic from './Automatic';
 import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
+import { patronIdentifierTypes } from './constants';
 
 class Scan extends React.Component {
   static contextTypes = {
@@ -36,6 +37,11 @@ class Scan extends React.Component {
           id: PropTypes.string,
         }),
       ),
+      userIdentifierPref: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+        }),
+      ),
     }),
     mutator: PropTypes.shape({
       mode: PropTypes.shape({
@@ -53,11 +59,21 @@ class Scan extends React.Component {
     }),
   };
 
+  static defaultProps = {
+    data: {},
+    mutator: {},
+  };
+
   static manifest = Object.freeze({
     mode: {},
     patrons: {},
     items: {},
     scannedItems: {},
+    userIdentifierPref: {
+      type: 'okapi',
+      records: 'configs',
+      path: 'configurations/entries?query=(module=SCAN and config_name=pref_patron_identifier)',
+    },
   });
 
   constructor(props, context) {
@@ -110,7 +126,7 @@ class Scan extends React.Component {
 
   onSubmitInCheckOutForm(data) {
     if (data.SubmitMeta.button === 'find_patron') {
-      return this.findPatron(data.patron.username);
+      return this.findPatron(data.patron);
     } else if (data.SubmitMeta.button === 'add_item') {
       return this.checkout(data.item.barcode);
     }
@@ -178,16 +194,17 @@ class Scan extends React.Component {
     });
   }
 
-  findPatron(username) {
+  findPatron(patron) {
+    const patronIdentifier = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value });
     this.props.mutator.items.replace([]);
-    return fetch(`${this.okapiUrl}/users?query=(username="${username}")`, { headers: this.httpHeaders })
+    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
         console.log('Error fetching user');
       } else {
         return response.json().then((json) => {
           if (json.users.length === 0) {
-            throw new SubmissionError({ patron: { username: 'User with this ID does not exist', _error: 'Scan failed' } });
+            throw new SubmissionError({ patron: { username: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
           }
           return this.props.mutator.patrons.replace(json.users);
         });
@@ -268,6 +285,11 @@ class Scan extends React.Component {
 
     const submithandler = (mode === 'CheckOut' ? this.onSubmitInCheckOutForm : this.onClickCheckin);
 
+    let identifierPrefName = 'barcode';
+    if (this.props.data.userIdentifierPref.length > 0) {
+      identifierPrefName = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value }).label;
+    }
+
     return React.createElement(this.componentMap[mode], {
       onChangeMode: this.onChangeMode,
       modeSelector: modeMenu,
@@ -276,6 +298,7 @@ class Scan extends React.Component {
       initialValues: {},
       patrons,
       scannedItems,
+      userIdentifierPrefName: identifierPrefName,
     });
   }
 }
