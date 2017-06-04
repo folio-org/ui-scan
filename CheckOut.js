@@ -62,6 +62,20 @@ function CheckOut(props) {
       submithandler,
       userIdentifierPrefName,
   } = props;
+  
+  const handleKeyDown = function (e, handler) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      handler();
+    }
+  };
+  
+  const makeSH = function(values, source) {
+    return submithandler({
+      ...values,
+      SubmitMeta: { button: source }
+    });
+  }
 
   return (
     <form>
@@ -70,7 +84,15 @@ function CheckOut(props) {
           <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={props.modeSelector}>
             <Row>
               <Col xs={9}>
-                <Field name="patron.identifier" placeholder={`Enter Patron's ${userIdentifierPrefName}`} aria-label="Patron Identifier" fullWidth id="patron_identifier" component={TextField} />
+                <Field 
+                  name="patron.identifier"
+                  placeholder={`Enter Patron's ${userIdentifierPrefName}`}
+                  aria-label="Patron Identifier"
+                  fullWidth
+                  id="patron_identifier"
+                  component={TextField}
+                  onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'find_patron'))); }}
+                />
               </Col>
               <Col xs={3}>
                 <Button
@@ -97,7 +119,15 @@ function CheckOut(props) {
           <Pane defaultWidth="50%" paneTitle="Scanned Items">
             <Row>
               <Col xs={9}>
-                <Field name="item.barcode" placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" component={TextField} />
+                <Field
+                  name="item.barcode"
+                  placeholder="Enter Barcode"
+                  aria-label="Item ID"
+                  fullWidth
+                  id="barcode"
+                  component={TextField}
+                  onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'add_item'))); }}
+                />
               </Col>
               <Col xs={3}>
                 <Button
