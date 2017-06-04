@@ -125,8 +125,6 @@ class Scan extends React.Component {
   }
 
   onSubmitInCheckOutForm(data) {
-    console.log('working now', data,)
-
     if (data.SubmitMeta.button === 'find_patron') {
       return this.findPatron(data.patron);
     } else if (data.SubmitMeta.button === 'add_item') {

@@ -62,20 +62,19 @@ function CheckOut(props) {
       submithandler,
       userIdentifierPrefName,
   } = props;
-  
-  const handleKeyDown = function (e, handler) {
+
+  const handleKeyDown = (e, handler) => {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
       handler();
     }
   };
-  
-  const makeSH = function(values, source) {
-    return submithandler({
+
+  const makeSH = (values, source) =>
+    submithandler({
       ...values,
-      SubmitMeta: { button: source }
+      SubmitMeta: { button: source },
     });
-  }
 
   return (
     <form>
@@ -84,7 +83,7 @@ function CheckOut(props) {
           <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={props.modeSelector}>
             <Row>
               <Col xs={9}>
-                <Field 
+                <Field
                   name="patron.identifier"
                   placeholder={`Enter Patron's ${userIdentifierPrefName}`}
                   aria-label="Patron Identifier"
