@@ -98,12 +98,7 @@ function CheckOut(props) {
                 <Button
                   buttonStyle="primary noRadius"
                   fullWidth
-                  onClick={handleSubmit(values =>
-                    submithandler({
-                      ...values,
-                      SubmitMeta: { button: 'find_patron' },
-                    }))
-                  }
+                  onClick={handleSubmit(values => makeSH(values, 'find_patron'))}
                 >Find Patron</Button>
               </Col>
             </Row>
@@ -133,12 +128,7 @@ function CheckOut(props) {
                 <Button
                   buttonStyle="primary noRadius"
                   fullWidth
-                  onClick={handleSubmit(values =>
-                    submithandler({
-                      ...values,
-                      SubmitMeta: { button: 'add_item' },
-                    }))
-                   }
+                  onClick={handleSubmit(values => makeSH(values, 'add_item'))}
                 >+ Add item</Button>
               </Col>
             </Row>
