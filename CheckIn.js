@@ -50,7 +50,7 @@ function CheckIn(props) {
   } = props;
 
   return (
-    <form>
+    <form onSubmit={handleSubmit(submithandler)}>
       <div style={containerStyle}>
         <Paneset static>
           <Pane paneTitle="Scanned Items" defaultWidth="100%" firstMenu={props.modeSelector}>
@@ -60,7 +60,7 @@ function CheckIn(props) {
                   <Field name="item.barcode" placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" component={TextField} />
                 </Col>
                 <Col xs={3}>
-                  <Button buttonStyle="primary noRadius" fullWidth onClick={handleSubmit(submithandler)}>+ Add item</Button>
+                  <Button buttonStyle="primary noRadius" fullWidth type="submit">+ Add item</Button>
                 </Col>
               </Row>
               <MultiColumnList
