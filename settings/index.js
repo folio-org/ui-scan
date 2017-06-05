@@ -14,7 +14,7 @@ const pages = [
   },
   {
     route: 'loanpolicies',
-    label: 'Loan Policies',
+    label: 'Loan policies',
     component: LoanPolicySettings,
   },
 ];
