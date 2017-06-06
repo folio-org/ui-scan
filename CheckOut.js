@@ -63,6 +63,19 @@ function CheckOut(props) {
       userIdentifierPrefName,
   } = props;
 
+  const handleKeyDown = (e, handler) => {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      handler();
+    }
+  };
+
+  const makeSH = (values, source) =>
+    submithandler({
+      ...values,
+      SubmitMeta: { button: source },
+    });
+
   return (
     <form>
       <div style={containerStyle}>
@@ -70,18 +83,21 @@ function CheckOut(props) {
           <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={props.modeSelector}>
             <Row>
               <Col xs={9}>
-                <Field name="patron.identifier" placeholder={`Enter Patron's ${userIdentifierPrefName}`} aria-label="Patron Identifier" fullWidth id="patron_identifier" component={TextField} />
+                <Field
+                  name="patron.identifier"
+                  placeholder={`Enter Patron's ${userIdentifierPrefName}`}
+                  aria-label="Patron Identifier"
+                  fullWidth
+                  id="patron_identifier"
+                  component={TextField}
+                  onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'find_patron'))); }}
+                />
               </Col>
               <Col xs={3}>
                 <Button
                   buttonStyle="primary noRadius"
                   fullWidth
-                  onClick={handleSubmit(values =>
-                    submithandler({
-                      ...values,
-                      SubmitMeta: { button: 'find_patron' },
-                    }))
-                  }
+                  onClick={handleSubmit(values => makeSH(values, 'find_patron'))}
                 >Find Patron</Button>
               </Col>
             </Row>
@@ -97,18 +113,21 @@ function CheckOut(props) {
           <Pane defaultWidth="50%" paneTitle="Scanned Items">
             <Row>
               <Col xs={9}>
-                <Field name="item.barcode" placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" component={TextField} />
+                <Field
+                  name="item.barcode"
+                  placeholder="Enter Barcode"
+                  aria-label="Item ID"
+                  fullWidth
+                  id="barcode"
+                  component={TextField}
+                  onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'add_item'))); }}
+                />
               </Col>
               <Col xs={3}>
                 <Button
                   buttonStyle="primary noRadius"
                   fullWidth
-                  onClick={handleSubmit(values =>
-                    submithandler({
-                      ...values,
-                      SubmitMeta: { button: 'add_item' },
-                    }))
-                   }
+                  onClick={handleSubmit(values => makeSH(values, 'add_item'))}
                 >+ Add item</Button>
               </Col>
             </Row>
