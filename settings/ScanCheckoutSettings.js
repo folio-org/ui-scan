@@ -64,6 +64,7 @@ class ScanCheckoutSettings extends React.Component {
     const value = (selectedIdentifier.length === 0) ? '' : selectedIdentifier[0].value;
     const identifierTypeOptions = patronIdentifierTypes.map(i => (
       {
+        id: i.key,
         label: i.label,
         value: i.key,
       }

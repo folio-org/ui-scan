@@ -4,6 +4,7 @@
 
 * Forms now submit when Enter is pressed in a text field (completes UIS-1).
 * Better handling of user identifier prefs when not set in Settings.
+* User identifier pref select list options now include keys to make React happy.
 
 ## [0.4.0](https://github.com/folio-org/ui-scan/tree/v0.4.0)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.3.0...v0.4.0)
