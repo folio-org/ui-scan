@@ -211,7 +211,7 @@ class Scan extends React.Component {
       }
     });
   }
-  
+
   // Return either the currently set user identifier preference or a default value
   // (see constants.js for values)
   userIdentifierPref() {
