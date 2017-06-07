@@ -13,7 +13,7 @@ import Select from '@folio/stripes-components/lib/Select';
 // import Automatic from './Automatic';
 import CheckIn from './CheckIn';
 import CheckOut from './CheckOut';
-import { patronIdentifierTypes } from './constants';
+import { patronIdentifierTypes, defaultPatronIdentifier } from './constants';
 
 class Scan extends React.Component {
   static contextTypes = {
@@ -195,7 +195,7 @@ class Scan extends React.Component {
   }
 
   findPatron(patron) {
-    const patronIdentifier = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value });
+    const patronIdentifier = this.userIdentifierPref();
     this.props.mutator.items.replace([]);
     return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
@@ -210,6 +210,15 @@ class Scan extends React.Component {
         });
       }
     });
+  }
+  
+  // Return either the currently set user identifier preference or a default value
+  // (see constants.js for values)
+  userIdentifierPref() {
+    const { data: { userIdentifierPref: pref } } = this.props;
+    return (pref.length > 0 && pref[0].value != null) ?
+      _.find(patronIdentifierTypes, { key: pref[0].value }) :
+      defaultPatronIdentifier;
   }
 
   postLoan(userid, itemid) {
@@ -285,11 +294,6 @@ class Scan extends React.Component {
 
     const submithandler = (mode === 'CheckOut' ? this.onSubmitInCheckOutForm : this.onClickCheckin);
 
-    let identifierPrefName = 'barcode';
-    if (this.props.data.userIdentifierPref.length > 0) {
-      identifierPrefName = _.find(patronIdentifierTypes, { key: this.props.data.userIdentifierPref[0].value }).label;
-    }
-
     return React.createElement(this.componentMap[mode], {
       onChangeMode: this.onChangeMode,
       modeSelector: modeMenu,
@@ -298,7 +302,7 @@ class Scan extends React.Component {
       initialValues: {},
       patrons,
       scannedItems,
-      userIdentifierPrefName: identifierPrefName,
+      userIdentifierPref: this.userIdentifierPref(),
     });
   }
 }
