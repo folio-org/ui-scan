@@ -23,7 +23,7 @@ const propTypes = {
   submitting: PropTypes.bool,
   onCancel: PropTypes.func,
   onClickDone: React.PropTypes.func,
-  userIdentifierPrefName: PropTypes.string,
+  userIdentifierPref: PropTypes.object,
 };
 
 function CheckOut(props) {
@@ -60,7 +60,7 @@ function CheckOut(props) {
       submitting, // eslint-disable-line no-unused-vars
       onCancel, // eslint-disable-line no-unused-vars
       submithandler,
-      userIdentifierPrefName,
+      userIdentifierPref,
   } = props;
 
   const handleKeyDown = (e, handler) => {
@@ -85,7 +85,7 @@ function CheckOut(props) {
               <Col xs={9}>
                 <Field
                   name="patron.identifier"
-                  placeholder={`Enter Patron's ${userIdentifierPrefName}`}
+                  placeholder={`Enter Patron's ${userIdentifierPref.label}`}
                   aria-label="Patron Identifier"
                   fullWidth
                   id="patron_identifier"
