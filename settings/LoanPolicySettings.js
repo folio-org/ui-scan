@@ -40,7 +40,6 @@ class LoanPolicySettings extends React.Component {
   onSelectRow(id, e) {
     e.preventDefault();
     this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id: id })});
-    console.log("policy selected: " + this.state.selectedPolicy.id);
   };
 
   createNewPolicy() {
@@ -86,7 +85,7 @@ class LoanPolicySettings extends React.Component {
           </NavList>
         </Pane>
         {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name}>
-          <LoanPolicyDetail />
+          <LoanPolicyDetail policy={this.state.selectedPolicy} />
         </Pane>}
       </Paneset>
     );
