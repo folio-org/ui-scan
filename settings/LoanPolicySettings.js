@@ -37,13 +37,14 @@ class LoanPolicySettings extends React.Component {
     this.createNewPolicy = this.createNewPolicy.bind(this);
   };
 
-  onSelectRow(e) {
+  onSelectRow(id, e) {
     e.preventDefault();
-    const selectedId = e.target.dataset.id;
-    this.setState({ selectedPolicy: _.find(this.state.loanPolicies, { id: selectedId })});
+    this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id: id })});
+    console.log("policy selected: " + this.state.selectedPolicy.id);
   };
 
   createNewPolicy() {
+    // TODO: Update this to use the real backend
     const newPolicy = {id: this.state.loanPolicies.length + 1, name: 'Untitled loan policy'};
     const newPolicyArray = this.state.loanPolicies.slice();
     newPolicyArray.push(newPolicy);
@@ -62,7 +63,7 @@ class LoanPolicySettings extends React.Component {
       <a
         key={p.id}
         href={`#${p.name}`}
-        onClick={this.onSelectRow}>
+        onClick={this.onSelectRow.bind(this, p.id)}>
           {p.name ? p.name : 'Untitled loan policy'}
       </a>) : null;
 
@@ -74,6 +75,7 @@ class LoanPolicySettings extends React.Component {
       </PaneMenu>
     );
 
+    console.log("selected policy:", this.state.selectedPolicy)
     return (
       <Paneset nested>
         <Pane defaultWidth="20%" lastMenu={LoanPolicyLastMenu}>
@@ -83,9 +85,9 @@ class LoanPolicySettings extends React.Component {
             </NavListSection>
           </NavList>
         </Pane>
-        <Pane>
+        {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name}>
           <LoanPolicyDetail />
-        </Pane>
+        </Pane>}
       </Paneset>
     );
   }
