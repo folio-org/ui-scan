@@ -85,7 +85,7 @@ class LoanPolicySettings extends React.Component {
           </NavList>
         </Pane>
         {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name}>
-          <LoanPolicyDetail policy={this.state.selectedPolicy} />
+          <LoanPolicyDetail initialValues={this.state.selectedPolicy} />
         </Pane>}
       </Paneset>
     );
