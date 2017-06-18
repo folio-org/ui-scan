@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Row, Col } from 'react-bootstrap';
+//import { Row, Col } from 'react-bootstrap';
 import _ from 'lodash';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
@@ -9,6 +9,8 @@ import Icon from '@folio/stripes-components/lib/Icon';
 import NavList from '@folio/stripes-components/lib/NavList';
 import NavListSection from '@folio/stripes-components/lib/NavListSection';
 
+import LoanPolicyDetail from './LoanPolicyDetail';
+
 class LoanPolicySettings extends React.Component {
 
   static propTypes = {
@@ -16,7 +18,11 @@ class LoanPolicySettings extends React.Component {
   };
 
   static manifest = Object.freeze({
-
+    loanPolicies: {
+      type: 'okapi',
+      records: 'loanPolicies',
+      path: 'loan-policy-storage/loan-policies',
+    },
   });
 
   constructor(props) {
@@ -24,7 +30,7 @@ class LoanPolicySettings extends React.Component {
 
     this.state = {
       selectedPolicy: null,
-      loanPolicies: [{id: 1, name: 'Policy 1'}, {id: 2, name: 'Policy 2'}],
+    //  loanPolicies: [{id: 1, name: 'Policy 1'}, {id: 2, name: 'Policy 2'}],
     }
 
     this.onSelectRow = this.onSelectRow.bind(this);
@@ -49,8 +55,8 @@ class LoanPolicySettings extends React.Component {
 
   render() {
     const { data } = this.props;
-    //const policies = data.loanPolicies;
-    const policies = this.state.loanPolicies;
+    const policies = data.loanPolicies;
+    //const policies = this.state.loanPolicies;
 
     const policyDisplay = policies != null ? policies.map(p =>
       <a
@@ -76,6 +82,9 @@ class LoanPolicySettings extends React.Component {
               {policyDisplay}
             </NavListSection>
           </NavList>
+        </Pane>
+        <Pane>
+          <LoanPolicyDetail />
         </Pane>
       </Paneset>
     );
