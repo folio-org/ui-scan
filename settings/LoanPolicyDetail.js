@@ -8,6 +8,8 @@ import Select from '@folio/stripes-components/lib/Select';
 import TextField from '@folio/stripes-components/lib/TextField';
 import TextArea from '@folio/stripes-components/lib/TextArea';
 
+import { loanProfileTypes, intervalPeriods, dueDateManagementOptions, renewFromOptions } from '../constants';
+
 class LoanPolicyDetail extends React.Component {
 
   static propTypes = {
@@ -53,22 +55,22 @@ class LoanPolicyDetail extends React.Component {
 
     const renewableOptionFields = policy.renewable ? (
       <div>
-        <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox} />
-        <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded />
+        <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox}  checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
+        <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Field
           label="Renew from"
           name="renewalsPolicy.renewFromId"
           id="renewFrom"
           component={Select}
-          dataOptions={[{ label: 'System date', value: 1 }]}
+          dataOptions={renewFromOptions}
         />
-        <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} />
+        <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField} onBlur={this.saveChanges} />
         <Field
           label="Alternate fixed due date schedule for renewals"
           name="renewalsPolicy"
           id="altRenewalFixedDueDate"
           component={Select}
-          dataOptions={[{ label: 'Quarter', value: 1 }]}
+          dataOptions={[]}
         />
       </div>
     ) : '';
@@ -80,17 +82,17 @@ class LoanPolicyDetail extends React.Component {
           name="loansPolicy.profileId"
           id="loanProfile"
           component={Select}
-          dataOptions={[{ label: 'Fixed', value: 1 }, { label: 'Rolling', value: 2 }]}
+          dataOptions={loanProfileTypes}
         />
         // TODO: this should only appear for 'rolling' profile
-        <Field label="Loan period" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded />
+        <Field label="Loan period" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Field
           label=""
           name="loansPolicy.period.intervalId"
           id="loanPeriodInterval"
           component={Select}
           placeholder="Select interval"
-          dataOptions={[]}
+          dataOptions={intervalPeriods}
         />
 
         <Field
@@ -98,25 +100,25 @@ class LoanPolicyDetail extends React.Component {
           name="fixedDueDateSchedule"
           id="fixedDueDateSchedule"
           component={Select}
-          dataOptions={[{ label: 'Semester', value: 1 }]}
+          dataOptions={[]}
         />
         <Field
           label="Closed library due date management"
           name="loansPolicy.closedLibraryDueDateManagementId"
           id="closedLibraryDueDateMgmt"
           component={Select}
-          dataOptions={[{ label: 'Move to the end of the next open day', value: 1 }]}
+          dataOptions={dueDateManagementOptions}
         />
-        <Field label="Skip closed dates in intervening period" name="skipClosed" id="skipClosed" component={Checkbox} />
+        <Field label="Skip closed dates in intervening period" name="skipClosed" id="skipClosed" component={Checkbox} checked={policy.loansPolicy && policy.loansPolicy.skipClosed} validate={this.validateField} onBlur={this.saveChanges} />
 
-        <Field label="Alternate loan period for items with existing requests" name="loansPolicy.existingRequestsPeriod.duration" id="altLoanPeriod" component={TextField} rounded />
+        <Field label="Alternate loan period for items with existing requests" name="loansPolicy.existingRequestsPeriod.duration" id="altLoanPeriod" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Field
           label=""
           name="loansPolicy.existingRequestsPeriod.intervalId"
           id="altLoanPeriodInterval"
           component={Select}
           placeholder="Select interval"
-          dataOptions={[]}
+          dataOptions={intervalPeriods}
         />
 
         <Field label="Grace period" name="gracePeriod" id="loansPolicy.gracePeriod.duration" component={TextField} rounded />
@@ -126,12 +128,12 @@ class LoanPolicyDetail extends React.Component {
           id="gracePeriodInterval"
           component={Select}
           placeholder="Select interval"
-          dataOptions={[]}
+          dataOptions={intervalPeriods}
         />
 
         <fieldset>
           <legend>Renewals</legend>
-          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} checked={policy.renewable} validate={this.validateField} onBlur={this.saveChanges}  />
+          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} checked={policy.renewable} validate={this.validateField} onBlur={this.saveChanges} />
           {renewableOptionFields}
         </fieldset>
       </div>
@@ -145,7 +147,7 @@ class LoanPolicyDetail extends React.Component {
         <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
         <hr/>
         <h2>Loans</h2>
-        <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges}  />
+        <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges} />
         {loanableOptionFields}
         <hr/>
         <h2>Requests</h2>
