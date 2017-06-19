@@ -43,14 +43,7 @@ class LoanPolicySettings extends React.Component {
   };
 
   createNewPolicy() {
-    // TODO: Update this to use the real backend
-    const newPolicy = {id: this.state.loanPolicies.length + 1, name: 'Untitled loan policy'};
-    const newPolicyArray = this.state.loanPolicies.slice();
-    newPolicyArray.push(newPolicy);
-    this.setState({
-      loanPolicies: newPolicyArray,
-      selectedPolicy: { id: newPolicy.id },
-    });
+    this.props.mutator.loanPolicies.POST({name: 'Untitled loan policy', loanable: false, renewable: false});
   };
 
   render() {
@@ -85,7 +78,7 @@ class LoanPolicySettings extends React.Component {
           </NavList>
         </Pane>
         {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name}>
-          <LoanPolicyDetail initialValues={this.state.selectedPolicy} />
+          <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} />
         </Pane>}
       </Paneset>
     );

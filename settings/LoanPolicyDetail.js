@@ -11,7 +11,7 @@ import TextArea from '@folio/stripes-components/lib/TextArea';
 class LoanPolicyDetail extends React.Component {
 
   static propTypes = {
-    policy: PropTypes.object.isRequired,
+    //policy: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -19,17 +19,65 @@ class LoanPolicyDetail extends React.Component {
 
     this.state = {
       confirmDelete: false,
+      policy: this.props.initialValues,
+      // loanable: false,
+      // renewable: false,
     };
+
+    this.validateField = this.validateField.bind(this);
+    this.saveChanges = this.saveChanges.bind(this);
+  };
+  //
+  // componentDidMount(){
+  //   console.log('renewable: '+ this.props.initialValues.renewable)
+  //   this.setState({
+  //     loanable: this.props.initialValues.loanable,
+  //     renewable: this.props.initialValues.renewable,
+  //   });
+  // };
+
+  // TODO: This feels like an abuse of the 'validate' parameter, using it to do an
+  // immediate save instead of actual validation ....
+  validateField(fieldValue, allValues) {
+    this.setState({ policy: allValues });
+  };
+
+  saveChanges() {
+    this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   };
 
   render() {
-    const policy = this.props.initialValues;
+    const policy = this.state.policy;
+    console.log('renwable2: '+ policy.renewable)
+
+    const renewableOptionFields = policy.renewable ? (
+      <div>
+        <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox} />
+        <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded />
+        <Field
+          label="Renew from"
+          name="renewalsPolicy.renewFromId"
+          id="renewFrom"
+          component={Select}
+          dataOptions={[{ label: 'System date', value: 1 }]}
+        />
+        <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} />
+        <Field
+          label="Alternate fixed due date schedule for renewals"
+          name="renewalsPolicy"
+          id="altRenewalFixedDueDate"
+          component={Select}
+          dataOptions={[{ label: 'Quarter', value: 1 }]}
+        />
+      </div>
+    ) : '';
 
     return (
       <div>
         <h2 style={{ marginTop: '0' }}>About</h2>
-        <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded />
-        <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded />
+        <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
+        {renewableOptionFields}
+        <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
         <hr/>
         <h2>Loans</h2>
@@ -90,24 +138,8 @@ class LoanPolicyDetail extends React.Component {
 
         <fieldset>
           <legend>Renewals</legend>
-          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} />
-          <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox} />
-          <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenwals" component={TextField} required rounded />
-          <Field
-            label="Renew from"
-            name="renewalsPolicy.renewFromId"
-            id="renewFrom"
-            component={Select}
-            dataOptions={[{ label: 'System date', value: 1 }]}
-          />
-          <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} />
-          <Field
-            label="Alternate fixed due date schedule for renewals"
-            name="renewalsPolicy"
-            id="altRenewalFixedDueDate"
-            component={Select}
-            dataOptions={[{ label: 'Quarter', value: 1 }]}
-          />
+          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} onClick={this.saveChanges} />
+          {renewableOptionFields}
         </fieldset>
 
         <hr/>
