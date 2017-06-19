@@ -50,6 +50,7 @@ class LoanPolicyDetail extends React.Component {
     const policy = this.state.policy;
     console.log('renwable2: '+ policy.renewable)
 
+
     const renewableOptionFields = policy.renewable ? (
       <div>
         <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox} />
@@ -72,16 +73,8 @@ class LoanPolicyDetail extends React.Component {
       </div>
     ) : '';
 
-    return (
+    const loanableOptionFields = policy.loanable ? (
       <div>
-        <h2 style={{ marginTop: '0' }}>About</h2>
-        <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
-        {renewableOptionFields}
-        <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
-        <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
-        <hr/>
-        <h2>Loans</h2>
-        <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} />
         <Field
           label="Loan profile"
           name="loansPolicy.profileId"
@@ -138,10 +131,22 @@ class LoanPolicyDetail extends React.Component {
 
         <fieldset>
           <legend>Renewals</legend>
-          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} onClick={this.saveChanges} />
+          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} checked={policy.renewable} validate={this.validateField} onBlur={this.saveChanges}  />
           {renewableOptionFields}
         </fieldset>
+      </div>
+    ) : '';
 
+    return (
+      <div>
+        <h2 style={{ marginTop: '0' }}>About</h2>
+        <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
+        <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
+        <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
+        <hr/>
+        <h2>Loans</h2>
+        <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges}  />
+        {loanableOptionFields}
         <hr/>
         <h2>Requests</h2>
         <Field label="Requestable" name="requestable" id="requestable" component={Checkbox} />
