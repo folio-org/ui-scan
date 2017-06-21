@@ -22,6 +22,7 @@ class LoanPolicyDetail extends React.Component {
     this.state = {
       confirmDelete: false,
       policy: this.props.initialValues,
+      rollingProfile: false,
       // loanable: false,
       // renewable: false,
     };
@@ -30,6 +31,7 @@ class LoanPolicyDetail extends React.Component {
     this.deletePolicy = this.deletePolicy.bind(this);
     this.validateField = this.validateField.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
+    this.updatePolicyType = this.updatePolicyType.bind(this);
   };
 
   // TODO: This feels like an abuse of the 'validate' parameter, using it to do an
@@ -59,11 +61,16 @@ class LoanPolicyDetail extends React.Component {
     }
   };
 
+  updatePolicyType(e) {
+    this.setState({
+      rollingProfile: e.target.value == 2 // TODO: Need a better way to check that the value is 'rolling'!
+    });
+  }
+
   render() {
     const policy = this.state.policy;
-    console.log('renwable2: '+ policy.renewable)
 
-
+    // The renewal option fields should only appear if the 'renewable' checkbox is checked
     const renewableOptionFields = policy.renewable ? (
       <div>
         <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox}  checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
@@ -88,18 +95,9 @@ class LoanPolicyDetail extends React.Component {
       </div>
     ) : '';
 
-    const loanableOptionFields = policy.loanable ? (
+    // Loan period fields should only appear for the 'rolling' profile type
+    const loanPeriodFields = this.state.rollingProfile ? (
       <div>
-        <Field
-          label="Loan profile"
-          name="loansPolicy.profileId"
-          id="loanProfile"
-          component={Select}
-          dataOptions={loanProfileTypes}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
-        // TODO: this should only appear for 'rolling' profile
         <Field label="Loan period" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Field
           label=""
@@ -111,6 +109,23 @@ class LoanPolicyDetail extends React.Component {
           validate={this.validateField}
           onBlur={this.saveChanges}
         />
+      </div>
+    ) : '';
+
+    // Most of the loan option fields should only appear if the 'loanable' checkbox is checked
+    const loanableOptionFields = policy.loanable ? (
+      <div>
+        <Field
+          label="Loan profile"
+          name="loansPolicy.profileId"
+          id="loanProfile"
+          component={Select}
+          dataOptions={loanProfileTypes}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
+          onChange={this.updatePolicyType}
+        />
+        {loanPeriodFields}
 
         <Field
           label="Fixed due date schedule"
@@ -169,8 +184,8 @@ class LoanPolicyDetail extends React.Component {
         <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
         {this.state.confirmDelete && <div>
-          <Button title="Confirm Delete Permission Set" onClick={() => { this.deletePolicy(true); }}>Confirm</Button>
-          <Button title="Cancel Delete Permission Set" onClick={() => { this.deletePolicy(false); }}>Cancel</Button>
+          <Button title="Confirm delete loan policy" onClick={() => { this.deletePolicy(true); }}>Confirm</Button>
+          <Button title="Cancel delete loan policy" onClick={() => { this.deletePolicy(false); }}>Cancel</Button>
         </div>}
         <hr/>
         <h2>Loans</h2>
