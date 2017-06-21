@@ -19,6 +19,7 @@ class ScanRouting extends Component {
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     showSettings: PropTypes.bool,
+
   }
 
   getChildContext() {
@@ -36,7 +37,7 @@ class ScanRouting extends Component {
 
   render() {
     if (this.props.showSettings) {
-      return <Settings {...this.props} />;
+      return <Settings {...this.props} paneTitle='Scan' />;
     }
 
     const { match: { path }, stripes: { connect } } = this.props;

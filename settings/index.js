@@ -4,6 +4,8 @@ import React from 'react';
 import Settings from '@folio/stripes-components/lib/Settings';
 
 import ScanCheckoutSettings from './ScanCheckoutSettings';
+import FixedDueDateScheduleSettings from './FixedDueDateScheduleSettings';
+import Foo from './Foo';
 
 const pages = [
   {
@@ -11,6 +13,11 @@ const pages = [
     label: 'Check-out',
     component: ScanCheckoutSettings,
   },
+  {
+    route: 'fixed-schedules',
+    label: 'Fixed due date schedules',
+    component: FixedDueDateScheduleSettings,
+  }
 ];
 
 export default props => <Settings {...props} pages={pages} />;
