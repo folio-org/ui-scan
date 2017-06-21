@@ -33,6 +33,7 @@ class LoanPolicySettings extends React.Component {
     //  loanPolicies: [{id: 1, name: 'Policy 1'}, {id: 2, name: 'Policy 2'}],
     }
 
+    this.clearSelection = this.clearSelection.bind(this);
     this.onSelectRow = this.onSelectRow.bind(this);
     this.createNewPolicy = this.createNewPolicy.bind(this);
   };
@@ -41,6 +42,10 @@ class LoanPolicySettings extends React.Component {
     e.preventDefault();
     this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id: id })});
   };
+
+  clearSelection() {
+    this.setState({ selectedPolicy: null });
+  }
 
   createNewPolicy() {
     this.props.mutator.loanPolicies.POST({name: 'Untitled loan policy', loanable: false, renewable: false});
@@ -78,7 +83,7 @@ class LoanPolicySettings extends React.Component {
           </NavList>
         </Pane>
         {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name}>
-          <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} />
+          <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} clearSelection={this.clearSelection} />
         </Pane>}
       </Paneset>
     );

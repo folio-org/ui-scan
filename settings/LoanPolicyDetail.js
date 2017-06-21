@@ -26,17 +26,11 @@ class LoanPolicyDetail extends React.Component {
       // renewable: false,
     };
 
+    this.beginDelete = this.beginDelete.bind(this);
+    this.deletePolicy = this.deletePolicy.bind(this);
     this.validateField = this.validateField.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
   };
-  //
-  // componentDidMount(){
-  //   console.log('renewable: '+ this.props.initialValues.renewable)
-  //   this.setState({
-  //     loanable: this.props.initialValues.loanable,
-  //     renewable: this.props.initialValues.renewable,
-  //   });
-  // };
 
   // TODO: This feels like an abuse of the 'validate' parameter, using it to do an
   // immediate save instead of actual validation ....
@@ -46,6 +40,23 @@ class LoanPolicyDetail extends React.Component {
 
   saveChanges() {
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
+  };
+
+  beginDelete() {
+    this.setState({
+      confirmDelete: true,
+    });
+  };
+
+  deletePolicy(confirmation) {
+    if (confirmation) {
+      this.props.parentMutator.loanPolicies.DELETE(this.state.policy)
+      .then(() => this.props.clearSelection());
+    } else {
+      this.setState({
+        confirmDelete: false,
+      });
+    }
   };
 
   render() {
@@ -157,6 +168,10 @@ class LoanPolicyDetail extends React.Component {
         <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
+        {this.state.confirmDelete && <div>
+          <Button title="Confirm Delete Permission Set" onClick={() => { this.deletePolicy(true); }}>Confirm</Button>
+          <Button title="Cancel Delete Permission Set" onClick={() => { this.deletePolicy(false); }}>Cancel</Button>
+        </div>}
         <hr/>
         <h2>Loans</h2>
         <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges} />
