@@ -63,6 +63,8 @@ class LoanPolicyDetail extends React.Component {
           id="renewFrom"
           component={Select}
           dataOptions={renewFromOptions}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
         />
         <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField} onBlur={this.saveChanges} />
         <Field
@@ -83,6 +85,8 @@ class LoanPolicyDetail extends React.Component {
           id="loanProfile"
           component={Select}
           dataOptions={loanProfileTypes}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
         />
         // TODO: this should only appear for 'rolling' profile
         <Field label="Loan period" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
@@ -93,6 +97,8 @@ class LoanPolicyDetail extends React.Component {
           component={Select}
           placeholder="Select interval"
           dataOptions={intervalPeriods}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
         />
 
         <Field
@@ -108,6 +114,8 @@ class LoanPolicyDetail extends React.Component {
           id="closedLibraryDueDateMgmt"
           component={Select}
           dataOptions={dueDateManagementOptions}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
         />
         <Field label="Skip closed dates in intervening period" name="skipClosed" id="skipClosed" component={Checkbox} checked={policy.loansPolicy && policy.loansPolicy.skipClosed} validate={this.validateField} onBlur={this.saveChanges} />
 
@@ -119,6 +127,8 @@ class LoanPolicyDetail extends React.Component {
           component={Select}
           placeholder="Select interval"
           dataOptions={intervalPeriods}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
         />
 
         <Field label="Grace period" name="gracePeriod" id="loansPolicy.gracePeriod.duration" component={TextField} rounded />
@@ -129,6 +139,8 @@ class LoanPolicyDetail extends React.Component {
           component={Select}
           placeholder="Select interval"
           dataOptions={intervalPeriods}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
         />
 
         <fieldset>
