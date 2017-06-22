@@ -93,9 +93,10 @@ class LoanPolicyDetail extends React.Component {
     const renewableOptionFields = (
       <div>
         <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox}  checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
+        <p>Number of renewals allowed</p>
         <Row>
           <Col xs={2}>
-            <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
+            <Field label="" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
             </Col>
         </Row>
         <Field
@@ -173,7 +174,7 @@ class LoanPolicyDetail extends React.Component {
           validate={this.validateField}
           onBlur={this.saveChanges}
         />
-        <Field label="Skip closed dates in intervening period" name="skipClosed" id="skipClosed" component={Checkbox} checked={policy.loansPolicy && policy.loansPolicy.skipClosed} validate={this.validateField} onBlur={this.saveChanges} />
+        <Field label="Skip closed dates in intervening period" name="loansPolicy.skipClosed" id="skipClosed" component={Checkbox} checked={policy.loansPolicy && policy.loansPolicy.skipClosed} validate={this.validateField} onBlur={this.saveChanges} />
 
         <p>Alternate loan period for items with existing requests</p>
         <Row>
