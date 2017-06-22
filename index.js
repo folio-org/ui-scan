@@ -37,7 +37,7 @@ class ScanRouting extends Component {
 
   render() {
     if (this.props.showSettings) {
-      return <Settings {...this.props} paneTitle='Scan' />;
+      return <Settings {...this.props} paneTitle="Scan" />;
     }
 
     const { match: { path }, stripes: { connect } } = this.props;
