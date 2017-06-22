@@ -62,9 +62,9 @@ class ScanCheckoutSettings extends React.Component {
   render() {
     const selectedIdentifier = this.props.data.userIdentifierPref || [];
     const value = (selectedIdentifier.length === 0) ? '' : selectedIdentifier[0].value;
-
     const identifierTypeOptions = patronIdentifierTypes.map(i => (
       {
+        id: i.key,
         label: i.label,
         value: i.key,
       }
@@ -74,10 +74,9 @@ class ScanCheckoutSettings extends React.Component {
       <Pane defaultWidth="fill" fluidContentWidth paneTitle="Check-out">
         <Row>
           <Col xs={12}>
-            <label htmlFor="patronScanId">Scan ID for patron check-out</label>
-            <br />
             <Select
               id="patronScanId"
+              label="Scan ID for patron check-out"
               placeholder="---"
               value={value}
               dataOptions={identifierTypeOptions}
