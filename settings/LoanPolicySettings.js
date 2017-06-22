@@ -53,7 +53,7 @@ class LoanPolicySettings extends React.Component {
 
   render() {
     const { data } = this.props;
-    const policies = data.loanPolicies;
+    const policies = _.sortBy(data.loanPolicies, ['name']);
     //const policies = this.state.loanPolicies;
 
     const policyDisplay = policies != null ? policies.map(p =>

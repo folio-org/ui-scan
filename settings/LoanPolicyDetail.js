@@ -30,15 +30,38 @@ class LoanPolicyDetail extends React.Component {
 
     this.beginDelete = this.beginDelete.bind(this);
     this.deletePolicy = this.deletePolicy.bind(this);
-    this.onChangeProfileType = this.onChangeProfileType.bind(this);
     this.validateField = this.validateField.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
-    this.updateProfileType = this.updateProfileType.bind(this);
   };
 
   // TODO: This feels like an abuse of the 'validate' parameter, using it to do an
   // immediate save instead of actual validation ....
   validateField(fieldValue, allValues) {
+
+    // TODO: This is a bad hack to deal with constraints that both fields of
+    // a "period" object have to exist in the record. This should be rewritten ASAP
+    let period = allValues.loansPolicy.period;
+    if (period && period.duration && !period.intervalId) {
+      this.props.change('loansPolicy.period.intervalId', 1);
+    }
+    if (period && period.intervalId && !period.duration) {
+      this.props.change('loansPolicy.period.duration', 1);
+    }
+    let existingPeriod = allValues.loansPolicy.existingRequestsPeriod;
+    if (existingPeriod && existingPeriod.duration && !existingPeriod.intervalId) {
+      this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 1);
+    }
+    if (existingPeriod && existingPeriod.intervalId && !existingPeriod.duration) {
+      this.props.change('loansPolicy.existingRequestsPeriod.duration', 1);
+    }
+    let gracePeriod = allValues.loansPolicy.gracePeriod;
+    if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
+      this.props.change('loansPolicy.gracePeriod.intervalId', 1);
+    }
+    if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
+      this.props.change('loansPolicy.gracePeriod.duration', 1);
+    }
+
     this.setState({ policy: allValues });
   };
 
@@ -63,24 +86,18 @@ class LoanPolicyDetail extends React.Component {
     }
   };
 
-  onChangeProfileType(e) {
-    this.updateProfileType(e.target.value);
-  };
-
-  updateProfileType(typeId) {
-    this.setState({
-      rollingProfile: typeId == 2 // TODO: Need a better way to check that the value is 'rolling'!
-    });
-  };
-
   render() {
     const policy = this.state.policy;
 
     // The renewal option fields should only appear if the 'renewable' checkbox is checked
-    const renewableOptionFields = policy.renewable ? (
+    const renewableOptionFields = (
       <div>
         <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox}  checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
-        <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
+        <Row>
+          <Col xs={2}>
+            <Field label="Number of renewals allowed" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
+            </Col>
+        </Row>
         <Field
           label="Renew from"
           name="renewalsPolicy.renewFromId"
@@ -90,6 +107,7 @@ class LoanPolicyDetail extends React.Component {
           validate={this.validateField}
           onBlur={this.saveChanges}
         />
+
         <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField} onBlur={this.saveChanges} />
         <Field
           label="Alternate fixed due date schedule for renewals"
@@ -99,15 +117,15 @@ class LoanPolicyDetail extends React.Component {
           dataOptions={[]}
         />
       </div>
-    ) : '';
+    );
 
     // Loan period fields should only appear for the 'rolling' profile type
-    const loanPeriodFields = (policy && policy.loansPolicy && policy.loansPolicy.profileId == 2) ? (
+    const loanPeriodFields = (
       <div>
         <p>Loan period</p>
         <Row>
           <Col xs={2}>
-            <Field label="" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
+            <Field label="" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} />
           </Col>
           <Col>
             <Field
@@ -118,15 +136,15 @@ class LoanPolicyDetail extends React.Component {
               placeholder="Select interval"
               dataOptions={intervalPeriods}
               validate={this.validateField}
-              onBlur={this.saveChanges}
+
             />
           </Col>
         </Row>
       </div>
-    ) : '';
+    );
 
     // Most of the loan option fields should only appear if the 'loanable' checkbox is checked
-    const loanableOptionFields = policy.loanable ? (
+    const loanableOptionFields = (
       <div>
         <Field
           label="Loan profile"
@@ -136,9 +154,8 @@ class LoanPolicyDetail extends React.Component {
           dataOptions={loanProfileTypes}
           validate={this.validateField}
           onBlur={this.saveChanges}
-          onChange={this.onChangeProfileType}
         />
-        {loanPeriodFields}
+        {policy.loansPolicy && policy.loansPolicy.profileId == 2 && loanPeriodFields}
 
         <Field
           label="Fixed due date schedule"
@@ -199,10 +216,10 @@ class LoanPolicyDetail extends React.Component {
         <fieldset>
           <legend>Renewals</legend>
           <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} checked={policy.renewable} validate={this.validateField} onBlur={this.saveChanges} />
-          {renewableOptionFields}
+          {policy.renewable && renewableOptionFields}
         </fieldset>
       </div>
-    ) : '';
+    );
 
     return (
       <div>
@@ -217,7 +234,7 @@ class LoanPolicyDetail extends React.Component {
         <hr/>
         <h2>Loans</h2>
         <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges} />
-        {loanableOptionFields}
+        {policy.loanable && loanableOptionFields}
       {/*  <hr/>
         <h2>Requests</h2>
         <Field label="Requestable" name="requestable" id="requestable" component={Checkbox} /> */}
