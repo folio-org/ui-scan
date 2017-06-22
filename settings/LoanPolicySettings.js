@@ -72,7 +72,6 @@ class LoanPolicySettings extends React.Component {
       </PaneMenu>
     );
 
-    console.log("selected policy:", this.state.selectedPolicy)
     return (
       <Paneset nested>
         <Pane defaultWidth="20%" lastMenu={LoanPolicyLastMenu}>

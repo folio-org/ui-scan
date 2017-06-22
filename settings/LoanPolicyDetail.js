@@ -4,6 +4,7 @@ import { Field, reduxForm } from 'redux-form';
 
 import Button from '@folio/stripes-components/lib/Button';
 import Checkbox from '@folio/stripes-components/lib/Checkbox';
+import { Row, Col } from '@folio/stripes-components/lib/LayoutGrid';
 import Select from '@folio/stripes-components/lib/Select';
 import TextField from '@folio/stripes-components/lib/TextField';
 import TextArea from '@folio/stripes-components/lib/TextArea';
@@ -29,9 +30,10 @@ class LoanPolicyDetail extends React.Component {
 
     this.beginDelete = this.beginDelete.bind(this);
     this.deletePolicy = this.deletePolicy.bind(this);
+    this.onChangeProfileType = this.onChangeProfileType.bind(this);
     this.validateField = this.validateField.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
-    this.updatePolicyType = this.updatePolicyType.bind(this);
+    this.updateProfileType = this.updateProfileType.bind(this);
   };
 
   // TODO: This feels like an abuse of the 'validate' parameter, using it to do an
@@ -61,11 +63,15 @@ class LoanPolicyDetail extends React.Component {
     }
   };
 
-  updatePolicyType(e) {
+  onChangeProfileType(e) {
+    this.updateProfileType(e.target.value);
+  };
+
+  updateProfileType(typeId) {
     this.setState({
-      rollingProfile: e.target.value == 2 // TODO: Need a better way to check that the value is 'rolling'!
+      rollingProfile: typeId == 2 // TODO: Need a better way to check that the value is 'rolling'!
     });
-  }
+  };
 
   render() {
     const policy = this.state.policy;
@@ -96,19 +102,26 @@ class LoanPolicyDetail extends React.Component {
     ) : '';
 
     // Loan period fields should only appear for the 'rolling' profile type
-    const loanPeriodFields = this.state.rollingProfile ? (
+    const loanPeriodFields = (policy && policy.loansPolicy && policy.loansPolicy.profileId == 2) ? (
       <div>
-        <Field label="Loan period" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
-        <Field
-          label=""
-          name="loansPolicy.period.intervalId"
-          id="loanPeriodInterval"
-          component={Select}
-          placeholder="Select interval"
-          dataOptions={intervalPeriods}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
+        <p>Loan period</p>
+        <Row>
+          <Col xs={2}>
+            <Field label="" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
+          </Col>
+          <Col>
+            <Field
+              label=""
+              name="loansPolicy.period.intervalId"
+              id="loanPeriodInterval"
+              component={Select}
+              placeholder="Select interval"
+              dataOptions={intervalPeriods}
+              validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+          </Col>
+        </Row>
       </div>
     ) : '';
 
@@ -123,7 +136,7 @@ class LoanPolicyDetail extends React.Component {
           dataOptions={loanProfileTypes}
           validate={this.validateField}
           onBlur={this.saveChanges}
-          onChange={this.updatePolicyType}
+          onChange={this.onChangeProfileType}
         />
         {loanPeriodFields}
 
@@ -145,29 +158,43 @@ class LoanPolicyDetail extends React.Component {
         />
         <Field label="Skip closed dates in intervening period" name="skipClosed" id="skipClosed" component={Checkbox} checked={policy.loansPolicy && policy.loansPolicy.skipClosed} validate={this.validateField} onBlur={this.saveChanges} />
 
-        <Field label="Alternate loan period for items with existing requests" name="loansPolicy.existingRequestsPeriod.duration" id="altLoanPeriod" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
-        <Field
-          label=""
-          name="loansPolicy.existingRequestsPeriod.intervalId"
-          id="altLoanPeriodInterval"
-          component={Select}
-          placeholder="Select interval"
-          dataOptions={intervalPeriods}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
+        <p>Alternate loan period for items with existing requests</p>
+        <Row>
+          <Col xs={2}>
+            <Field label="" name="loansPolicy.existingRequestsPeriod.duration" id="altLoanPeriod" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
+          </Col>
+          <Col>
+            <Field
+              label=""
+              name="loansPolicy.existingRequestsPeriod.intervalId"
+              id="altLoanPeriodInterval"
+              component={Select}
+              placeholder="Select interval"
+              dataOptions={intervalPeriods}
+              validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+          </Col>
+        </Row>
 
-        <Field label="Grace period" name="gracePeriod" id="loansPolicy.gracePeriod.duration" component={TextField} rounded />
-        <Field
-          label=""
-          name="loansPolicy.gracePeriod.intervalId"
-          id="gracePeriodInterval"
-          component={Select}
-          placeholder="Select interval"
-          dataOptions={intervalPeriods}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
+        <p>Grace period</p>
+        <Row>
+          <Col xs={2}>
+            <Field label="" name="gracePeriod" id="loansPolicy.gracePeriod.duration" component={TextField} rounded />
+          </Col>
+          <Col>
+            <Field
+              label=""
+              name="loansPolicy.gracePeriod.intervalId"
+              id="gracePeriodInterval"
+              component={Select}
+              placeholder="Select interval"
+              dataOptions={intervalPeriods}
+              validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+          </Col>
+        </Row>
 
         <fieldset>
           <legend>Renewals</legend>
@@ -191,9 +218,9 @@ class LoanPolicyDetail extends React.Component {
         <h2>Loans</h2>
         <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges} />
         {loanableOptionFields}
-        <hr/>
+      {/*  <hr/>
         <h2>Requests</h2>
-        <Field label="Requestable" name="requestable" id="requestable" component={Checkbox} />
+        <Field label="Requestable" name="requestable" id="requestable" component={Checkbox} /> */}
       </div>
     );
 
