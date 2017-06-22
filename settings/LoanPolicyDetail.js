@@ -40,21 +40,21 @@ class LoanPolicyDetail extends React.Component {
 
     // TODO: This is a bad hack to deal with constraints that both fields of
     // a "period" object have to exist in the record. This should be rewritten ASAP
-    let period = allValues.loansPolicy.period;
+    let period = (allValues.loansPolicy && allValues.loansPolicy.period);
     if (period && period.duration && !period.intervalId) {
       this.props.change('loansPolicy.period.intervalId', 1);
     }
     if (period && period.intervalId && !period.duration) {
       this.props.change('loansPolicy.period.duration', 1);
     }
-    let existingPeriod = allValues.loansPolicy.existingRequestsPeriod;
+    let existingPeriod = (allValues.loansPolicy && allValues.loansPolicy.existingRequestsPeriod);
     if (existingPeriod && existingPeriod.duration && !existingPeriod.intervalId) {
       this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 1);
     }
     if (existingPeriod && existingPeriod.intervalId && !existingPeriod.duration) {
       this.props.change('loansPolicy.existingRequestsPeriod.duration', 1);
     }
-    let gracePeriod = allValues.loansPolicy.gracePeriod;
+    let gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
     if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
       this.props.change('loansPolicy.gracePeriod.intervalId', 1);
     }
