@@ -1,5 +1,9 @@
 # Change history for ui-scan
 
+## In progress
+
+* Add support for loan periods in settings (completes UIS-13)
+
 ## [0.5.0](https://github.com/folio-org/ui-scan/tree/v0.5.0) (2017-06-07)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.4.0...v0.5.0)
 
@@ -43,4 +47,3 @@
 
 * First version to have a documented change-log. Each subsequent version will
   describe its differences from the previous one.
-
