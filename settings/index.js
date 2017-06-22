@@ -5,7 +5,6 @@ import Settings from '@folio/stripes-components/lib/Settings';
 
 import ScanCheckoutSettings from './ScanCheckoutSettings';
 import FixedDueDateScheduleSettings from './FixedDueDateScheduleSettings';
-import Foo from './Foo';
 
 const pages = [
   {

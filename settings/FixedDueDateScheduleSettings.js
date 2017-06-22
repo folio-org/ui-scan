@@ -42,7 +42,6 @@ const FIXED_DATE_SCHEDULES = [
 ];
 
 class FixedDueDateScheduleSettings extends React.Component {
-  /*
   static propTypes = {
     stripes: PropTypes.shape({
       hasPerm: PropTypes.func.isRequired,
@@ -59,6 +58,7 @@ class FixedDueDateScheduleSettings extends React.Component {
     }).isRequired,
   };
 
+  /* @@
   static manifest = Object.freeze({
     scheduleSettings: {
       type: 'okapi',
@@ -95,7 +95,6 @@ class FixedDueDateScheduleSettings extends React.Component {
 
   onSelectSchedule(e) {
     e.preventDefault();
-    // Number.parseInt is required for === comparisons to work. Why?
     const scheduleId = Number.parseInt(e.target.dataset.id, 10);
     _.forEach(this.fixedDateSchedules, (schedule) => {
       if (schedule.id === scheduleId) {
@@ -110,10 +109,6 @@ class FixedDueDateScheduleSettings extends React.Component {
     });
   }
 
-  clearSelection() {
-    this.setSelectedSchedule(null);
-  }
-
   createNewSchedule() {
     // @@ TODO
     /*
@@ -124,6 +119,7 @@ class FixedDueDateScheduleSettings extends React.Component {
   }
 
   render() {
+    // @@ eventually will be const mutator = this.props.mutator
     const mutator = {
       scheduleSettings: {
         POST: () => { console.log('post'); },
@@ -138,16 +134,11 @@ class FixedDueDateScheduleSettings extends React.Component {
     ) : [];
 
     const FixedScheduleLastMenu = (
-      <IfPermission perm="perms.permissions.item.post">
-        {/* In practice, there is point letting someone create a schedule if they can't set its name */}
-        <IfPermission perm="perms.permissions.item.put">
-          <PaneMenu>
-            <button title="Add Fixed Due Date Schedule" onClick={this.createNewSchedule}>
-              <Icon icon="plus-sign" />
-            </button>
-          </PaneMenu>
-        </IfPermission>
-      </IfPermission>
+      <PaneMenu>
+        <button title="Add Fixed Due Date Schedule" onClick={this.createNewSchedule}>
+          <Icon icon="plus-sign" />
+        </button>
+      </PaneMenu>
     );
 
     return (
@@ -161,7 +152,6 @@ class FixedDueDateScheduleSettings extends React.Component {
         </Pane>
         {this.state.selectedSchedule && <FixedDueDateScheduleDetails
           parentMutator={mutator}
-          clearSelection={this.clearSelection}
           stripes={this.props.stripes}
           initialValues={this.state.selectedSchedule}
           selectedSchedule={this.state.selectedSchedule}

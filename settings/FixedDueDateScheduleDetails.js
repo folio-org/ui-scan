@@ -1,50 +1,14 @@
 // We have to remove node_modules/react to avoid having multiple copies loaded.
 // eslint-disable-next-line import/no-unresolved
 import React, { Component, PropTypes } from 'react';
+import { Row, Col } from 'react-bootstrap';
+import { Field, FieldArray, reduxForm } from 'redux-form';
 import Pane from '@folio/stripes-components/lib/Pane';
 import Textfield from '@folio/stripes-components/lib/TextField';
 import TextArea from '@folio/stripes-components/lib/TextArea';
 import Button from '@folio/stripes-components/lib/Button';
 import IfPermission from '@folio/stripes-components/lib/IfPermission';
-
-import { Row, Col } from 'react-bootstrap';
-import Datepicker from '@folio/stripes-components/lib/Datepicker';
-import { Field, FieldArray, reduxForm } from 'redux-form';
-
-const RenderSchedule = (member, index) => (
-  <Row key={index}>
-    <Col xs={4}>
-      <Field
-        name={`${member}.dateFrom`}
-        type="text"
-        component={Datepicker}
-        placeholder="Date From"
-        label="Date From"
-        dateFormat="YYYY-MM-DD"
-      />
-    </Col>
-    <Col xs={4}>
-      <Field
-        name={`${member}.dateTo`}
-        type="text"
-        component={Datepicker}
-        placeholder="Date To"
-        label="Date To"
-        dateFormat="YYYY-MM-DD"
-      />
-    </Col>
-    <Col xs={4}>
-      <Field
-        name={`${member}.dueDate`}
-        type="text"
-        component={Datepicker}
-        placeholder="Due Date "
-        label="Due Date"
-        dateFormat="YYYY-MM-DD"
-      />
-    </Col>
-  </Row>
-);
+import RenderFixedDueDateSchedule from './RenderFixedDueDateSchedule';
 
 const RenderSchedules = ({ fields }) => (
   <section>
@@ -58,18 +22,18 @@ const RenderSchedules = ({ fields }) => (
       </Col>
     </Row>
     <br />
-    {fields.map(RenderSchedule)}
+    {fields.map((member, index) => (
+      <RenderFixedDueDateSchedule member={member} index={index} key={index} />
+    ))}
   </section>
 );
 
 class FixedDueDateScheduleDetails extends Component {
-
   static propTypes = {
     stripes: PropTypes.shape({
       hasPerm: PropTypes.func.isRequired,
       connect: PropTypes.func.isRequired,
     }).isRequired,
-    clearSelection: PropTypes.func.isRequired,
     selectedSchedule: PropTypes.object,
     parentMutator: PropTypes.shape({
       scheduleSettings: PropTypes.shape({
@@ -82,21 +46,22 @@ class FixedDueDateScheduleDetails extends Component {
   constructor(props) {
     super(props);
     this.saveSchedule = this.saveSchedule.bind(this);
+    this.addScheduleItem = this.addScheduleItem.bind(this);
+    this.removeScheduleItem = this.removeScheduleItem.bind(this);
   }
 
   saveSchedule() {
-    // @@
-    // this.props.parentMutator.scheduleSettings.PUT(this.state.selectedSchedule);
+    this.props.parentMutator.scheduleSettings.PUT(this.state.selectedSchedule);
   }
 
-  addSubSchedule(schedule) {
-    // this.state.selectedSchedule.schedules.push(schedule);
+  addScheduleItem(schedule) {
+    this.state.selectedSchedule.schedules.push(schedule);
     this.saveSchedule();
   }
 
-  removeSubSchedule(schedule) {
-    // const selectedScheduleSchedules = this.state.selectedSchedule.schedules;
-    // selectedScheduleSchedules.splice(selectedScheduleSchedules.indexOf(perm), 1);
+  removeScheduleItem(schedule) {
+    const selectedScheduleSchedules = this.state.selectedSchedule.schedules;
+    selectedScheduleSchedules.splice(selectedScheduleSchedules.indexOf(schedule), 1);
     this.saveSchedule();
   }
 
