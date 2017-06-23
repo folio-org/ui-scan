@@ -4,6 +4,7 @@
 
 * Add support for loan periods in settings (completes UIS-13)
 * Upgrade dependencies on Stripes libraries. These had got very out of date: all three of them by one or more major versions. Fixes UIS-26.
+* Add okapiInterfaces and permissionSets in `package.json`. Fixes UIS-24.
 
 ## [0.5.0](https://github.com/folio-org/ui-scan/tree/v0.5.0) (2017-06-07)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.4.0...v0.5.0)
