@@ -26,6 +26,10 @@
     },
     "permissionSets": [
       {
+        "permissionName": "module.scan.enabled",
+        "displayName": "UI: Scan module is enabled"
+      },
+      {
         "permissionName": "circulation.all",
         "displayName": "circulation - all permissions",
         "description": "Entire set of permissions needed to use the circulation",
