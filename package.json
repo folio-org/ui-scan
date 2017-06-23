@@ -15,7 +15,37 @@
     "type": "app",
     "displayName": "Scan",
     "route": "/scan",
-    "hasSettings": true
+    "hasSettings": true,
+    "okapiInterfaces": {
+      "circulation": "1.0",
+      "configuration": "0.0.9",
+      "item-storage": "3.0",
+      "loan-policy-storage": "1.0",
+      "loan-storage": "2.0",
+      "users": "11.0"
+    },
+    "permissionSets": [
+      {
+        "permissionName": "circulation.all",
+        "displayName": "circulation - all permissions",
+        "description": "Entire set of permissions needed to use the circulation",
+        "visible": true,
+        "subPermissions": [
+          "circulation.loans.collection.get",
+          "circulation.loans.item.get",
+          "circulation.loans.item.post",
+          "circulation.loans.item.put",
+          "circulation.loans.item.delete",
+          "circulation.loans.collection.delete",
+          "module.scan.enabled",
+          "circulation-storage.all",
+          "configuration.all",
+          "inventory-storage.items.item.get",
+          "inventory-storage.items.item.put",
+          "users.collection.get"
+        ]
+      }
+    ]
   },
   "scripts": {
     "lint": "eslint *.js || true"
