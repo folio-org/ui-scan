@@ -61,6 +61,13 @@ class LoanPolicyDetail extends React.Component {
     if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
       this.props.change('loansPolicy.gracePeriod.duration', 1);
     }
+    let altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
+    if (altRenewPeriod && altRenewPeriod.duration && !altRenewPeriod.intervalId) {
+      this.props.change('renewalsPolicy.period.intervalId', 1);
+    }
+    if (altRenewPeriod && altRenewPeriod.intervalId && !altRenewPeriod.duration) {
+      this.props.change('renewalsPolicy.period.duration', 1);
+    }
 
     this.setState({ policy: allValues });
   };
@@ -90,16 +97,59 @@ class LoanPolicyDetail extends React.Component {
   render() {
     const policy = this.state.policy;
 
+    let altRenewalScheduleLabel = "Alternate fixed due date schedule for renewals";
+    if (policy.loansPolicy && policy.loansPolicy.profileId == 2) {
+      altRenewalScheduleLabel = "Alternate fixed due date schedule (due date limit) for renewals";
+    }
+    const altRenewalScheduleSelect = (policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId != 3) ? (
+      <Field
+        label={altRenewalScheduleLabel}
+        name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
+        id="altRenewalFixedDueDate"
+        component={Select}
+        placeholder="Select schedule"
+        dataOptions={[]}
+      />
+    ) : '';
+
+    // Renewal alt loan period fields should only appear for the 'rolling' profile type
+    const altRenewalPeriodFields = (
+      <div>
+        <p>Alternate loan period for renewals</p>
+        <Row>
+          <Col xs={2}>
+            <Field label="" name="renewalsPolicy.period.duration" id="renewalPeriodDuration" component={TextField} rounded validate={this.validateField} />
+          </Col>
+          <Col>
+            <Field
+              label=""
+              name="renewalsPolicy.period.intervalId"
+              id="renewalPeriodInterval"
+              component={Select}
+              placeholder="Select interval"
+              dataOptions={intervalPeriods}
+              validate={this.validateField}
+
+            />
+          </Col>
+        </Row>
+      </div>
+    );
+
     // The renewal option fields should only appear if the 'renewable' checkbox is checked
     const renewableOptionFields = (
       <div>
         <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox}  checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
-        <p>Number of renewals allowed</p>
-        <Row>
-          <Col xs={2}>
-            <Field label="" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
-            </Col>
-        </Row>
+        { policy.renewalsPolicy.unlimited == false &&
+          <div>
+            <p>Number of renewals allowed</p>
+            <Row>
+              <Col xs={2}>
+                <Field label="" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
+                </Col>
+            </Row>
+          </div>
+        }
         <Field
           label="Renew from"
           name="renewalsPolicy.renewFromId"
@@ -111,14 +161,8 @@ class LoanPolicyDetail extends React.Component {
         />
 
         <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField} onBlur={this.saveChanges} />
-        <Field
-          label="Alternate fixed due date schedule for renewals"
-          name="renewalsPolicy"
-          id="altRenewalFixedDueDate"
-          component={Select}
-          placeholder="Select schedule"
-          dataOptions={[]}
-        />
+        {policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId == 2 && altRenewalPeriodFields}
+        {altRenewalScheduleSelect}
       </div>
     );
 
@@ -146,6 +190,21 @@ class LoanPolicyDetail extends React.Component {
       </div>
     );
 
+    let dueDateScheduleFieldLabel = "Fixed due date schedule";
+    if (policy.loansPolicy && policy.loansPolicy.profileId == 2) {
+      dueDateScheduleFieldLabel += " (due date limit)";
+    }
+    const dueDateScheduleField = (policy.loansPolicy && policy.loansPolicy.profileId == 3) ? '' : (
+      <Field
+        label={dueDateScheduleFieldLabel}
+        name="loansPolicy.fixedDueDateSchedule"
+        id="fixedDueDateSchedule"
+        component={Select}
+        placeholder="Select schedule"
+        dataOptions={[]}
+      />
+    );
+
     // Most of the loan option fields should only appear if the 'loanable' checkbox is checked
     const loanableOptionFields = (
       <div>
@@ -159,15 +218,7 @@ class LoanPolicyDetail extends React.Component {
           onBlur={this.saveChanges}
         />
         {policy.loansPolicy && policy.loansPolicy.profileId == 2 && loanPeriodFields}
-
-        <Field
-          label="Fixed due date schedule"
-          name="fixedDueDateSchedule"
-          id="fixedDueDateSchedule"
-          component={Select}
-          placeholder="Select schedule"
-          dataOptions={[]}
-        />
+        {dueDateScheduleField}
         <Field
           label="Closed library due date management"
           name="loansPolicy.closedLibraryDueDateManagementId"
