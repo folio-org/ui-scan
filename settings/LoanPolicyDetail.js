@@ -13,7 +13,15 @@ import { loanProfileTypes, intervalPeriods, dueDateManagementOptions, renewFromO
 class LoanPolicyDetail extends React.Component {
 
   static propTypes = {
-    policy: PropTypes.object.isRequired,
+    initialValues: PropTypes.object.isRequired,
+    change: PropTypes.object.isRequired,
+    parentMutator: PropTypes.shape({
+      loanPolicies: PropTypes.shape({
+        DELETE: PropTypes.func.isRequired,
+        PUT: PropTypes.func.isRequired,
+      }),
+    }).isRequired,
+    clearSelection: PropTypes.function.isRequired,
   };
 
   constructor(props) {
@@ -31,36 +39,35 @@ class LoanPolicyDetail extends React.Component {
     this.deletePolicy = this.deletePolicy.bind(this);
     this.validateField = this.validateField.bind(this);
     this.saveChanges = this.saveChanges.bind(this);
-  };
+  }
 
   // TODO: This feels like an abuse of the 'validate' parameter, using it to do an
   // immediate save instead of actual validation ....
   validateField(fieldValue, allValues) {
-
     // TODO: This is a bad hack to deal with constraints that both fields of
     // a "period" object have to exist in the record. This should be rewritten ASAP
-    let period = (allValues.loansPolicy && allValues.loansPolicy.period);
+    const period = (allValues.loansPolicy && allValues.loansPolicy.period);
     if (period && period.duration && !period.intervalId) {
       this.props.change('loansPolicy.period.intervalId', 1);
     }
     if (period && period.intervalId && !period.duration) {
       this.props.change('loansPolicy.period.duration', 1);
     }
-    let existingPeriod = (allValues.loansPolicy && allValues.loansPolicy.existingRequestsPeriod);
+    const existingPeriod = (allValues.loansPolicy && allValues.loansPolicy.existingRequestsPeriod);
     if (existingPeriod && existingPeriod.duration && !existingPeriod.intervalId) {
       this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 1);
     }
     if (existingPeriod && existingPeriod.intervalId && !existingPeriod.duration) {
       this.props.change('loansPolicy.existingRequestsPeriod.duration', 1);
     }
-    let gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
+    const gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
     if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
       this.props.change('loansPolicy.gracePeriod.intervalId', 1);
     }
     if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
       this.props.change('loansPolicy.gracePeriod.duration', 1);
     }
-    let altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
+    const altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
     if (altRenewPeriod && altRenewPeriod.duration && !altRenewPeriod.intervalId) {
       this.props.change('renewalsPolicy.period.intervalId', 1);
     }
@@ -69,18 +76,18 @@ class LoanPolicyDetail extends React.Component {
     }
 
     this.setState({ policy: allValues });
-  };
+  }
 
   saveChanges() {
     delete this.state.policy._cid;  // Hack to deal with STRIPES-425
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
-  };
+  }
 
   beginDelete() {
     this.setState({
       confirmDelete: true,
     });
-  };
+  }
 
   deletePolicy(confirmation) {
     if (confirmation) {
@@ -91,16 +98,16 @@ class LoanPolicyDetail extends React.Component {
         confirmDelete: false,
       });
     }
-  };
+  }
 
   render() {
     const policy = this.state.policy;
 
-    let altRenewalScheduleLabel = "Alternate fixed due date schedule for renewals";
-    if (policy.loansPolicy && policy.loansPolicy.profileId == 2) {
-      altRenewalScheduleLabel = "Alternate fixed due date schedule (due date limit) for renewals";
+    let altRenewalScheduleLabel = 'Alternate fixed due date schedule for renewals';
+    if (policy.loansPolicy && policy.loansPolicy.profileId === 2) {
+      altRenewalScheduleLabel = 'Alternate fixed due date schedule (due date limit) for renewals';
     }
-    const altRenewalScheduleSelect = (policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId != 3) ? (
+    const altRenewalScheduleSelect = (policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== 3) ? (
       <Field
         label={altRenewalScheduleLabel}
         name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
@@ -138,14 +145,14 @@ class LoanPolicyDetail extends React.Component {
     // The renewal option fields should only appear if the 'renewable' checkbox is checked
     const renewableOptionFields = (
       <div>
-        <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox}  checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
-        { policy.renewalsPolicy.unlimited == false &&
+        <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
+        { policy.renewalsPolicy.unlimited === false &&
           <div>
             <p>Number of renewals allowed</p>
             <Row>
               <Col xs={2}>
                 <Field label="" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
-                </Col>
+              </Col>
             </Row>
           </div>
         }
@@ -160,7 +167,7 @@ class LoanPolicyDetail extends React.Component {
         />
 
         <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField} onBlur={this.saveChanges} />
-        {policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId == 2 && altRenewalPeriodFields}
+        {policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId === 2 && altRenewalPeriodFields}
         {altRenewalScheduleSelect}
       </div>
     );
@@ -189,11 +196,11 @@ class LoanPolicyDetail extends React.Component {
       </div>
     );
 
-    let dueDateScheduleFieldLabel = "Fixed due date schedule";
-    if (policy.loansPolicy && policy.loansPolicy.profileId == 2) {
-      dueDateScheduleFieldLabel += " (due date limit)";
+    let dueDateScheduleFieldLabel = 'Fixed due date schedule';
+    if (policy.loansPolicy && policy.loansPolicy.profileId === 2) {
+      dueDateScheduleFieldLabel += ' (due date limit)';
     }
-    const dueDateScheduleField = (policy.loansPolicy && policy.loansPolicy.profileId == 3) ? '' : (
+    const dueDateScheduleField = (policy.loansPolicy && policy.loansPolicy.profileId === 3) ? '' : (
       <Field
         label={dueDateScheduleFieldLabel}
         name="loansPolicy.fixedDueDateSchedule"
@@ -216,7 +223,7 @@ class LoanPolicyDetail extends React.Component {
           validate={this.validateField}
           onBlur={this.saveChanges}
         />
-        {policy.loansPolicy && policy.loansPolicy.profileId == 2 && loanPeriodFields}
+        {policy.loansPolicy && policy.loansPolicy.profileId === 2 && loanPeriodFields}
         {dueDateScheduleField}
         <Field
           label="Closed library due date management"
@@ -285,18 +292,16 @@ class LoanPolicyDetail extends React.Component {
           <Button title="Confirm delete loan policy" onClick={() => { this.deletePolicy(true); }}>Confirm</Button>
           <Button title="Cancel delete loan policy" onClick={() => { this.deletePolicy(false); }}>Cancel</Button>
         </div>}
-        <hr/>
+        <hr />
         <h2>Loans</h2>
         <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges} />
         {policy.loanable && loanableOptionFields}
-      {/*  <hr/>
+        {/*  <hr/>
         <h2>Requests</h2>
         <Field label="Requestable" name="requestable" id="requestable" component={Checkbox} /> */}
       </div>
     );
-
-  };
-
+  }
 }
 
 export default reduxForm({
