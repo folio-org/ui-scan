@@ -21,7 +21,7 @@ class LoanPolicyDetail extends React.Component {
         PUT: PropTypes.func.isRequired,
       }),
     }).isRequired,
-    clearSelection: PropTypes.function.isRequired,
+    clearSelection: PropTypes.func.isRequired,
   };
 
   constructor(props) {
