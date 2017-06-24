@@ -48,14 +48,27 @@ class LoanPolicySettings extends React.Component {
   }
 
   createNewPolicy() {
-    this.props.mutator.loanPolicies.POST({name: 'Untitled loan policy', loanable: false, renewable: false});
+    this.props.mutator.loanPolicies.POST({
+      name: 'Untitled loan policy',
+      loanable: true,
+      loansPolicy: {
+        profileId: 2,  // TODO: update when this is switched to a GUID
+        closedLibraryDueDateManagementId: 4,  // TODO: update when this is switched to a GUID
+
+
+      },
+      renewable: true,
+      renewalsPolicy: {
+        unlimited: false,
+        renewFromId: 2, // TODO: update when this is switched to a GUID
+        differentPeriod: false,
+      },
+    });
   };
 
   render() {
     const { data } = this.props;
     const policies = _.sortBy(data.loanPolicies, ['name']);
-    //const policies = this.state.loanPolicies;
-
     const policyDisplay = policies != null ? policies.map(p =>
       <a
         key={p.id}

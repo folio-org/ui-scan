@@ -116,6 +116,7 @@ class LoanPolicyDetail extends React.Component {
           name="renewalsPolicy"
           id="altRenewalFixedDueDate"
           component={Select}
+          placeholder="Select schedule"
           dataOptions={[]}
         />
       </div>
@@ -164,6 +165,7 @@ class LoanPolicyDetail extends React.Component {
           name="fixedDueDateSchedule"
           id="fixedDueDateSchedule"
           component={Select}
+          placeholder="Select schedule"
           dataOptions={[]}
         />
         <Field
