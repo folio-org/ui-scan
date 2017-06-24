@@ -81,7 +81,7 @@ class LoanPolicySettings extends React.Component {
             </NavListSection>
           </NavList>
         </Pane>
-        {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name}>
+        {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name} defaultWidth="fill">
           <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} clearSelection={this.clearSelection} />
         </Pane>}
       </Paneset>

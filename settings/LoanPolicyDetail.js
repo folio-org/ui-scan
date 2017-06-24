@@ -66,6 +66,7 @@ class LoanPolicyDetail extends React.Component {
   };
 
   saveChanges() {
+    delete this.state.policy._cid;  // Hack to deal with STRIPES-425
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   };
 
