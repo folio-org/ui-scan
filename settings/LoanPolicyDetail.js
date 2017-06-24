@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-//import { Row, Col } from 'react-bootstrap';
 import { Field, reduxForm } from 'redux-form';
 
 import Button from '@folio/stripes-components/lib/Button';
@@ -14,7 +13,7 @@ import { loanProfileTypes, intervalPeriods, dueDateManagementOptions, renewFromO
 class LoanPolicyDetail extends React.Component {
 
   static propTypes = {
-    //policy: PropTypes.object.isRequired,
+    policy: PropTypes.object.isRequired,
   };
 
   constructor(props) {

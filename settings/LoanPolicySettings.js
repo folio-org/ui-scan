@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-//import { Row, Col } from 'react-bootstrap';
 import _ from 'lodash';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
@@ -14,7 +13,14 @@ import LoanPolicyDetail from './LoanPolicyDetail';
 class LoanPolicySettings extends React.Component {
 
   static propTypes = {
-    // data: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired,
+    mutator: PropTypes.shape({
+      loanPolicies: PropTypes.shape({
+        POST: PropTypes.func,
+        DELETE: PropTypes.func,
+        GET: PropTypes.func,
+      }),
+    }).isRequired,
   };
 
   static manifest = Object.freeze({
@@ -31,17 +37,17 @@ class LoanPolicySettings extends React.Component {
     this.state = {
       selectedPolicy: null,
     //  loanPolicies: [{id: 1, name: 'Policy 1'}, {id: 2, name: 'Policy 2'}],
-    }
+    };
 
     this.clearSelection = this.clearSelection.bind(this);
     this.onSelectRow = this.onSelectRow.bind(this);
     this.createNewPolicy = this.createNewPolicy.bind(this);
-  };
+  }
 
   onSelectRow(id, e) {
     e.preventDefault();
-    this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id: id })});
-  };
+    this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id }) });
+  }
 
   clearSelection() {
     this.setState({ selectedPolicy: null });
@@ -54,8 +60,6 @@ class LoanPolicySettings extends React.Component {
       loansPolicy: {
         profileId: 2,  // TODO: update when this is switched to a GUID
         closedLibraryDueDateManagementId: 4,  // TODO: update when this is switched to a GUID
-
-
       },
       renewable: true,
       renewalsPolicy: {
@@ -64,7 +68,7 @@ class LoanPolicySettings extends React.Component {
         differentPeriod: false,
       },
     });
-  };
+  }
 
   render() {
     const { data } = this.props;
@@ -73,8 +77,9 @@ class LoanPolicySettings extends React.Component {
       <a
         key={p.id}
         href={`#${p.name}`}
-        onClick={this.onSelectRow.bind(this, p.id)}>
-          {p.name ? p.name : 'Untitled loan policy'}
+        onClick={this.onSelectRow.bind(this, p.id)}
+      >
+        {p.name ? p.name : 'Untitled loan policy'}
       </a>) : null;
 
     const LoanPolicyLastMenu = (
