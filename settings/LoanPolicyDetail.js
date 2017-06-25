@@ -103,187 +103,17 @@ class LoanPolicyDetail extends React.Component {
   render() {
     const policy = this.state.policy;
 
+    // Conditional field labels
+    let dueDateScheduleFieldLabel = 'Fixed due date schedule';
     let altRenewalScheduleLabel = 'Alternate fixed due date schedule for renewals';
-    if (policy.loansPolicy && policy.loansPolicy.profileId === 2) {
+    if (policy.loansPolicy && policy.loansPolicy.profileId === '2') {
+      dueDateScheduleFieldLabel += ' (due date limit)';
       altRenewalScheduleLabel = 'Alternate fixed due date schedule (due date limit) for renewals';
     }
-    const altRenewalScheduleSelect = (policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== 3) ? (
-      <Field
-        label={altRenewalScheduleLabel}
-        name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
-        id="altRenewalFixedDueDate"
-        component={Select}
-        placeholder="Select schedule"
-        dataOptions={[]}
-      />
-    ) : '';
-
-    // Renewal alt loan period fields should only appear for the 'rolling' profile type
-    const altRenewalPeriodFields = (
-      <div>
-        <p>Alternate loan period for renewals</p>
-        <Row>
-          <Col xs={2}>
-            <Field label="" name="renewalsPolicy.period.duration" id="renewalPeriodDuration" component={TextField} rounded validate={this.validateField} />
-          </Col>
-          <Col>
-            <Field
-              label=""
-              name="renewalsPolicy.period.intervalId"
-              id="renewalPeriodInterval"
-              component={Select}
-              placeholder="Select interval"
-              dataOptions={intervalPeriods}
-              validate={this.validateField}
-
-            />
-          </Col>
-        </Row>
-      </div>
-    );
-
-    // The renewal option fields should only appear if the 'renewable' checkbox is checked
-    const renewableOptionFields = (
-      <div>
-        <Field label="Unlimited renewals" name="renewalsPolicy.unlimited" id="unlimitedRenewals" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField} onBlur={this.saveChanges} />
-        { policy.renewalsPolicy.unlimited === false &&
-          <div>
-            <p>Number of renewals allowed</p>
-            <Row>
-              <Col xs={2}>
-                <Field label="" name="renewalsPolicy.numberAllowed" id="numRenewals" component={TextField} required rounded validate={this.validateField} onBlur={this.saveChanges} />
-              </Col>
-            </Row>
-          </div>
-        }
-        <Field
-          label="Renew from"
-          name="renewalsPolicy.renewFromId"
-          id="renewFrom"
-          component={Select}
-          dataOptions={renewFromOptions}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
-
-        <Field label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod" id="diffRenewPeriod" component={Checkbox} checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField} onBlur={this.saveChanges} />
-        {policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId === 2 && altRenewalPeriodFields}
-        {altRenewalScheduleSelect}
-      </div>
-    );
-
-    // Loan period fields should only appear for the 'rolling' profile type
-    const loanPeriodFields = (
-      <div>
-        <p>Loan period</p>
-        <Row>
-          <Col xs={2}>
-            <Field label="" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} />
-          </Col>
-          <Col>
-            <Field
-              label=""
-              name="loansPolicy.period.intervalId"
-              id="loanPeriodInterval"
-              component={Select}
-              placeholder="Select interval"
-              dataOptions={intervalPeriods}
-              validate={this.validateField}
-
-            />
-          </Col>
-        </Row>
-      </div>
-    );
-
-    let dueDateScheduleFieldLabel = 'Fixed due date schedule';
-    if (policy.loansPolicy && policy.loansPolicy.profileId === 2) {
-      dueDateScheduleFieldLabel += ' (due date limit)';
-    }
-    const dueDateScheduleField = (policy.loansPolicy && policy.loansPolicy.profileId === 3) ? '' : (
-      <Field
-        label={dueDateScheduleFieldLabel}
-        name="loansPolicy.fixedDueDateSchedule"
-        id="fixedDueDateSchedule"
-        component={Select}
-        placeholder="Select schedule"
-        dataOptions={[]}
-      />
-    );
-
-    // Most of the loan option fields should only appear if the 'loanable' checkbox is checked
-    const loanableOptionFields = (
-      <div>
-        <Field
-          label="Loan profile"
-          name="loansPolicy.profileId"
-          id="loanProfile"
-          component={Select}
-          dataOptions={loanProfileTypes}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
-        {policy.loansPolicy && policy.loansPolicy.profileId === 2 && loanPeriodFields}
-        {dueDateScheduleField}
-        <Field
-          label="Closed library due date management"
-          name="loansPolicy.closedLibraryDueDateManagementId"
-          id="closedLibraryDueDateMgmt"
-          component={Select}
-          dataOptions={dueDateManagementOptions}
-          validate={this.validateField}
-          onBlur={this.saveChanges}
-        />
-        <Field label="Skip closed dates in intervening period" name="loansPolicy.skipClosed" id="skipClosed" component={Checkbox} checked={policy.loansPolicy && policy.loansPolicy.skipClosed} validate={this.validateField} onBlur={this.saveChanges} />
-
-        <p>Alternate loan period for items with existing requests</p>
-        <Row>
-          <Col xs={2}>
-            <Field label="" name="loansPolicy.existingRequestsPeriod.duration" id="altLoanPeriod" component={TextField} rounded validate={this.validateField} onBlur={this.saveChanges} />
-          </Col>
-          <Col>
-            <Field
-              label=""
-              name="loansPolicy.existingRequestsPeriod.intervalId"
-              id="altLoanPeriodInterval"
-              component={Select}
-              placeholder="Select interval"
-              dataOptions={intervalPeriods}
-              validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
-          </Col>
-        </Row>
-
-        <p>Grace period</p>
-        <Row>
-          <Col xs={2}>
-            <Field label="" name="gracePeriod" id="loansPolicy.gracePeriod.duration" component={TextField} rounded />
-          </Col>
-          <Col>
-            <Field
-              label=""
-              name="loansPolicy.gracePeriod.intervalId"
-              id="gracePeriodInterval"
-              component={Select}
-              placeholder="Select interval"
-              dataOptions={intervalPeriods}
-              validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
-          </Col>
-        </Row>
-
-        <fieldset>
-          <legend>Renewals</legend>
-          <Field label="Renewable" name="renewable" id="renewable" component={Checkbox} checked={policy.renewable} validate={this.validateField} onBlur={this.saveChanges} />
-          {policy.renewable && renewableOptionFields}
-        </fieldset>
-      </div>
-    );
 
     return (
       <div>
+        {/* Primary information: policy name and description, plus delete button */}
         <h2 style={{ marginTop: '0' }}>About</h2>
         <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
@@ -293,12 +123,240 @@ class LoanPolicyDetail extends React.Component {
           <Button title="Cancel delete loan policy" onClick={() => { this.deletePolicy(false); }}>Cancel</Button>
         </div>}
         <hr />
+
+        {/* Loan detail section */}
         <h2>Loans</h2>
-        <Field label="Loanable" name="loanable" id="loanable" component={Checkbox} checked={policy.loanable} validate={this.validateField} onBlur={this.saveChanges} />
-        {policy.loanable && loanableOptionFields}
-        {/*  <hr/>
-        <h2>Requests</h2>
-        <Field label="Requestable" name="requestable" id="requestable" component={Checkbox} /> */}
+        {/* loanable: boolean determining visibility of all subsequent elements */}
+        <Field
+          label="Loanable"
+          name="loanable"
+          component={Checkbox}
+          checked={policy.loanable}
+          validate={this.validateField}
+          onBlur={this.saveChanges}
+        />
+        {/* loan profile. Value affects visibility of several subsequent elements */}
+        { policy.loanable &&
+          <Field
+            label="Loan profile"
+            name="loansPolicy.profileId"
+            component={Select}
+            dataOptions={loanProfileTypes}
+            validate={this.validateField}
+            onBlur={this.saveChanges}
+          />
+        }
+        {/* loan period - only appears when profile is "rolling" */}
+        { (policy.loanable && policy.loansPolicy.profileId === '2') &&
+          <div>
+            <p>Loan period</p>
+            <Row>
+              <Col xs={2}>
+                <Field label="" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} />
+              </Col>
+              <Col>
+                <Field
+                  label=""
+                  name="loansPolicy.period.intervalId"
+                  component={Select}
+                  placeholder="Select interval"
+                  dataOptions={intervalPeriods}
+                  validate={this.validateField}
+                />
+              </Col>
+            </Row>
+          </div>
+        }
+        {/* fixed due date schedule - appears when profile is "fixed" or "rolling",
+            but with different labels */}
+        { (policy.loanable && policy.loansPolicy && policy.loansPolicy.profileId !== '3') &&
+          <Field
+            label={dueDateScheduleFieldLabel}
+            name="loansPolicy.fixedDueDateSchedule"
+            component={Select}
+            placeholder="Select schedule"
+            dataOptions={[]}
+          />
+        }
+        {/* closed library due date management - Select */}
+        { policy.loanable &&
+          <Field
+            label="Closed library due date management"
+            name="loansPolicy.closedLibraryDueDateManagementId"
+            component={Select}
+            dataOptions={dueDateManagementOptions}
+            validate={this.validateField}
+            onBlur={this.saveChanges}
+          />
+        }
+        {/* skip closed dates - boolean */}
+        { policy.loanable &&
+          <Field
+            label="Skip closed dates in intervening period"
+            name="loansPolicy.skipClosed"
+            component={Checkbox}
+            checked={policy.loansPolicy && policy.loansPolicy.skipClosed}
+            validate={this.validateField}
+            onBlur={this.saveChanges}
+          />
+        }
+        {/* alternate loan period */}
+        { policy.loanable &&
+          <div>
+            <p>Alternate loan period for items with existing requests</p>
+            <Row>
+              <Col xs={2}>
+                <Field
+                  label=""
+                  name="loansPolicy.existingRequestsPeriod.duration"
+                  component={TextField}
+                  rounded
+                  validate={this.validateField}
+                  onBlur={this.saveChanges}
+                />
+              </Col>
+              <Col>
+                <Field
+                  label=""
+                  name="loansPolicy.existingRequestsPeriod.intervalId"
+                  component={Select}
+                  placeholder="Select interval"
+                  dataOptions={intervalPeriods}
+                  validate={this.validateField}
+                  onBlur={this.saveChanges}
+                />
+              </Col>
+            </Row>
+          </div>
+        }
+        {/* grace period */}
+        { policy.loanable &&
+          <div>
+            <p>Grace period</p>
+            <Row>
+              <Col xs={2}>
+                <Field
+                  label=""
+                  name="loansPolicy.gracePeriod.duration"
+                  component={TextField}
+                  rounded
+                  validate={this.validateField}
+                  onBlur={this.saveChanges}
+                />
+              </Col>
+              <Col>
+                <Field
+                  label=""
+                  name="loansPolicy.gracePeriod.intervalId"
+                  component={Select}
+                  placeholder="Select interval"
+                  dataOptions={intervalPeriods}
+                  validate={this.validateField}
+                  onBlur={this.saveChanges}
+                />
+              </Col>
+            </Row>
+          </div>
+        }
+
+        {/************* renewals section **************/}
+        { policy.loanable &&
+          <fieldset>
+            <legend>Renewals</legend>
+
+            {/* renewable (bool) - affects visibility of most subsequent fields */}
+            <Field
+              label="Renewable"
+              name="renewable"
+              component={Checkbox}
+              checked={policy.renewable}
+              validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+            {/* unlimited renewals (bool) */}
+            <Field
+              label="Unlimited renewals"
+              name="renewalsPolicy.unlimited"
+              component={Checkbox}
+              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+            {/* number of renewals allowed */}
+            { policy.renewalsPolicy.unlimited === false &&
+              <div>
+                <p>Number of renewals allowed</p>
+                <Row>
+                  <Col xs={2}>
+                    <Field
+                      label=""
+                      name="renewalsPolicy.numberAllowed"
+                      component={TextField}
+                      required
+                      rounded
+                      validate={this.validateField}
+                      onBlur={this.saveChanges}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            }
+            {/* renew from */}
+            <Field
+              label="Renew from"
+              name="renewalsPolicy.renewFromId"
+              component={Select}
+              dataOptions={renewFromOptions}
+              validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+            {/* different renewal period (bool) */}
+            <Field
+              label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod"
+              component={Checkbox}
+              checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField}
+              onBlur={this.saveChanges}
+            />
+            {/* alternate loan period for renewals ("rolling" profile only) */}
+            { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId === '2' &&
+              <div>
+                <p>Alternate loan period for renewals</p>
+                <Row>
+                  <Col xs={2}>
+                    <Field
+                      label=""
+                      name="renewalsPolicy.period.duration"
+                      component={TextField}
+                      rounded
+                      validate={this.validateField}
+                    />
+                  </Col>
+                  <Col>
+                    <Field
+                      label=""
+                      name="renewalsPolicy.period.intervalId"
+                      component={Select}
+                      placeholder="Select interval"
+                      dataOptions={intervalPeriods}
+                      validate={this.validateField}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            }
+            {/* alt fixed due date schedule for renewals - appears when profile is
+              "fixed" or "rolling", but with different labels */}
+            { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== '3' &&
+              <Field
+                label={altRenewalScheduleLabel}
+                name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
+                component={Select}
+                placeholder="Select schedule"
+                dataOptions={[]}
+              />
+            }
+          </fieldset>
+        }
+
       </div>
     );
   }
