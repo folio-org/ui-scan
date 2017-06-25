@@ -36,12 +36,30 @@ class LoanPolicySettings extends React.Component {
 
     this.state = {
       selectedPolicy: null,
-    //  loanPolicies: [{id: 1, name: 'Policy 1'}, {id: 2, name: 'Policy 2'}],
     };
 
     this.clearSelection = this.clearSelection.bind(this);
     this.onSelectRow = this.onSelectRow.bind(this);
     this.createNewPolicy = this.createNewPolicy.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    // Follows example from permission set settings in ui-users
+    const policyDiffs = _.differenceBy(this.props.data.loanPolicies, prevProps.data.loanPolicies, 'id');
+    const newPolicy = policyDiffs[0];
+    //console.log("misc: pc", newPolicy.pendingCreate)
+
+    if (newPolicy) {
+      // At this point in the lifecycle the CID is still on the object, and
+      // this messes up the saveing of the Permission Set. It should not be needed any longer
+      // and will be removed.
+      delete newPolicy._cid; // eslint-disable-line no-underscore-dangle
+
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({
+        selectedPolicy: newPolicy,
+      });
+    }
   }
 
   onSelectRow(id, e) {
@@ -55,7 +73,7 @@ class LoanPolicySettings extends React.Component {
 
   createNewPolicy() {
     this.props.mutator.loanPolicies.POST({
-      name: 'Untitled loan policy',
+      name: 'Untitled',
       loanable: true,
       loansPolicy: {
         profileId: 2,  // TODO: update when this is switched to a GUID

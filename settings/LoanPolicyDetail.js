@@ -79,7 +79,10 @@ class LoanPolicyDetail extends React.Component {
   }
 
   saveChanges() {
-    delete this.state.policy._cid;  // Hack to deal with STRIPES-425
+    // Hacks to deal with STRIPES-425
+    delete this.state.policy._cid; // eslint-disable-line no-underscore-dangle
+    delete this.state.policy.busy;
+
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   }
 
