@@ -83,6 +83,7 @@ class LoanPolicyDetail extends React.Component {
     delete this.state.policy._cid; // eslint-disable-line no-underscore-dangle
     delete this.state.policy.busy;
     delete this.state.policy.pendingCreate;
+    delete this.state.policy.pendingUpdate;
 
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   }
