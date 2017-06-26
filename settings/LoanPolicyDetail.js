@@ -55,7 +55,7 @@ class LoanPolicyDetail extends React.Component {
     }
     const existingPeriod = (allValues.loansPolicy && allValues.loansPolicy.existingRequestsPeriod);
     if (existingPeriod && existingPeriod.duration && !existingPeriod.intervalId) {
-      this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 1);
+      this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 3);
     }
     if (existingPeriod && existingPeriod.intervalId && !existingPeriod.duration) {
       this.props.change('loansPolicy.existingRequestsPeriod.duration', 1);
@@ -82,6 +82,7 @@ class LoanPolicyDetail extends React.Component {
     // Hacks to deal with STRIPES-425
     delete this.state.policy._cid; // eslint-disable-line no-underscore-dangle
     delete this.state.policy.busy;
+    delete this.state.policy.pendingCreate;
 
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   }
