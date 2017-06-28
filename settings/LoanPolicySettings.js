@@ -94,7 +94,7 @@ class LoanPolicySettings extends React.Component {
     const policyDisplay = policies != null ? policies.map(p =>
       <a
         key={p.id}
-        href={`#${p.name}`}
+        href={`#${p.id}`}
         onClick={this.onSelectRow.bind(this, p.id)}
       >
         {p.name ? p.name : 'Untitled loan policy'}
