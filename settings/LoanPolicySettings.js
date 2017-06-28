@@ -77,13 +77,13 @@ class LoanPolicySettings extends React.Component {
       name: 'Untitled',
       loanable: true,
       loansPolicy: {
-        profileId: 2,  // TODO: update when this is switched to a GUID
-        closedLibraryDueDateManagementId: 4,  // TODO: update when this is switched to a GUID
+        profileId: '2',  // TODO: update when this is switched to a GUID
+        closedLibraryDueDateManagementId: '4',  // TODO: update when this is switched to a GUID
       },
       renewable: true,
       renewalsPolicy: {
         unlimited: false,
-        renewFromId: 2, // TODO: update when this is switched to a GUID
+        renewFromId: '2', // TODO: update when this is switched to a GUID
         differentPeriod: false,
       },
     });
