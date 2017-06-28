@@ -14,7 +14,7 @@ class LoanPolicyDetail extends React.Component {
 
   static propTypes = {
     initialValues: PropTypes.object.isRequired,
-    change: PropTypes.object.isRequired,
+    change: PropTypes.func.isRequired,
     parentMutator: PropTypes.shape({
       loanPolicies: PropTypes.shape({
         DELETE: PropTypes.func.isRequired,
