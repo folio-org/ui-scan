@@ -97,7 +97,10 @@ class LoanPolicyDetail extends React.Component {
   deletePolicy(confirmation) {
     if (confirmation) {
       this.props.parentMutator.loanPolicies.DELETE(this.state.policy)
-      .then(() => this.props.clearSelection());
+      .then(() => {
+        this.setState({ confirmDelete: false });
+        this.props.clearSelection();
+      });
     } else {
       this.setState({
         confirmDelete: false,

@@ -68,7 +68,8 @@ class LoanPolicySettings extends React.Component {
   }
 
   clearSelection() {
-    this.setState({ selectedPolicy: null });
+    const policyForFocus = this.props.data.loanPolicies ? _.sortBy(this.props.data.loanPolicies, ['name'])[0] : '';
+    this.setState({ selectedPolicy: policyForFocus });
   }
 
   createNewPolicy() {
