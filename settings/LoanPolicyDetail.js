@@ -179,6 +179,7 @@ class LoanPolicyDetail extends React.Component {
             but with different labels */}
         { (policy.loanable && policy.loansPolicy && policy.loansPolicy.profileId !== '3') &&
           <Field
+            disabled={true}
             label={dueDateScheduleFieldLabel}
             name="loansPolicy.fixedDueDateSchedule"
             component={Select}
@@ -286,7 +287,7 @@ class LoanPolicyDetail extends React.Component {
               label="Unlimited renewals"
               name="renewalsPolicy.unlimited"
               component={Checkbox}
-              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField}
+              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
               onBlur={this.saveChanges}
             />
             {/* number of renewals allowed */}
@@ -356,6 +357,7 @@ class LoanPolicyDetail extends React.Component {
             { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== '3' &&
               <Field
                 label={altRenewalScheduleLabel}
+                disabled={true}
                 name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
                 component={Select}
                 placeholder="Select schedule"
