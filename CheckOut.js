@@ -12,6 +12,8 @@ import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import { Row, Col } from 'react-bootstrap';
 
+import UserSearch from "./lib/UserSearch";
+
 const propTypes = {
   modeSelector: React.PropTypes.element,
   scannedItems: React.PropTypes.arrayOf(React.PropTypes.object),
@@ -24,9 +26,11 @@ const propTypes = {
   onCancel: PropTypes.func,
   onClickDone: React.PropTypes.func,
   userIdentifierPref: PropTypes.object,
+  parentProps: PropTypes.object,
 };
 
 function CheckOut(props) {
+
   const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -76,6 +80,10 @@ function CheckOut(props) {
       SubmitMeta: { button: source },
     });
 
+  const selectUser = (user) => {
+    props.change("patron.identifier", user.username);
+  }
+
   return (
     <form>
       <div style={containerStyle}>
@@ -85,11 +93,12 @@ function CheckOut(props) {
               <Col xs={9}>
                 <Field
                   name="patron.identifier"
-                  placeholder={`Enter Patron's ${userIdentifierPref.label}`}
+                  placeholder={`Enter Patron's ${userIdentifierPref?userIdentifierPref.label:null}`}
                   aria-label="Patron Identifier"
                   fullWidth
                   id="patron_identifier"
                   component={TextField}
+                  startControl={<UserSearch {...props.parentProps} selectUser={selectUser} />}
                   onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'find_patron'))); }}
                 />
               </Col>

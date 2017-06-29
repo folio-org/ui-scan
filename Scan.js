@@ -57,6 +57,13 @@ class Scan extends React.Component {
         replace: PropTypes.func,
       }),
     }),
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+      search: PropTypes.string,
+    }).isRequired,
+    match: PropTypes.shape({
+      path: PropTypes.string.isRequired,
+    }).isRequired,
   };
 
   static defaultProps = {
@@ -81,7 +88,6 @@ class Scan extends React.Component {
     this.okapiUrl = context.stripes.okapi.url;
     this.httpHeaders = Object.assign({},
       { 'X-Okapi-Tenant': context.stripes.okapi.tenant, 'X-Okapi-Token': context.stripes.store.getState().okapi.token, 'Content-Type': 'application/json' });
-
     this.componentMap = {
       CheckOut,
       CheckIn,
@@ -302,6 +308,7 @@ class Scan extends React.Component {
       initialValues: {},
       patrons,
       scannedItems,
+      parentProps: this.props,
       userIdentifierPref: this.userIdentifierPref(),
     });
   }

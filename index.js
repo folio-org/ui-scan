@@ -21,6 +21,11 @@ class ScanRouting extends Component {
     showSettings: PropTypes.bool,
   }
 
+  constructor(props) {
+    super(props);
+    this.connectedApp = props.stripes.connect(Scan);
+  }
+
   getChildContext() {
     return { stripes: this.props.stripes };
   }
@@ -44,7 +49,7 @@ class ScanRouting extends Component {
       <Switch>
         <Route
           path={`${path}`}
-          render={() => React.createElement(connect(Scan))}
+          render={() => <this.connectedApp {...this.props} />}
         />
         <Route component={() => { this.NoMatch(); }} />
       </Switch>
