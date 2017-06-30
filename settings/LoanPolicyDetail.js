@@ -62,7 +62,7 @@ class LoanPolicyDetail extends React.Component {
     }
     const gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
     if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
-      this.props.change('loansPolicy.gracePeriod.intervalId', 1);
+      this.props.change('loansPolicy.gracePeriod.intervalId', 3);
     }
     if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
       this.props.change('loansPolicy.gracePeriod.duration', 1);
@@ -230,7 +230,7 @@ class LoanPolicyDetail extends React.Component {
                   name="loansPolicy.existingRequestsPeriod.intervalId"
                   component={Select}
                   placeholder="Select interval"
-                  dataOptions={intervalPeriods}
+                  dataOptions={intervalPeriods.slice(0,3)}
                   validate={this.validateField}
                   onBlur={this.saveChanges}
                 />
