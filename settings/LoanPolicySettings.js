@@ -68,7 +68,8 @@ class LoanPolicySettings extends React.Component {
   }
 
   clearSelection() {
-    this.setState({ selectedPolicy: null });
+    const policyForFocus = this.props.data.loanPolicies ? _.sortBy(this.props.data.loanPolicies, ['name'])[0] : '';
+    this.setState({ selectedPolicy: policyForFocus });
   }
 
   createNewPolicy() {
@@ -76,13 +77,13 @@ class LoanPolicySettings extends React.Component {
       name: 'Untitled',
       loanable: true,
       loansPolicy: {
-        profileId: 2,  // TODO: update when this is switched to a GUID
-        closedLibraryDueDateManagementId: 4,  // TODO: update when this is switched to a GUID
+        profileId: '2',  // TODO: update when this is switched to a GUID
+        closedLibraryDueDateManagementId: '4',  // TODO: update when this is switched to a GUID
       },
       renewable: true,
       renewalsPolicy: {
         unlimited: false,
-        renewFromId: 2, // TODO: update when this is switched to a GUID
+        renewFromId: '2', // TODO: update when this is switched to a GUID
         differentPeriod: false,
       },
     });
@@ -94,7 +95,7 @@ class LoanPolicySettings extends React.Component {
     const policyDisplay = policies != null ? policies.map(p =>
       <a
         key={p.id}
-        href={`#${p.name}`}
+        href={`#${p.id}`}
         onClick={this.onSelectRow.bind(this, p.id)}
       >
         {p.name ? p.name : 'Untitled loan policy'}

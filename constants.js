@@ -5,6 +5,8 @@ export const patronIdentifierTypes = [
   { key: 'USER', label: 'User ID', queryKey: 'username' },
 ];
 
+export const defaultPatronIdentifier = { key: 'BARCODE', label: 'Barcode', queryKey: 'barcode' };
+
 // These next sets are temporary Select list options for LoanPolicyDetail.js
 // The idea is to eventually replace them with small, controlled vocabularies
 // on the server side.

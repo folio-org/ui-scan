@@ -14,7 +14,7 @@ class LoanPolicyDetail extends React.Component {
 
   static propTypes = {
     initialValues: PropTypes.object.isRequired,
-    change: PropTypes.object.isRequired,
+    change: PropTypes.func.isRequired,
     parentMutator: PropTypes.shape({
       loanPolicies: PropTypes.shape({
         DELETE: PropTypes.func.isRequired,
@@ -62,7 +62,7 @@ class LoanPolicyDetail extends React.Component {
     }
     const gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
     if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
-      this.props.change('loansPolicy.gracePeriod.intervalId', 1);
+      this.props.change('loansPolicy.gracePeriod.intervalId', 3);
     }
     if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
       this.props.change('loansPolicy.gracePeriod.duration', 1);
@@ -97,7 +97,10 @@ class LoanPolicyDetail extends React.Component {
   deletePolicy(confirmation) {
     if (confirmation) {
       this.props.parentMutator.loanPolicies.DELETE(this.state.policy)
-      .then(() => this.props.clearSelection());
+      .then(() => {
+        this.setState({ confirmDelete: false });
+        this.props.clearSelection();
+      });
     } else {
       this.setState({
         confirmDelete: false,
@@ -176,6 +179,7 @@ class LoanPolicyDetail extends React.Component {
             but with different labels */}
         { (policy.loanable && policy.loansPolicy && policy.loansPolicy.profileId !== '3') &&
           <Field
+            disabled={true}
             label={dueDateScheduleFieldLabel}
             name="loansPolicy.fixedDueDateSchedule"
             component={Select}
@@ -226,7 +230,7 @@ class LoanPolicyDetail extends React.Component {
                   name="loansPolicy.existingRequestsPeriod.intervalId"
                   component={Select}
                   placeholder="Select interval"
-                  dataOptions={intervalPeriods}
+                  dataOptions={intervalPeriods.slice(0,3)}
                   validate={this.validateField}
                   onBlur={this.saveChanges}
                 />
@@ -283,7 +287,7 @@ class LoanPolicyDetail extends React.Component {
               label="Unlimited renewals"
               name="renewalsPolicy.unlimited"
               component={Checkbox}
-              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited} validate={this.validateField}
+              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
               onBlur={this.saveChanges}
             />
             {/* number of renewals allowed */}
@@ -353,6 +357,7 @@ class LoanPolicyDetail extends React.Component {
             { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== '3' &&
               <Field
                 label={altRenewalScheduleLabel}
+                disabled={true}
                 name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
                 component={Select}
                 placeholder="Select schedule"
