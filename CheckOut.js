@@ -81,7 +81,7 @@ function CheckOut(props) {
     });
 
   const selectUser = (user) => {
-    props.change("patron.identifier", user.username);
+    props.change("patron.identifier", user[userIdentifierPref.key]);
   }
 
   return (
