@@ -3,8 +3,8 @@
   "version": "0.5.0",
   "description": "Item Check-in/Check-out",
   "repository": "folio-org/ui-scan",
-  "publishConfig" : {
-    "registry" : "https://repository.folio.org/repository/npm-folio/"
+  "publishConfig": {
+    "registry": "https://repository.folio.org/repository/npm-folio/"
   },
   "license": "Apache-2.0",
   "engines": {
@@ -71,18 +71,19 @@
   },
   "dependencies": {
     "@folio/stripes-components": "^1.0.0",
+    "@folio/users": "^2.7.0",
+    "dateformat": "^2.0.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "query-string": "^4.3.2",
     "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",
     "react-router-dom": "^4.0.0",
-    "dateformat": "^2.0.0",
-    "uuid": "^3.0.1",
-    "redux-form": "^6.1.1"
+    "redux-form": "^6.1.1",
+    "uuid": "^3.0.1"
   },
   "peerDependencies": {
-    "@folio/stripes-core": "^1.14.0",
-    "@folio/stripes-connect": "^2.2.1"
+    "@folio/stripes-connect": "^2.2.1",
+    "@folio/stripes-core": "^1.14.0"
   }
 }

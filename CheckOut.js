@@ -3,7 +3,7 @@ import _ from 'lodash';
 // eslint-disable-next-line import/no-unresolved
 import React, { PropTypes } from 'react';
 
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -80,8 +80,12 @@ function CheckOut(props) {
       SubmitMeta: { button: source },
     });
 
-  const selectUser = (user) => {
-    props.change("patron.identifier", user[userIdentifierPref.key]);
+  const selectUser = (user) => {    
+    if(user[userIdentifierPref.key]) {
+      props.change("patron.identifier", user[userIdentifierPref.key]);
+    } else {
+      user.error = `User ${user.username} does not have a ${userIdentifierPref.label}`
+    }
   }
 
   return (
@@ -93,7 +97,7 @@ function CheckOut(props) {
               <Col xs={9}>
                 <Field
                   name="patron.identifier"
-                  placeholder={`Enter Patron's ${userIdentifierPref?userIdentifierPref.label:null}`}
+                  placeholder={`Enter Patron's ${userIdentifierPref.label}`}
                   aria-label="Patron Identifier"
                   fullWidth
                   id="patron_identifier"

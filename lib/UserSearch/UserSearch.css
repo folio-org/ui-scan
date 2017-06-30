@@ -11,3 +11,7 @@
 .userSearchModal {
     min-height: 400px;
 }
+
+.userError {
+    color: red
+}
