@@ -123,8 +123,8 @@ class LoanPolicyDetail extends React.Component {
       <div>
         {/* Primary information: policy name and description, plus delete button */}
         <h2 style={{ marginTop: '0' }}>About</h2>
-        <Field label="Policy name" name="name" id="policyName" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
-        <Field label="Policy description" name="description" id="policyDescription" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
+        <Field label="Policy name" name="name" component={TextField} required fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
+        <Field label="Policy description" name="description" component={TextArea} fullWidth rounded validate={this.validateField} onBlur={this.saveChanges} />
         <Button title="Delete policy" onClick={this.beginDelete} disabled={this.state.confirmDelete}>Delete policy</Button>
         {this.state.confirmDelete && <div>
           <Button title="Confirm delete loan policy" onClick={() => { this.deletePolicy(true); }}>Confirm</Button>
@@ -160,7 +160,7 @@ class LoanPolicyDetail extends React.Component {
             <p>Loan period</p>
             <Row>
               <Col xs={2}>
-                <Field label="" name="loansPolicy.period.duration" id="loanPeriodDuration" component={TextField} rounded validate={this.validateField} />
+                <Field label="" name="loansPolicy.period.duration" component={TextField} rounded validate={this.validateField} />
               </Col>
               <Col>
                 <Field
