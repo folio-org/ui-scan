@@ -79,7 +79,7 @@ class Scan extends React.Component {
     userIdentifierPref: {
       type: 'okapi',
       records: 'configs',
-      path: 'configurations/entries?query=(module=SCAN and config_name=pref_patron_identifier)',
+      path: 'configurations/entries?query=(module=SCAN and configName=pref_patron_identifier)',
     },
   });
 
