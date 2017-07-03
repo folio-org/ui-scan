@@ -10,7 +10,7 @@ import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import { Row, Col } from 'react-bootstrap';
 
-import UserSearch from "./lib/UserSearch";
+import MaybeUserSearch from "./lib/MaybeUserSearch";
 
 const propTypes = {
   modeSelector: React.PropTypes.element,
@@ -102,7 +102,7 @@ function CheckOut(props) {
                   fullWidth
                   id="patron_identifier"
                   component={TextField}
-                  startControl={<UserSearch {...props.parentProps} selectUser={selectUser} />}
+                  startControl={<MaybeUserSearch {...props.parentProps} selectUser={selectUser} />}
                   onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'find_patron'))); }}
                 />
               </Col>
