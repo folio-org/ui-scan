@@ -70,6 +70,7 @@
     "eslint-plugin-react": "^6.4.1"
   },
   "dependencies": {
+    "@folio/plugin-find-user": "1.0.0",
     "@folio/stripes-components": "^1.0.0",
     "@folio/users": "^2.7.0",
     "dateformat": "^2.0.0",
