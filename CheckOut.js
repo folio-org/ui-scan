@@ -79,8 +79,10 @@ function CheckOut(props) {
     });
 
   const selectUser = (user) => {    
-    if(user[userIdentifierPref.key]) {
-      props.change("patron.identifier", user[userIdentifierPref.key]);
+    console.log('user:', user)
+    console.log('userIdentifierPref:', userIdentifierPref)
+    if(user[userIdentifierPref.queryKey]) {
+      props.change("patron.identifier", user[userIdentifierPref.queryKey]);
     } else {
       user.error = `User ${user.username} does not have a ${userIdentifierPref.label}`
     }
