@@ -10,7 +10,7 @@ import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import { Row, Col } from 'react-bootstrap';
 
-import MaybeUserSearch from "./lib/MaybeUserSearch";
+import MaybeUserSearch from "./MaybeUserSearch";
 
 const propTypes = {
   modeSelector: React.PropTypes.element,
