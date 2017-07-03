@@ -9,6 +9,7 @@ import TextField from '@folio/stripes-components/lib/TextField';
 import TextArea from '@folio/stripes-components/lib/TextArea';
 
 import { loanProfileTypes, intervalPeriods, dueDateManagementOptions, renewFromOptions } from '../constants';
+import Period from './Period';
 
 class LoanPolicyDetail extends React.Component {
 
@@ -156,24 +157,11 @@ class LoanPolicyDetail extends React.Component {
         }
         {/* loan period - only appears when profile is "rolling" */}
         { (policy.loanable && policy.loansPolicy.profileId === '2') &&
-          <div>
-            <p>Loan period</p>
-            <Row>
-              <Col xs={2}>
-                <Field label="" name="loansPolicy.period.duration" component={TextField} rounded validate={this.validateField} />
-              </Col>
-              <Col>
-                <Field
-                  label=""
-                  name="loansPolicy.period.intervalId"
-                  component={Select}
-                  placeholder="Select interval"
-                  dataOptions={intervalPeriods}
-                  validate={this.validateField}
-                />
-              </Col>
-            </Row>
-          </div>
+          <Period
+            label="Loan period"
+            elementName="loansPolicy.period"
+            intervalOptions={intervalPeriods}
+          />
         }
         {/* fixed due date schedule - appears when profile is "fixed" or "rolling",
             but with different labels */}
@@ -211,61 +199,19 @@ class LoanPolicyDetail extends React.Component {
         }
         {/* alternate loan period */}
         { policy.loanable &&
-          <div>
-            <p>Alternate loan period for items with existing requests</p>
-            <Row>
-              <Col xs={2}>
-                <Field
-                  label=""
-                  name="loansPolicy.existingRequestsPeriod.duration"
-                  component={TextField}
-                  rounded
-                  validate={this.validateField}
-                  onBlur={this.saveChanges}
-                />
-              </Col>
-              <Col>
-                <Field
-                  label=""
-                  name="loansPolicy.existingRequestsPeriod.intervalId"
-                  component={Select}
-                  placeholder="Select interval"
-                  dataOptions={intervalPeriods.slice(0,3)}
-                  validate={this.validateField}
-                  onBlur={this.saveChanges}
-                />
-              </Col>
-            </Row>
-          </div>
+          <Period
+            label="Alternate loan period for items with existing requests"
+            elementName="loansPolicy.existingRequestsPeriod"
+            intervalOptions={intervalPeriods.slice(0,3)}
+          />
         }
         {/* grace period */}
         { policy.loanable &&
-          <div>
-            <p>Grace period</p>
-            <Row>
-              <Col xs={2}>
-                <Field
-                  label=""
-                  name="loansPolicy.gracePeriod.duration"
-                  component={TextField}
-                  rounded
-                  validate={this.validateField}
-                  onBlur={this.saveChanges}
-                />
-              </Col>
-              <Col>
-                <Field
-                  label=""
-                  name="loansPolicy.gracePeriod.intervalId"
-                  component={Select}
-                  placeholder="Select interval"
-                  dataOptions={intervalPeriods}
-                  validate={this.validateField}
-                  onBlur={this.saveChanges}
-                />
-              </Col>
-            </Row>
-          </div>
+          <Period
+            label="Grace period"
+            elementName="loansPolicy.gracePeriod"
+            intervalOptions={intervalPeriods}
+          />
         }
 
         {/************* renewals section **************/}
@@ -327,30 +273,11 @@ class LoanPolicyDetail extends React.Component {
             />
             {/* alternate loan period for renewals ("rolling" profile only) */}
             { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId === '2' &&
-              <div>
-                <p>Alternate loan period for renewals</p>
-                <Row>
-                  <Col xs={2}>
-                    <Field
-                      label=""
-                      name="renewalsPolicy.period.duration"
-                      component={TextField}
-                      rounded
-                      validate={this.validateField}
-                    />
-                  </Col>
-                  <Col>
-                    <Field
-                      label=""
-                      name="renewalsPolicy.period.intervalId"
-                      component={Select}
-                      placeholder="Select interval"
-                      dataOptions={intervalPeriods}
-                      validate={this.validateField}
-                    />
-                  </Col>
-                </Row>
-              </div>
+              <Period
+                label="Alternate loan period for renewals"
+                elementName="renewalsPolicy.period"
+                intervalOptions={intervalPeriods}
+              />
             }
             {/* alt fixed due date schedule for renewals - appears when profile is
               "fixed" or "rolling", but with different labels */}
