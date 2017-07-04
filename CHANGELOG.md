@@ -1,5 +1,9 @@
 # Change history for ui-scan
 
+## 1.1.0 (IN PROGRESS)
+
+* Specify module name in settings second column. Part of STRPCOMP-1.
+
 ## [1.0.0](https://github.com/folio-org/ui-scan/tree/v1.0.0) (2017-07-03)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.5.0...v1.0.0)
 
