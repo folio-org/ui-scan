@@ -111,7 +111,7 @@ class LoanPolicySettings extends React.Component {
 
     return (
       <Paneset nested>
-        <Pane defaultWidth="20%" lastMenu={LoanPolicyLastMenu}>
+        <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={this.props.label}>
           <NavList>
             <NavListSection activeLink={this.state.selectedPolicy ? `#${this.state.selectedPolicy.id}` : ''}>
               {policyDisplay}
