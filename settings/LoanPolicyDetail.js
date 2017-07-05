@@ -47,34 +47,34 @@ class LoanPolicyDetail extends React.Component {
   validateField(fieldValue, allValues) {
     // TODO: This is a bad hack to deal with constraints that both fields of
     // a "period" object have to exist in the record. This should be rewritten ASAP
-    const period = (allValues.loansPolicy && allValues.loansPolicy.period);
-    if (period && period.duration && !period.intervalId) {
-      this.props.change('loansPolicy.period.intervalId', 1);
-    }
-    if (period && period.intervalId && !period.duration) {
-      this.props.change('loansPolicy.period.duration', 1);
-    }
-    const existingPeriod = (allValues.loansPolicy && allValues.loansPolicy.existingRequestsPeriod);
-    if (existingPeriod && existingPeriod.duration && !existingPeriod.intervalId) {
-      this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 3);
-    }
-    if (existingPeriod && existingPeriod.intervalId && !existingPeriod.duration) {
-      this.props.change('loansPolicy.existingRequestsPeriod.duration', 1);
-    }
-    const gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
-    if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
-      this.props.change('loansPolicy.gracePeriod.intervalId', 3);
-    }
-    if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
-      this.props.change('loansPolicy.gracePeriod.duration', 1);
-    }
-    const altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
-    if (altRenewPeriod && altRenewPeriod.duration && !altRenewPeriod.intervalId) {
-      this.props.change('renewalsPolicy.period.intervalId', 1);
-    }
-    if (altRenewPeriod && altRenewPeriod.intervalId && !altRenewPeriod.duration) {
-      this.props.change('renewalsPolicy.period.duration', 1);
-    }
+    // const period = (allValues.loansPolicy && allValues.loansPolicy.period);
+    // if (period && period.duration && !period.intervalId) {
+    //   this.props.change('loansPolicy.period.intervalId', 1);
+    // }
+    // if (period && period.intervalId && !period.duration) {
+    //   this.props.change('loansPolicy.period.duration', 1);
+    // }
+    // const existingPeriod = (allValues.loansPolicy && allValues.loansPolicy.existingRequestsPeriod);
+    // if (existingPeriod && existingPeriod.duration && !existingPeriod.intervalId) {
+    //   this.props.change('loansPolicy.existingRequestsPeriod.intervalId', 3);
+    // }
+    // if (existingPeriod && existingPeriod.intervalId && !existingPeriod.duration) {
+    //   this.props.change('loansPolicy.existingRequestsPeriod.duration', 1);
+    // }
+    // const gracePeriod = (allValues.loansPolicy && allValues.loansPolicy.gracePeriod);
+    // if (gracePeriod && gracePeriod.duration && !gracePeriod.intervalId) {
+    //   this.props.change('loansPolicy.gracePeriod.intervalId', 3);
+    // }
+    // if (gracePeriod && gracePeriod.intervalId && !gracePeriod.duration) {
+    //   this.props.change('loansPolicy.gracePeriod.duration', 1);
+    // }
+    // const altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
+    // if (altRenewPeriod && altRenewPeriod.duration && !altRenewPeriod.intervalId) {
+    //   this.props.change('renewalsPolicy.period.intervalId', 1);
+    // }
+    // if (altRenewPeriod && altRenewPeriod.intervalId && !altRenewPeriod.duration) {
+    //   this.props.change('renewalsPolicy.period.duration', 1);
+    // }
 
     this.setState({ policy: allValues });
   }
@@ -161,6 +161,7 @@ class LoanPolicyDetail extends React.Component {
             label="Loan period"
             elementName="loansPolicy.period"
             intervalOptions={intervalPeriods}
+            onBlur={this.saveChanges}
           />
         }
         {/* fixed due date schedule - appears when profile is "fixed" or "rolling",
