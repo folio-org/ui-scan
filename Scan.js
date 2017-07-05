@@ -70,10 +70,10 @@ class Scan extends React.Component {
   };
 
   static manifest = Object.freeze({
-    mode: {},
-    patrons: {},
-    items: {},
-    scannedItems: {},
+    mode: { initialValue: 'CheckOut' },
+    patrons: { initialValue: [] },
+    items: { initialValue: [] },
+    scannedItems: { initialValue: [] },
     userIdentifierPref: {
       type: 'okapi',
       records: 'configs',
@@ -96,23 +96,6 @@ class Scan extends React.Component {
     this.onSubmitInCheckOutForm = this.onSubmitInCheckOutForm.bind(this);
     this.onClickDone = this.onClickDone.bind(this);
     this.onClickCheckin = this.onClickCheckin.bind(this);
-  }
-
-  componentWillMount() {
-    const { data: { items, scannedItems, mode, patrons }, mutator } = this.props;
-
-    if (_.isEmpty(mode)) {
-      mutator.mode.replace('CheckOut');
-    }
-    if (_.isEmpty(items)) {
-      mutator.items.replace([]);
-    }
-    if (_.isEmpty(scannedItems)) {
-      mutator.scannedItems.replace([]);
-    }
-    if (_.isEmpty(patrons)) {
-      mutator.patrons.replace([]);
-    }
   }
 
   onChangeMode(e) {
