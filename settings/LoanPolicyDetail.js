@@ -283,15 +283,17 @@ class LoanPolicyDetail extends React.Component {
               onBlur={this.saveChanges}
             />
             {/* unlimited renewals (bool) */}
-            <Field
-              label="Unlimited renewals"
-              name="renewalsPolicy.unlimited"
-              component={Checkbox}
-              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
+            { policy.renewable &&
+              <Field
+                label="Unlimited renewals"
+                name="renewalsPolicy.unlimited"
+                component={Checkbox}
+                checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
+                onBlur={this.saveChanges}
+              />
+            }
             {/* number of renewals allowed */}
-            { policy.renewalsPolicy.unlimited === false &&
+            { policy.renewable && policy.renewalsPolicy.unlimited === false &&
               <div>
                 <p>Number of renewals allowed</p>
                 <Row>
@@ -310,23 +312,29 @@ class LoanPolicyDetail extends React.Component {
               </div>
             }
             {/* renew from */}
-            <Field
-              label="Renew from"
-              name="renewalsPolicy.renewFromId"
-              component={Select}
-              dataOptions={renewFromOptions}
-              validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
+            { policy.renewable &&
+              <Field
+                label="Renew from"
+                name="renewalsPolicy.renewFromId"
+                component={Select}
+                dataOptions={renewFromOptions}
+                validate={this.validateField}
+                onBlur={this.saveChanges}
+              />
+            }
             {/* different renewal period (bool) */}
-            <Field
-              label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod"
-              component={Checkbox}
-              checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
+            { policy.renewable &&
+              <Field
+                label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod"
+                component={Checkbox}
+                checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField}
+                onBlur={this.saveChanges}
+              />
+            }
             {/* alternate loan period for renewals ("rolling" profile only) */}
-            { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId === '2' &&
+            { policy.renewable &&
+              policy.renewalsPolicy.differentPeriod &&
+              policy.loansPolicy.profileId === '2' &&
               <div>
                 <p>Alternate loan period for renewals</p>
                 <Row>
@@ -354,7 +362,9 @@ class LoanPolicyDetail extends React.Component {
             }
             {/* alt fixed due date schedule for renewals - appears when profile is
               "fixed" or "rolling", but with different labels */}
-            { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== '3' &&
+            { policy.renewable &&
+              policy.renewalsPolicy.differentPeriod &&
+              policy.loansPolicy.profileId !== '3' &&
               <Field
                 label={altRenewalScheduleLabel}
                 disabled={true}

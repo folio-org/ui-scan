@@ -5,6 +5,7 @@
 * Specify module name in settings second column. Part of STRPCOMP-1.
 * Include label in loan-policies editor paneTitle. Part of STRPCOMP-1.
 * Eliminate use of `componentWillMount` to provide initial values to resources. Part of STRIPES-433.
+* Improvements to loan period form in settings. 
 
 ## [1.0.0](https://github.com/folio-org/ui-scan/tree/v1.0.0) (2017-07-03)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.5.0...v1.0.0)
