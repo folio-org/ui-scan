@@ -84,6 +84,8 @@ class LoanPolicyDetail extends React.Component {
     delete this.state.policy.busy;
     delete this.state.policy.pendingCreate;
     delete this.state.policy.pendingUpdate;
+    
+    console.log("renewable: " + this.state.policy.renewable)
 
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   }
