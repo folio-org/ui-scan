@@ -85,8 +85,6 @@ class LoanPolicyDetail extends React.Component {
     delete this.state.policy.pendingCreate;
     delete this.state.policy.pendingUpdate;
     
-    console.log("renewable: " + this.state.policy.renewable)
-
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   }
 
@@ -143,6 +141,7 @@ class LoanPolicyDetail extends React.Component {
           component={Checkbox}
           checked={policy.loanable}
           validate={this.validateField}
+          normalize={v => !!v}
           onBlur={this.saveChanges}
         />
         {/* loan profile. Value affects visibility of several subsequent elements */}
@@ -208,6 +207,7 @@ class LoanPolicyDetail extends React.Component {
             component={Checkbox}
             checked={policy.loansPolicy && policy.loansPolicy.skipClosed}
             validate={this.validateField}
+            normalize={v => !!v}
             onBlur={this.saveChanges}
           />
         }
@@ -275,13 +275,19 @@ class LoanPolicyDetail extends React.Component {
           <fieldset>
             <legend>Renewals</legend>
 
-            {/* renewable (bool) - affects visibility of most subsequent fields */}
+            {/* 
+              renewable (bool) - affects visibility of most subsequent fields 
+              (The normalize function used is needed to deal with an annoying behavior
+              in current versions of redux-form in which values of 'false' are
+              not handled properly -- see https://github.com/erikras/redux-form/issues/1993)
+            */}
             <Field
               label="Renewable"
               name="renewable"
               component={Checkbox}
               checked={policy.renewable}
               validate={this.validateField}
+              normalize={v => !!v}
               onBlur={this.saveChanges}
             />
             {/* unlimited renewals (bool) */}
@@ -291,6 +297,7 @@ class LoanPolicyDetail extends React.Component {
                 name="renewalsPolicy.unlimited"
                 component={Checkbox}
                 checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
+                normalize={v => !!v}
                 onBlur={this.saveChanges}
               />
             }
@@ -330,6 +337,7 @@ class LoanPolicyDetail extends React.Component {
                 label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod"
                 component={Checkbox}
                 checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField}
+                normalize={v => !!v}
                 onBlur={this.saveChanges}
               />
             }
