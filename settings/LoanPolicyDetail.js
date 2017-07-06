@@ -84,7 +84,7 @@ class LoanPolicyDetail extends React.Component {
     delete this.state.policy.busy;
     delete this.state.policy.pendingCreate;
     delete this.state.policy.pendingUpdate;
-    
+
     this.props.parentMutator.loanPolicies.PUT(this.state.policy);
   }
 
@@ -180,7 +180,7 @@ class LoanPolicyDetail extends React.Component {
             but with different labels */}
         { (policy.loanable && policy.loansPolicy && policy.loansPolicy.profileId !== '3') &&
           <Field
-            disabled={true}
+            disabled
             label={dueDateScheduleFieldLabel}
             name="loansPolicy.fixedDueDateSchedule"
             component={Select}
@@ -232,7 +232,7 @@ class LoanPolicyDetail extends React.Component {
                   name="loansPolicy.existingRequestsPeriod.intervalId"
                   component={Select}
                   placeholder="Select interval"
-                  dataOptions={intervalPeriods.slice(0,3)}
+                  dataOptions={intervalPeriods.slice(0, 3)}
                   validate={this.validateField}
                   onBlur={this.saveChanges}
                 />
@@ -270,13 +270,13 @@ class LoanPolicyDetail extends React.Component {
           </div>
         }
 
-        {/************* renewals section **************/}
+        {/* ************ renewals section ************* */}
         { policy.loanable &&
           <fieldset>
             <legend>Renewals</legend>
 
-            {/* 
-              renewable (bool) - affects visibility of most subsequent fields 
+            {/*
+              renewable (bool) - affects visibility of most subsequent fields
               (The normalize function used is needed to deal with an annoying behavior
               in current versions of redux-form in which values of 'false' are
               not handled properly -- see https://github.com/erikras/redux-form/issues/1993)
@@ -377,7 +377,7 @@ class LoanPolicyDetail extends React.Component {
               policy.loansPolicy.profileId !== '3' &&
               <Field
                 label={altRenewalScheduleLabel}
-                disabled={true}
+                disabled
                 name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
                 component={Select}
                 placeholder="Select schedule"
