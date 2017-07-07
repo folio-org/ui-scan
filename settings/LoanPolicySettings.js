@@ -7,6 +7,9 @@ import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Icon from '@folio/stripes-components/lib/Icon';
 import NavList from '@folio/stripes-components/lib/NavList';
 import NavListSection from '@folio/stripes-components/lib/NavListSection';
+import Settings from '@folio/stripes-components/lib/Settings';
+
+import LoanPolicySelector from './LoanPolicySelector';
 
 import LoanPolicyDetail from './LoanPolicyDetail';
 
@@ -110,18 +113,19 @@ class LoanPolicySettings extends React.Component {
     );
 
     return (
-      <Paneset nested>
-        <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={this.props.label}>
-          <NavList>
-            <NavListSection activeLink={this.state.selectedPolicy ? `#${this.state.selectedPolicy.id}` : ''}>
-              {policyDisplay}
-            </NavListSection>
-          </NavList>
-        </Pane>
-        {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name} defaultWidth="fill">
-          <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} clearSelection={this.clearSelection} />
-        </Pane>}
-      </Paneset>
+      policies.length > 0 && <LoanPolicySelector {...this.props} policies={policies} policyCreator={this.createNewPolicy} parentMutator={this.props.mutator} paneTitle="Loan policies" />
+      // <Paneset nested>
+      //   <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={this.props.label}>
+      //     <NavList>
+      //       <NavListSection activeLink={this.state.selectedPolicy ? `#${this.state.selectedPolicy.id}` : ''}>
+      //         {policyDisplay}
+      //       </NavListSection>
+      //     </NavList>
+      //   </Pane>
+      //   {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name} defaultWidth="fill">
+      //     <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} clearSelection={this.clearSelection} />
+      //   </Pane>}
+      // </Paneset>
     );
   }
 
