@@ -13,28 +13,28 @@ import NavListSection from '@folio/stripes-components/lib/NavListSection';
 import LoanPolicyDetail from './LoanPolicyDetail';
 
 const LoanPolicySelector = (props) => {
-  
-  const { policies, policyCreator, parentMutator, location } = props;
-  
-  const links = _.sortBy(policies, ['name']).map((p) => {
-    return <Link key={p.id} to={`${props.match.path}/${p.id}`}>{p.name}</Link>;
-  });
-  const firstLink = links[0];
-  
-  const routes = policies.map((p) => {
-    return (
-      <Route
-        key={p.id}
-        path={`${props.match.path}/${p.id}`}
-        render={(props) => (
-          <Pane paneTitle={p.name} defaultWidth="fill">
-            <LoanPolicyDetail initialValues={p} loanPolicies={policies} parentMutator={parentMutator} />
-          </Pane>
-        )}
-      />
-    );
-  });
-  
+  const { policies, policyCreator, parentMutator, location, paneTitle } = props;
+
+  const links = _.sortBy(policies, ['name']).map(p => (
+    <Link key={p.id} to={`${props.match.path}/${p.id}`}>{p.name}</Link>
+  ));
+
+  const routes = policies.map(p => (
+    <Route
+      key={p.id}
+      path={`${props.match.path}/${p.id}`}
+      render={props => (
+        <Pane paneTitle={p.name} defaultWidth="fill">
+          <LoanPolicyDetail
+            initialValues={p}
+            loanPolicies={policies}
+            parentMutator={parentMutator}
+          />
+        </Pane>
+      )}
+    />
+  ));
+
   const LoanPolicyLastMenu = (
     <PaneMenu>
       <button title="Add loan policy" onClick={policyCreator}>
@@ -42,12 +42,12 @@ const LoanPolicySelector = (props) => {
       </button>
     </PaneMenu>
   );
-  
+
   const activeLink = location.pathname;
-  
+
   return (
     <Paneset nested defaultWidth="80%">
-      <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={props.paneTitle || 'Module Settings'}>
+      <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={paneTitle}>
         <NavList>
           <NavListSection activeLink={activeLink}>
             {links}
@@ -65,27 +65,16 @@ const LoanPolicySelector = (props) => {
       </Switch>
     </Paneset>
   );
-  
 };
 
-// <Paneset nested>
-//   <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={this.props.label}>
-//     <NavList>
-//       <NavListSection activeLink={this.state.selectedPolicy ? `#${this.state.selectedPolicy.id}` : ''}>
-//         {policyDisplay}
-//       </NavListSection>
-//     </NavList>
-//   </Pane>
-//   {this.state.selectedPolicy && <Pane paneTitle={this.state.selectedPolicy.name} defaultWidth="fill">
-//     <LoanPolicyDetail initialValues={this.state.selectedPolicy} parentMutator={this.props.mutator} clearSelection={this.clearSelection} />
-//   </Pane>}
-// </Paneset>
-
 LoanPolicySelector.propTypes = {
+  parentMutator: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
   policies: PropTypes.arrayOf(
     PropTypes.object,
   ).isRequired,
   policyCreator: PropTypes.func.isRequired,
-}
+  paneTitle: PropTypes.string,
+};
 
 export default LoanPolicySelector;
