@@ -43,6 +43,8 @@ class LoanPolicySettings extends React.Component {
         renewFromId: '2', // TODO: update when this is switched to a GUID
         differentPeriod: false,
       },
+    }).then(() => {
+      //this.props.history.push()
     });
   }
 
@@ -50,7 +52,7 @@ class LoanPolicySettings extends React.Component {
     const policies = _.sortBy(this.props.data.loanPolicies, ['name']);
 
     return (
-      policies.length > 0 &&
+    
         <LoanPolicySelector
           {...this.props}
           policies={policies}
