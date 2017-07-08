@@ -14,7 +14,7 @@ import LoanPolicyDetail from './LoanPolicyDetail';
 
 const LoanPolicySelector = (props) => {
   
-  const { policies, policyCreator, parentMutator } = props;
+  const { policies, policyCreator, parentMutator, location } = props;
   
   const links = _.sortBy(policies, ['name']).map((p) => {
     return <Link key={p.id} to={`${props.match.path}/${p.id}`}>{p.name}</Link>;
@@ -43,11 +43,13 @@ const LoanPolicySelector = (props) => {
     </PaneMenu>
   );
   
+  const activeLink = location.pathname;
+  
   return (
     <Paneset nested defaultWidth="80%">
       <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={props.paneTitle || 'Module Settings'}>
         <NavList>
-          <NavListSection activeLink={firstLink}>
+          <NavListSection activeLink={activeLink}>
             {links}
           </NavListSection>
         </NavList>

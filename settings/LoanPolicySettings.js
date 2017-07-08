@@ -37,43 +37,43 @@ class LoanPolicySettings extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      selectedPolicy: null,
-    };
+    // this.state = {
+    //   selectedPolicy: null,
+    // };
 
-    this.clearSelection = this.clearSelection.bind(this);
-    this.onSelectRow = this.onSelectRow.bind(this);
+    // this.clearSelection = this.clearSelection.bind(this);
+    // this.onSelectRow = this.onSelectRow.bind(this);
     this.createNewPolicy = this.createNewPolicy.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
-    // Follows example from permission set settings in ui-users
-    const policyDiffs = _.differenceBy(this.props.data.loanPolicies, prevProps.data.loanPolicies, 'id');
-    const newPolicy = policyDiffs[0];
-    //console.log("misc: pc", newPolicy.pendingCreate)
+  // componentDidUpdate(prevProps) {
+  //   // Follows example from permission set settings in ui-users
+  //   const policyDiffs = _.differenceBy(this.props.data.loanPolicies, prevProps.data.loanPolicies, 'id');
+  //   const newPolicy = policyDiffs[0];
+  //   //console.log("misc: pc", newPolicy.pendingCreate)
+  // 
+  //   if (newPolicy) {
+  //     // At this point in the lifecycle the CID is still on the object, and
+  //     // this messes up the saveing of the Permission Set. It should not be needed any longer
+  //     // and will be removed.
+  //     delete newPolicy._cid; // eslint-disable-line no-underscore-dangle
+  // 
+  //     // eslint-disable-next-line react/no-did-update-set-state
+  //     this.setState({
+  //       selectedPolicy: newPolicy,
+  //     });
+  //   }
+  // }
+  // 
+  // onSelectRow(id, e) {
+  //   e.preventDefault();
+  //   this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id }) });
+  // }
 
-    if (newPolicy) {
-      // At this point in the lifecycle the CID is still on the object, and
-      // this messes up the saveing of the Permission Set. It should not be needed any longer
-      // and will be removed.
-      delete newPolicy._cid; // eslint-disable-line no-underscore-dangle
-
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({
-        selectedPolicy: newPolicy,
-      });
-    }
-  }
-
-  onSelectRow(id, e) {
-    e.preventDefault();
-    this.setState({ selectedPolicy: _.find(this.props.data.loanPolicies, { id }) });
-  }
-
-  clearSelection() {
-    const policyForFocus = this.props.data.loanPolicies ? _.sortBy(this.props.data.loanPolicies, ['name'])[0] : '';
-    this.setState({ selectedPolicy: policyForFocus });
-  }
+  // clearSelection() {
+  //   const policyForFocus = this.props.data.loanPolicies ? _.sortBy(this.props.data.loanPolicies, ['name'])[0] : '';
+  //   this.setState({ selectedPolicy: policyForFocus });
+  // }
 
   createNewPolicy() {
     this.props.mutator.loanPolicies.POST({
@@ -93,24 +93,25 @@ class LoanPolicySettings extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
-    const policies = _.sortBy(data.loanPolicies, ['name']);
-    const policyDisplay = policies != null ? policies.map(p =>
-      <a
-        key={p.id}
-        href={`#${p.id}`}
-        onClick={this.onSelectRow.bind(this, p.id)}
-      >
-        {p.name ? p.name : 'Untitled loan policy'}
-      </a>) : null;
+  //  const { data } = this.props;
+    const policies = _.sortBy(this.props.data.loanPolicies, ['name']);
 
-    const LoanPolicyLastMenu = (
-      <PaneMenu>
-        <button title="Add loan policy" onClick={this.createNewPolicy}>
-          <Icon icon="plus-sign" />
-        </button>
-      </PaneMenu>
-    );
+    // const policyDisplay = policies != null ? policies.map(p =>
+    //   <a
+    //     key={p.id}
+    //     href={`#${p.id}`}
+    //     onClick={this.onSelectRow.bind(this, p.id)}
+    //   >
+    //     {p.name ? p.name : 'Untitled loan policy'}
+    //   </a>) : null;
+    // 
+    // const LoanPolicyLastMenu = (
+    //   <PaneMenu>
+    //     <button title="Add loan policy" onClick={this.createNewPolicy}>
+    //       <Icon icon="plus-sign" />
+    //     </button>
+    //   </PaneMenu>
+    // );
 
     return (
       policies.length > 0 && <LoanPolicySelector {...this.props} policies={policies} policyCreator={this.createNewPolicy} parentMutator={this.props.mutator} paneTitle="Loan policies" />
