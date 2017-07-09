@@ -7,6 +7,8 @@
 * Eliminate use of `componentWillMount` to provide initial values to resources. Part of STRIPES-433.
 * Improvements to loan period form in settings. Fixes UIS-36, UIS-38.
 * Rewrite nav menu selector in loan policy form to be reusable. Also fixes UIS-39.
+* Bump `users` interface dependency to v13.0. Fixes UIS-32.
+* Bump `configuration` interface dependency to v2.0. Fixes UIS-41.
 
 ## [1.0.0](https://github.com/folio-org/ui-scan/tree/v1.0.0) (2017-07-03)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.5.0...v1.0.0)
