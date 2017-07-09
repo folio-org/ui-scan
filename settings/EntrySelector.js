@@ -10,97 +10,90 @@ import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import NavList from '@folio/stripes-components/lib/NavList';
 import NavListSection from '@folio/stripes-components/lib/NavListSection';
 
-import LoanPolicyDetail from './LoanPolicyDetail';
+class EntrySelector extends React.Component {
 
-class LoanPolicySelector extends React.Component {
-  
   static propTypes = {
+    addButtonTitle: PropTypes.string,
+    detailComponent: PropTypes.object.isRequired,
     parentMutator: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
-    policies: PropTypes.arrayOf(
+    allEntries: PropTypes.arrayOf(
       PropTypes.object,
     ).isRequired,
-    policyCreator: PropTypes.func.isRequired,
+    entryCreator: PropTypes.func.isRequired,
     paneTitle: PropTypes.string,
   };
-  
+
   constructor(props) {
     super(props);
-    
+
     this.activeLink = this.activeLink.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
     this.linkPath = this.linkPath.bind(this);
   }
-  
+
   activeLink(links) {
-    return this.props.location.pathname || linkPath(links[0].key);
+    return this.props.location.pathname || this.linkPath(links[0].key);
   }
-  
+
   linkPath(id) {
     return `${this.props.match.path}/${id}`;
   }
-  
+
   clearSelection() {
-    console.log("clear selection")
-    this.props.history.push(`${this.props.match.path}/${this.props.policies[0].id}`);
+    this.props.history.push(`${this.props.match.path}/${this.props.allEntries[0].id}`);
   }
-  
+
   render() {
-    const { policies, policyCreator, parentMutator, location, paneTitle } = this.props;
-    
-    const links = _.sortBy(policies, ['name']).map(p => (
-      <Link key={p.id} to={this.linkPath(p.id)}>{p.name}</Link>
+    const { addButtonTitle, allEntries, entryCreator, location, paneTitle, parentMutator } = this.props;
+
+    const links = _.sortBy(allEntries, ['name']).map(e => (
+      <Link key={e.id} to={this.linkPath(e.id)}>{e.name}</Link>
     ));
-    
-    const routes = policies.map(p => (
+
+    const ComponentToRender = this.props.detailComponent;
+
+    const routes = allEntries.map(e => (
       <Route
-        key={p.id}
-        path={this.linkPath(p.id)}
+        key={e.id}
+        path={this.linkPath(e.id)}
         render={() => (
-          <Pane paneTitle={p.name} defaultWidth="fill">
-            <LoanPolicyDetail
+          <Pane paneTitle={e.name} defaultWidth="fill">
+            <ComponentToRender
               clearSelection={this.clearSelection}
-              initialValues={p}
-              loanPolicies={policies}
+              initialValues={e}
+              loanPolicies={allEntries}
               parentMutator={parentMutator}
             />
           </Pane>
         )}
       />
     ));
-    
-    const LoanPolicyLastMenu = (
+
+    const LastMenu = (
       <PaneMenu>
-        <button title="Add loan policy" onClick={policyCreator}>
+        <button title={addButtonTitle} onClick={entryCreator}>
           <Icon icon="plus-sign" />
         </button>
       </PaneMenu>
     );
-    
-    const activeLink = location.pathname;
-  
+
     return (
       <Paneset nested defaultWidth="80%">
-        <Pane defaultWidth="25%" lastMenu={LoanPolicyLastMenu} paneTitle={paneTitle}>
+        <Pane defaultWidth="25%" lastMenu={LastMenu} paneTitle={paneTitle}>
           <NavList>
             <NavListSection activeLink={this.activeLink(links)}>
               {links}
             </NavListSection>
           </NavList>
         </Pane>
- 
+
         <Switch>
           {routes}
-          {/* <Route
-            key={0}
-            path={props.match.path}
-            render={routes[0]}
-          /> */}
         </Switch>
       </Paneset>
     );
   }
-  
 }
 
-export default LoanPolicySelector;
+export default EntrySelector;

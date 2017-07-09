@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 
-import LoanPolicySelector from './LoanPolicySelector';
+import EntrySelector from './EntrySelector';
+import LoanPolicyDetail from './LoanPolicyDetail';
 
 class LoanPolicySettings extends React.Component {
 
@@ -71,12 +72,14 @@ class LoanPolicySettings extends React.Component {
 
     return (
     
-        <LoanPolicySelector
+        <EntrySelector
           {...this.props}
-          policies={policies}
-          policyCreator={this.createNewPolicy}
+          detailComponent={LoanPolicyDetail}
+          allEntries={policies}
+          entryCreator={this.createNewPolicy}
           parentMutator={this.props.mutator}
           paneTitle="Loan policies"
+          addButtonTitle="Add loan policy"
         />
     );
   }
