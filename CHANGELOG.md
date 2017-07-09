@@ -6,6 +6,7 @@
 * Include label in loan-policies editor paneTitle. Part of STRPCOMP-1.
 * Eliminate use of `componentWillMount` to provide initial values to resources. Part of STRIPES-433.
 * Improvements to loan period form in settings. Fixes UIS-36, UIS-38.
+* Rewrite nav menu selector in loan policy form to be reusable. Also fixes UIS-39.
 * Bump `users` interface dependency to v13.0. Fixes UIS-32.
 * Bump `configuration` interface dependency to v2.0. Fixes UIS-41.
 
