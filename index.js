@@ -7,13 +7,14 @@ import Settings from './settings';
 class ScanRouting extends React.Component {
 
   static childContextTypes = {
-    stripes: React.PropTypes.object,
+    history: React.PropTypes.object,
   };
 
   static propTypes = {
     stripes: PropTypes.shape({
       connect: PropTypes.func.isRequired,
     }).isRequired,
+    history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     showSettings: PropTypes.bool,
@@ -25,7 +26,7 @@ class ScanRouting extends React.Component {
   }
 
   getChildContext() {
-    return { stripes: this.props.stripes };
+    return { history: this.props.history };
   }
 
   NoMatch() {
@@ -42,7 +43,7 @@ class ScanRouting extends React.Component {
       return <Settings {...this.props} />;
     }
 
-    const { match: { path }, stripes: { connect } } = this.props;
+    const { match: { path } } = this.props;
     return (
       <Switch>
         <Route

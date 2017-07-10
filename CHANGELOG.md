@@ -2,6 +2,7 @@
 
 ## 1.1.0 (IN PROGRESS)
 
+* Click-through to Users tab from record of currently scanned patron ID
 * Specify module name in settings second column. Part of STRPCOMP-1.
 * Include label in loan-policies editor paneTitle. Part of STRPCOMP-1.
 * Eliminate use of `componentWillMount` to provide initial values to resources. Part of STRIPES-433.
