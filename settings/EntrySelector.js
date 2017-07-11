@@ -41,7 +41,10 @@ class EntrySelector extends React.Component {
   }
 
   clearSelection() {
-    this.props.history.push(`${this.props.match.path}/${this.props.allEntries[0].id}`);
+    const { allEntries } = this.props;
+    let id;
+    if (allEntries.length > 0) { id = allEntries[0].id; }
+    this.props.history.push(`${this.props.match.path}/${id}`);
   }
 
   render() {
