@@ -1,12 +1,10 @@
-// We have to remove node_modules/react to avoid having multiple copies loaded.
-// eslint-disable-next-line import/no-unresolved
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import Route from 'react-router-dom/Route';
 import Switch from 'react-router-dom/Switch';
 import Scan from './Scan';
 import Settings from './settings';
 
-class ScanRouting extends Component {
+class ScanRouting extends React.Component {
 
   static childContextTypes = {
     stripes: React.PropTypes.object,
@@ -19,6 +17,11 @@ class ScanRouting extends Component {
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     showSettings: PropTypes.bool,
+  }
+
+  constructor(props) {
+    super(props);
+    this.connectedApp = props.stripes.connect(Scan);
   }
 
   getChildContext() {
@@ -44,7 +47,7 @@ class ScanRouting extends Component {
       <Switch>
         <Route
           path={`${path}`}
-          render={() => React.createElement(connect(Scan))}
+          render={() => <this.connectedApp {...this.props} />}
         />
         <Route component={() => { this.NoMatch(); }} />
       </Switch>

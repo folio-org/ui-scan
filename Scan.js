@@ -1,6 +1,4 @@
 import _ from 'lodash';
-// We have to remove node_modules/react to avoid having multiple copies loaded.
-// eslint-disable-next-line import/no-unresolved
 import React, { PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
 import dateFormat from 'dateformat';
@@ -57,6 +55,13 @@ class Scan extends React.Component {
         replace: PropTypes.func,
       }),
     }),
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+      search: PropTypes.string,
+    }).isRequired,
+    match: PropTypes.shape({
+      path: PropTypes.string.isRequired,
+    }).isRequired,
   };
 
   static defaultProps = {
@@ -65,14 +70,14 @@ class Scan extends React.Component {
   };
 
   static manifest = Object.freeze({
-    mode: {},
-    patrons: {},
-    items: {},
-    scannedItems: {},
+    mode: { initialValue: 'CheckOut' },
+    patrons: { initialValue: [] },
+    items: { initialValue: [] },
+    scannedItems: { initialValue: [] },
     userIdentifierPref: {
       type: 'okapi',
       records: 'configs',
-      path: 'configurations/entries?query=(module=SCAN and config_name=pref_patron_identifier)',
+      path: 'configurations/entries?query=(module=SCAN and configName=pref_patron_identifier)',
     },
   });
 
@@ -81,7 +86,6 @@ class Scan extends React.Component {
     this.okapiUrl = context.stripes.okapi.url;
     this.httpHeaders = Object.assign({},
       { 'X-Okapi-Tenant': context.stripes.okapi.tenant, 'X-Okapi-Token': context.stripes.store.getState().okapi.token, 'Content-Type': 'application/json' });
-
     this.componentMap = {
       CheckOut,
       CheckIn,
@@ -92,23 +96,6 @@ class Scan extends React.Component {
     this.onSubmitInCheckOutForm = this.onSubmitInCheckOutForm.bind(this);
     this.onClickDone = this.onClickDone.bind(this);
     this.onClickCheckin = this.onClickCheckin.bind(this);
-  }
-
-  componentWillMount() {
-    const { data: { items, scannedItems, mode, patrons }, mutator } = this.props;
-
-    if (_.isEmpty(mode)) {
-      mutator.mode.replace('CheckOut');
-    }
-    if (_.isEmpty(items)) {
-      mutator.items.replace([]);
-    }
-    if (_.isEmpty(scannedItems)) {
-      mutator.scannedItems.replace([]);
-    }
-    if (_.isEmpty(patrons)) {
-      mutator.patrons.replace([]);
-    }
   }
 
   onChangeMode(e) {
@@ -302,6 +289,7 @@ class Scan extends React.Component {
       initialValues: {},
       patrons,
       scannedItems,
+      parentProps: this.props,
       userIdentifierPref: this.userIdentifierPref(),
     });
   }

@@ -141,6 +141,7 @@ class LoanPolicyDetail extends React.Component {
           component={Checkbox}
           checked={policy.loanable}
           validate={this.validateField}
+          normalize={v => !!v}
           onBlur={this.saveChanges}
         />
         {/* loan profile. Value affects visibility of several subsequent elements */}
@@ -179,7 +180,7 @@ class LoanPolicyDetail extends React.Component {
             but with different labels */}
         { (policy.loanable && policy.loansPolicy && policy.loansPolicy.profileId !== '3') &&
           <Field
-            disabled={true}
+            disabled
             label={dueDateScheduleFieldLabel}
             name="loansPolicy.fixedDueDateSchedule"
             component={Select}
@@ -206,6 +207,7 @@ class LoanPolicyDetail extends React.Component {
             component={Checkbox}
             checked={policy.loansPolicy && policy.loansPolicy.skipClosed}
             validate={this.validateField}
+            normalize={v => !!v}
             onBlur={this.saveChanges}
           />
         }
@@ -230,7 +232,7 @@ class LoanPolicyDetail extends React.Component {
                   name="loansPolicy.existingRequestsPeriod.intervalId"
                   component={Select}
                   placeholder="Select interval"
-                  dataOptions={intervalPeriods.slice(0,3)}
+                  dataOptions={intervalPeriods.slice(0, 3)}
                   validate={this.validateField}
                   onBlur={this.saveChanges}
                 />
@@ -268,30 +270,39 @@ class LoanPolicyDetail extends React.Component {
           </div>
         }
 
-        {/************* renewals section **************/}
+        {/* ************ renewals section ************* */}
         { policy.loanable &&
           <fieldset>
             <legend>Renewals</legend>
 
-            {/* renewable (bool) - affects visibility of most subsequent fields */}
+            {/*
+              renewable (bool) - affects visibility of most subsequent fields
+              (The normalize function used is needed to deal with an annoying behavior
+              in current versions of redux-form in which values of 'false' are
+              not handled properly -- see https://github.com/erikras/redux-form/issues/1993)
+            */}
             <Field
               label="Renewable"
               name="renewable"
               component={Checkbox}
               checked={policy.renewable}
               validate={this.validateField}
+              normalize={v => !!v}
               onBlur={this.saveChanges}
             />
             {/* unlimited renewals (bool) */}
-            <Field
-              label="Unlimited renewals"
-              name="renewalsPolicy.unlimited"
-              component={Checkbox}
-              checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
+            { policy.renewable &&
+              <Field
+                label="Unlimited renewals"
+                name="renewalsPolicy.unlimited"
+                component={Checkbox}
+                checked={policy.renewalsPolicy && policy.renewalsPolicy.unlimited === true} validate={this.validateField}
+                normalize={v => !!v}
+                onBlur={this.saveChanges}
+              />
+            }
             {/* number of renewals allowed */}
-            { policy.renewalsPolicy.unlimited === false &&
+            { policy.renewable && policy.renewalsPolicy.unlimited === false &&
               <div>
                 <p>Number of renewals allowed</p>
                 <Row>
@@ -310,23 +321,30 @@ class LoanPolicyDetail extends React.Component {
               </div>
             }
             {/* renew from */}
-            <Field
-              label="Renew from"
-              name="renewalsPolicy.renewFromId"
-              component={Select}
-              dataOptions={renewFromOptions}
-              validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
+            { policy.renewable &&
+              <Field
+                label="Renew from"
+                name="renewalsPolicy.renewFromId"
+                component={Select}
+                dataOptions={renewFromOptions}
+                validate={this.validateField}
+                onBlur={this.saveChanges}
+              />
+            }
             {/* different renewal period (bool) */}
-            <Field
-              label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod"
-              component={Checkbox}
-              checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField}
-              onBlur={this.saveChanges}
-            />
+            { policy.renewable &&
+              <Field
+                label="Renewal period different from original loan" name="renewalsPolicy.differentPeriod"
+                component={Checkbox}
+                checked={policy.renewalsPolicy && policy.renewalsPolicy.differentPeriod} validate={this.validateField}
+                normalize={v => !!v}
+                onBlur={this.saveChanges}
+              />
+            }
             {/* alternate loan period for renewals ("rolling" profile only) */}
-            { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId === '2' &&
+            { policy.renewable &&
+              policy.renewalsPolicy.differentPeriod &&
+              policy.loansPolicy.profileId === '2' &&
               <div>
                 <p>Alternate loan period for renewals</p>
                 <Row>
@@ -354,10 +372,12 @@ class LoanPolicyDetail extends React.Component {
             }
             {/* alt fixed due date schedule for renewals - appears when profile is
               "fixed" or "rolling", but with different labels */}
-            { policy.renewalsPolicy.differentPeriod && policy.loansPolicy.profileId !== '3' &&
+            { policy.renewable &&
+              policy.renewalsPolicy.differentPeriod &&
+              policy.loansPolicy.profileId !== '3' &&
               <Field
                 label={altRenewalScheduleLabel}
-                disabled={true}
+                disabled
                 name="renewalsPolicy"       // TODO: Need to hook this up with the right schema component when it's ready
                 component={Select}
                 placeholder="Select schedule"

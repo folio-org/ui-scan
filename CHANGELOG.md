@@ -1,10 +1,22 @@
 # Change history for ui-scan
 
-## 1.0.0 IN PROGRESS
+## 1.1.0 (IN PROGRESS)
 
-* Add support for loan periods in settings (completes UIS-13)
+* Specify module name in settings second column. Part of STRPCOMP-1.
+* Include label in loan-policies editor paneTitle. Part of STRPCOMP-1.
+* Eliminate use of `componentWillMount` to provide initial values to resources. Part of STRIPES-433.
+* Improvements to loan period form in settings. Fixes UIS-36, UIS-38.
+* Rewrite nav menu selector in loan policy form to be reusable. Also fixes UIS-39.
+* Bump `users` interface dependency to v13.0. Fixes UIS-32.
+* Bump `configuration` interface dependency to v2.0. Fixes UIS-41.
+
+## [1.0.0](https://github.com/folio-org/ui-scan/tree/v1.0.0) (2017-07-03)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.5.0...v1.0.0)
+
+* Add support for loan periods in settings. Fixes UIS-13, UIS-16, UIS-27 and UIS-28.
+* Add `okapiInterfaces` and `permissionSets` in `package.json`. Fixes UIS-24.
 * Upgrade dependencies on Stripes libraries. These had got very out of date: all three of them by one or more major versions. Fixes UIS-26.
-* Add okapiInterfaces and permissionSets in `package.json`. Fixes UIS-24.
+* Depend on v1.0 of the `configuration` interface. Fixes UIS-33 and UIS-34.
 
 ## [0.5.0](https://github.com/folio-org/ui-scan/tree/v0.5.0) (2017-06-07)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.4.0...v0.5.0)

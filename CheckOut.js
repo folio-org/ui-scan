@@ -1,9 +1,7 @@
 import _ from 'lodash';
-// We have to remove node_modules/react to avoid having multiple copies loaded.
-// eslint-disable-next-line import/no-unresolved
 import React, { PropTypes } from 'react';
 
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -11,6 +9,8 @@ import Button from '@folio/stripes-components/lib/Button';
 import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import { Row, Col } from 'react-bootstrap';
+
+import MaybeUserSearch from "./MaybeUserSearch";
 
 const propTypes = {
   modeSelector: React.PropTypes.element,
@@ -24,9 +24,11 @@ const propTypes = {
   onCancel: PropTypes.func,
   onClickDone: React.PropTypes.func,
   userIdentifierPref: PropTypes.object,
+  parentProps: PropTypes.object,
 };
 
 function CheckOut(props) {
+
   const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -76,6 +78,16 @@ function CheckOut(props) {
       SubmitMeta: { button: source },
     });
 
+  const selectUser = (user) => {    
+    console.log('user:', user)
+    console.log('userIdentifierPref:', userIdentifierPref)
+    if(user[userIdentifierPref.queryKey]) {
+      props.change("patron.identifier", user[userIdentifierPref.queryKey]);
+    } else {
+      user.error = `User ${user.username} does not have a ${userIdentifierPref.label}`
+    }
+  }
+
   return (
     <form>
       <div style={containerStyle}>
@@ -90,6 +102,7 @@ function CheckOut(props) {
                   fullWidth
                   id="patron_identifier"
                   component={TextField}
+                  startControl={<MaybeUserSearch {...props.parentProps} selectUser={selectUser} />}
                   onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'find_patron'))); }}
                 />
               </Col>
