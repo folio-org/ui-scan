@@ -27,8 +27,11 @@ const propTypes = {
   parentProps: PropTypes.object,
 };
 
-function CheckOut(props) {
+const contextTypes = {
+  history: PropTypes.object,
+};
 
+function CheckOut(props, context) {
   const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -53,6 +56,12 @@ function CheckOut(props) {
     Name: user => `${_.get(user, ['personal', 'last_name'], '')}, ${_.get(user, ['personal', 'first_name'], '')}`,
     Username: user => user.username,
     Email: user => _.get(user, ['personal', 'email']),
+  };
+
+  const onSelectRow = (e, patron) => {
+    const userId = patron.id;
+    const username = patron.username;
+    context.history.push(`/users/view/${userId}/${username}`);
   };
 
   const {
@@ -121,6 +130,7 @@ function CheckOut(props) {
               visibleColumns={['Active', 'Name', 'Username', 'Email']}
               fullWidth
               isEmptyMessage={'No patron selected'}
+              onRowClick={onSelectRow}
             />
           </Pane>
           <Pane defaultWidth="50%" paneTitle="Scanned Items">
@@ -164,6 +174,8 @@ function CheckOut(props) {
 }
 
 CheckOut.propTypes = propTypes;
+
+CheckOut.contextTypes = contextTypes;
 
 export default reduxForm({
   form: 'CheckOut',
