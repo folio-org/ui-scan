@@ -14,7 +14,7 @@ class EntrySelector extends React.Component {
 
   static propTypes = {
     addButtonTitle: PropTypes.string,
-    detailComponent: PropTypes.object.isRequired,
+    detailComponent: PropTypes.func.isRequired,
     parentMutator: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     allEntries: PropTypes.arrayOf(
