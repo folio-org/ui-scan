@@ -31,7 +31,7 @@
       },
       {
         "permissionName": "circulation.all",
-        "displayName": "circulation - all permissions",
+        "displayName": "Circulation: All permissions",
         "description": "Entire set of permissions needed to use the circulation",
         "visible": true,
         "subPermissions": [
