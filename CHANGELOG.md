@@ -1,12 +1,13 @@
 # Change history for ui-scan
 
-## 1.1.0 (IN PROGRESS)
+## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.0.0)
 
 * Bugfix, reinstate missing error messages for patron form (ref. requirements in LIBAPP-168)
-* Align with new API versions of `circulation`and `loan-storage`. UIS-64
+* Align with new API versions of `circulation` and `loan-storage`. UIS-64
 * Bump `circulation` interface dependency to v2.0
 * Bump `loan-storage` interface dependency to v3.0
-* Surface some back-end and front-end system errors as error messages in UI
+* Surface some back-end and front-end system errors as error messages in UI (UIS-48)
 * Bump `users` interface dependency to v14.0. UIS-63.
 * Click-through to Users tab from record of currently scanned patron ID
 * Specify module name in settings second column. Part of STRPCOMP-1.

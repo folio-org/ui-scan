@@ -1,6 +1,6 @@
 {
   "name": "@folio/scan",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Item Check-in/Check-out",
   "repository": "folio-org/ui-scan",
   "publishConfig": {
