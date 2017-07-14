@@ -1,5 +1,9 @@
 # Change history for ui-scan
 
+## 1.2.0 (IN PROGRESS)
+
+* New permission `settings.loan-policies.all`. Fixes UIS-50.
+
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.0.0)
 
@@ -16,7 +20,6 @@
 * Improvements to loan period form in settings. Fixes UIS-36, UIS-38.
 * Rewrite nav menu selector in loan policy form to be reusable. Also fixes UIS-39.
 * Bump `configuration` interface dependency to v2.0. Fixes UIS-41.
-* New permission `settings.loan-policies.all`. Fixes UIS-50.
 
 ## [1.0.0](https://github.com/folio-org/ui-scan/tree/v1.0.0) (2017-07-03)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v0.5.0...v1.0.0)
