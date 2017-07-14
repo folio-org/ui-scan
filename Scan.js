@@ -136,6 +136,7 @@ class Scan extends React.Component {
                   const now = new Date();
                   loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'Z'");
                   loan.status = { name: 'Closed' };
+                  loan.action = "checkedin";
                   this.putReturn(loan).then(() => this.fetchLoan(loan.id));
                 });
               });
