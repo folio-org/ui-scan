@@ -2,13 +2,18 @@
 
 ## 1.1.0 (IN PROGRESS)
 
+* Bugfix, reinstate missing error messages for patron form (ref. requirements in LIBAPP-168)
+* Align with new API versions of `circulation`and `loan-storage`. UIS-64
+* Bump `circulation` interface dependency to v2.0
+* Bump `loan-storage` interface dependency to v3.0
+* Surface some back-end and front-end system errors as error messages in UI
+* Bump `users` interface dependency to v14.0. UIS-63.
 * Click-through to Users tab from record of currently scanned patron ID
 * Specify module name in settings second column. Part of STRPCOMP-1.
 * Include label in loan-policies editor paneTitle. Part of STRPCOMP-1.
 * Eliminate use of `componentWillMount` to provide initial values to resources. Part of STRIPES-433.
 * Improvements to loan period form in settings. Fixes UIS-36, UIS-38.
 * Rewrite nav menu selector in loan policy form to be reusable. Also fixes UIS-39.
-* Bump `users` interface dependency to v13.0. Fixes UIS-32.
 * Bump `configuration` interface dependency to v2.0. Fixes UIS-41.
 * New permission `settings.loan-policies.all`. Fixes UIS-50.
 

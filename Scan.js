@@ -55,13 +55,6 @@ class Scan extends React.Component {
         replace: PropTypes.func,
       }),
     }),
-    location: PropTypes.shape({
-      pathname: PropTypes.string.isRequired,
-      search: PropTypes.string,
-    }).isRequired,
-    match: PropTypes.shape({
-      path: PropTypes.string.isRequired,
-    }).isRequired,
   };
 
   static defaultProps = {
@@ -117,51 +110,50 @@ class Scan extends React.Component {
     } else if (data.SubmitMeta.button === 'add_item') {
       return this.checkout(data.item.barcode);
     }
+    throw new SubmissionError({ item: { barcode: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' },
+                                patron: { identifier: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' } });
   }
 
-  onClickCheckin() {
-    const barcodeValue = document.getElementById('barcode').value;
-    const barcodes = barcodeValue.split(' ');
-    for (let i = 0; i < barcodes.length; i++) {
-      const barcode = barcodes[i].trim();
-      if (barcode) {
-        // fetch item by barcode to get item id
-        return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
-        .then((itemsResponse) => {
-          if (itemsResponse.status >= 400) {
-            console.log('Error fetching item');
+  onClickCheckin(data) {
+    // fetch item by barcode to get item id
+    return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${data.item.barcode}")`, { headers: this.httpHeaders })
+    .then((itemsResponse) => {
+      if (itemsResponse.status >= 400) {
+        throw new SubmissionError({ item: { barcode: `Error ${itemsResponse.status} retrieving item by barcode ${data.item.barcode}`, _error: 'Scan failed' } });
+      } else {
+        return itemsResponse.json().then((itemsJson) => {
+          if (itemsJson.items.length === 0) {
+            throw new SubmissionError({ item: { barcode: 'Item with this barcode does not exist', _error: 'Scan failed' } });
           } else {
-            itemsResponse.json().then((itemsJson) => {
-              const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
-              item.status = { name: 'Available' };
-              // PUT the item with status 'Available'
-              this.putItem(item);
-              // PUT the loan with a returnDate and status 'Closed'
-              this.fetchLoanByItemId(item.id).then((loansResponse) => {
-                loansResponse.json().then((loansJson) => {
-                  const loan = loansJson.loans[0];
-                  const now = new Date();
-                  loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'Z'");
-                  loan.status = { name: 'Closed' };
-                  this.putReturn(loan).then(() => this.fetchLoan(loan.id));
-                });
+            const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
+            item.status = { name: 'Available' };
+            // PUT the item with status 'Available'
+            this.putItem(item);
+            // PUT the loan with a returnDate and status 'Closed'
+            this.fetchLoanByItemId(item.id).then((loansResponse) => {
+              loansResponse.json().then((loansJson) => {
+                const loan = loansJson.loans[0];
+                const now = new Date();
+                loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'Z'");
+                loan.status = { name: 'Closed' };
+                loan.action = 'checkedin';
+                this.putReturn(loan).then(() => this.fetchLoan(loan.id));
               });
             });
           }
         });
       }
-      document.getElementById('barcode').value = '';
-    }
+    });
   }
 
   checkout(barcode) {
     if (this.props.data.patrons.length === 0) {
-      throw new SubmissionError({ patron: { username: 'Please fill this out to continue' } });
+      throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
     }
     return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
-        console.log('Error fetching item');
+        throw new SubmissionError({ item: { barcode: `Okapi error ${response.status} ${response.status} retrieving item by barcode`, _error: 'Scan failed' } });
       } else {
         return response.json().then((itemsJson) => {
           if (itemsJson.items.length === 0) {
@@ -172,7 +164,7 @@ class Scan extends React.Component {
             // PUT the item with status 'Checked out'
             this.putItem(item);
             // PUT the loan with a loanDate and status 'Open'
-            this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
+            return this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
               this.fetchLoan(loansJson.id);
             });
           }
@@ -187,11 +179,11 @@ class Scan extends React.Component {
     return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
-        console.log('Error fetching user');
+        throw new SubmissionError({ patron: { identifier: `Error ${response.status} retrieving patron by ${patronIdentifier.label}`, _error: 'Scan failed' } });
       } else {
         return response.json().then((json) => {
           if (json.users.length === 0) {
-            throw new SubmissionError({ patron: { username: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
+            throw new SubmissionError({ patron: { identifier: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
           }
           return this.props.mutator.patrons.replace(json.users);
         });
@@ -215,6 +207,7 @@ class Scan extends React.Component {
       userId: userid,
       itemId: itemid,
       loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      action: 'checkedout',
       status: {
         name: 'Open',
       },
@@ -223,8 +216,15 @@ class Scan extends React.Component {
       method: 'POST',
       headers: this.httpHeaders,
       body: JSON.stringify(loan),
-    }).then(response => response.json());
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new SubmissionError({ item: { barcode: `Okapi Error ${response.status} storing loan ${itemid} for patron ${userid}`, _error: 'Scan failed' } });
+      } else {
+        return response.json();
+      }
+    });
   }
+
 
   putReturn(loan) {
     return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
