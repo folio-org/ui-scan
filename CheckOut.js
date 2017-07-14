@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react';
 
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -10,7 +10,7 @@ import MultiColumnList from '@folio/stripes-components/lib/MultiColumnList';
 import TextField from '@folio/stripes-components/lib/TextField';
 import { Row, Col } from 'react-bootstrap';
 
-import MaybeUserSearch from "./MaybeUserSearch";
+import MaybeUserSearch from './MaybeUserSearch';
 
 const propTypes = {
   modeSelector: React.PropTypes.element,
@@ -87,15 +87,13 @@ function CheckOut(props, context) {
       SubmitMeta: { button: source },
     });
 
-  const selectUser = (user) => {    
-    console.log('user:', user)
-    console.log('userIdentifierPref:', userIdentifierPref)
-    if(user[userIdentifierPref.queryKey]) {
-      props.change("patron.identifier", user[userIdentifierPref.queryKey]);
+  const selectUser = (user) => {
+    if (user[userIdentifierPref.queryKey]) {
+      props.change('patron.identifier', user[userIdentifierPref.queryKey]);
     } else {
-      user.error = `User ${user.username} does not have a ${userIdentifierPref.label}`
+      user.error = `User ${user.username} does not have a ${userIdentifierPref.label}`;
     }
-  }
+  };
 
   return (
     <form>
