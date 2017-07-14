@@ -22,7 +22,7 @@
       "item-storage": "3.0",
       "loan-policy-storage": "1.0",
       "loan-storage": "2.0",
-      "users": "13.0"
+      "users": "14.0"
     },
     "permissionSets": [
       {
@@ -84,6 +84,6 @@
   },
   "peerDependencies": {
     "@folio/stripes-connect": "^2.2.1",
-    "@folio/stripes-core": "^1.14.0"
+    "@folio/stripes-core": "^2.1.0"
   }
 }
