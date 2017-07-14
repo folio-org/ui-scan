@@ -208,6 +208,7 @@ class Scan extends React.Component {
       userId: userid,
       itemId: itemid,
       loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      action: 'checkedout',
       status: {
         name: 'Open',
       },
