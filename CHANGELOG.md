@@ -1,5 +1,8 @@
 # Change history for ui-scan
 
+## 1.2.0 (IN PROGRESS)
+* Click-through to item list/details (UIS-49)
+
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.0.0)
 

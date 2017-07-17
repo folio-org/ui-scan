@@ -111,7 +111,7 @@ class Scan extends React.Component {
       return this.checkout(data.item.barcode);
     }
     throw new SubmissionError({ item: { barcode: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' },
-                                patron: { identifier: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' } });
+      patron: { identifier: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' } });
   }
 
   onClickCheckin(data) {

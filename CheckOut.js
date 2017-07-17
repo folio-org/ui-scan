@@ -58,10 +58,14 @@ function CheckOut(props, context) {
     Email: user => _.get(user, ['personal', 'email']),
   };
 
-  const onSelectRow = (e, patron) => {
+  const onSelectPatronRow = (e, patron) => {
     const userId = patron.id;
     const username = patron.username;
     context.history.push(`/users/view/${userId}/${username}`);
+  };
+
+  const onSelectItemRow = (e, item) => {
+    context.history.push(`/items/view/${item.itemId}`);
   };
 
   const {
@@ -128,7 +132,7 @@ function CheckOut(props, context) {
               visibleColumns={['Active', 'Name', 'Username', 'Email']}
               fullWidth
               isEmptyMessage={'No patron selected'}
-              onRowClick={onSelectRow}
+              onRowClick={onSelectPatronRow}
             />
           </Pane>
           <Pane defaultWidth="50%" paneTitle="Scanned Items">
@@ -159,6 +163,7 @@ function CheckOut(props, context) {
               formatter={itemListFormatter}
               isEmptyMessage="No items have been entered yet."
               fullWidth
+              onRowClick={onSelectItemRow}
             />
           </Pane>
 
