@@ -85,7 +85,7 @@
   },
   "dependencies": {
     "@folio/plugin-find-user": "1.0.0",
-    "@folio/stripes-components": "^1.0.0",
+    "@folio/stripes-components": "^1.3.0",
     "dateformat": "^2.0.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
