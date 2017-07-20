@@ -46,7 +46,7 @@ class LoanPolicySettings extends React.Component {
       },
     });
   }
-  
+
   componentDidUpdate(prevProps) {
     // Follows example from permission set settings in ui-users
     const policyDiffs = _.differenceBy(this.props.data.loanPolicies, prevProps.data.loanPolicies, 'id');
@@ -63,7 +63,7 @@ class LoanPolicySettings extends React.Component {
       // this.setState({
       //   selectedPolicy: newPolicy,
       // });
-      this.props.history.push(`${this.props.match.path}/${newPolicy.id}`)
+    //  this.props.history.push(`${this.props.match.path}/${newPolicy.id}`)
     }
   }
 
@@ -71,7 +71,6 @@ class LoanPolicySettings extends React.Component {
     const policies = _.sortBy(this.props.data.loanPolicies, ['name']);
 
     return (
-    
         <EntrySelector
           {...this.props}
           detailComponent={LoanPolicyDetail}
