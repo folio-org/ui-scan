@@ -5,7 +5,7 @@
 * New permission `settings.loan-policies.all`. Fixes UIS-50.
 
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
-[Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.0.0)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.0.0...v1.1.0)
 
 * Bugfix, reinstate missing error messages for patron form (ref. requirements in LIBAPP-168)
 * Align with new API versions of `circulation` and `loan-storage`. UIS-64
