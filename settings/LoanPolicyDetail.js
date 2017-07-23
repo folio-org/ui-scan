@@ -49,7 +49,7 @@ class LoanPolicyDetail extends React.Component {
     // a "period" object have to exist in the record. This should be rewritten ASAP
     const period = (allValues.loansPolicy && allValues.loansPolicy.period);
     if (period && period.duration && !period.intervalId) {
-      this.props.change('loansPolicy.period.intervalId', 1);
+      this.props.change('loansPolicy.period.intervalId', 2);
     }
     if (period && period.intervalId && !period.duration) {
       this.props.change('loansPolicy.period.duration', 1);
@@ -70,7 +70,7 @@ class LoanPolicyDetail extends React.Component {
     }
     const altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
     if (altRenewPeriod && altRenewPeriod.duration && !altRenewPeriod.intervalId) {
-      this.props.change('renewalsPolicy.period.intervalId', 1);
+      this.props.change('renewalsPolicy.period.intervalId', 2);
     }
     if (altRenewPeriod && altRenewPeriod.intervalId && !altRenewPeriod.duration) {
       this.props.change('renewalsPolicy.period.duration', 1);
