@@ -11,7 +11,7 @@ const pages = [
     component: ScanCheckoutSettings,
   },
   {
-    route: 'loanpolicies',
+    route: 'loan-policies',
     label: 'Loan policies',
     component: LoanPolicySettings,
   },
