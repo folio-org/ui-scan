@@ -32,18 +32,25 @@ class EntrySelector extends React.Component {
 
   constructor(props) {
     super(props);
+    
+    this.state = {
+      creatingEntry: false,
+    };
 
     this.activeLink = this.activeLink.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
     this.linkPath = this.linkPath.bind(this);
+    this.onClickAdd = this.onClickAdd.bind(this);
   }
 
   componentDidUpdate(prevProps) {
     // If a new item has been added to the list, push it to history to gain focus
-    const entryDiffs = _.differenceBy(this.props.allEntries, prevProps.allEntries, 'id');
-    const newEntry = prevProps.allEntries.length > 0 && entryDiffs[0];
-    if (newEntry) {
-      this.props.history.push(`${this.props.match.path}/${newEntry.id}`);
+    if (this.state.creatingEntry) {
+      const entryDiffs = _.differenceBy(this.props.allEntries, prevProps.allEntries, 'id');
+      this.props.history.push(`${this.props.match.path}/${entryDiffs[0].id}`);
+      this.setState({
+        creatingEntry: false,
+      });
     }
   }
 
@@ -60,6 +67,13 @@ class EntrySelector extends React.Component {
     let id;
     if (allEntries.length > 0) { id = allEntries[0].id; }
     this.props.history.push(`${this.props.match.path}/${id}`);
+  }
+  
+  onClickAdd() {
+    this.setState({
+      creatingEntry: true,
+    });
+    this.props.entryCreator();
   }
 
   render() {
@@ -90,7 +104,7 @@ class EntrySelector extends React.Component {
 
     const LastMenu = (
       <PaneMenu>
-        <button title={addButtonTitle} onClick={entryCreator}>
+        <button title={addButtonTitle} onClick={this.onClickAdd}>
           <Icon icon="plus-sign" />
         </button>
       </PaneMenu>
