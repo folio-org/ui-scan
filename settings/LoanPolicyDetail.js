@@ -49,7 +49,7 @@ class LoanPolicyDetail extends React.Component {
     // a "period" object have to exist in the record. This should be rewritten ASAP
     const period = (allValues.loansPolicy && allValues.loansPolicy.period);
     if (period && period.duration && !period.intervalId) {
-      this.props.change('loansPolicy.period.intervalId', 2);
+      this.props.change('loansPolicy.period.intervalId', 3);
     }
     if (period && period.intervalId && !period.duration) {
       this.props.change('loansPolicy.period.duration', 1);
@@ -356,6 +356,7 @@ class LoanPolicyDetail extends React.Component {
                       component={TextField}
                       rounded
                       validate={this.validateField}
+                      onBlur={this.saveChanges}
                     />
                   </Col>
                   <Col>
@@ -366,6 +367,7 @@ class LoanPolicyDetail extends React.Component {
                       placeholder="Select interval"
                       dataOptions={intervalPeriods}
                       validate={this.validateField}
+                      onBlur={this.saveChanges}
                     />
                   </Col>
                 </Row>
