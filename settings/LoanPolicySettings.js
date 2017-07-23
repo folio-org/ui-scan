@@ -48,39 +48,19 @@ class LoanPolicySettings extends React.Component {
     });
   }
 
-  componentDidUpdate(prevProps) {
-    // Follows example from permission set settings in ui-users
-    const policyDiffs = _.differenceBy(this.props.data.loanPolicies, prevProps.data.loanPolicies, 'id');
-    const newPolicy = policyDiffs[0];
-    //console.log("misc: pc", newPolicy.pendingCreate)
-
-    if (newPolicy) {
-      // At this point in the lifecycle the CID is still on the object, and
-      // this messes up the saveing of the Permission Set. It should not be needed any longer
-      // and will be removed.
-      delete newPolicy._cid; // eslint-disable-line no-underscore-dangle
-
-      // eslint-disable-next-line react/no-did-update-set-state
-      // this.setState({
-      //   selectedPolicy: newPolicy,
-      // });
-    //  this.props.history.push(`${this.props.match.path}/${newPolicy.id}`)
-    }
-  }
-
   render() {
     const policies = _.sortBy(this.props.data.loanPolicies, ['name']);
 
     return (
-        <EntrySelector
-          {...this.props}
-          detailComponent={LoanPolicyDetail}
-          allEntries={policies}
-          entryCreator={this.createNewPolicy}
-          parentMutator={this.props.mutator}
-          paneTitle="Loan policies"
-          addButtonTitle="Add loan policy"
-        />
+      <EntrySelector
+        {...this.props}
+        detailComponent={LoanPolicyDetail}
+        allEntries={policies}
+        entryCreator={this.createNewPolicy}
+        parentMutator={this.props.mutator}
+        paneTitle="Loan policies"
+        addButtonTitle="Add loan policy"
+      />
     );
   }
 

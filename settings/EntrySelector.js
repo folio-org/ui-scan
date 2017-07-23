@@ -22,6 +22,12 @@ class EntrySelector extends React.Component {
     ).isRequired,
     entryCreator: PropTypes.func.isRequired,
     paneTitle: PropTypes.string,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+    match: PropTypes.shape({
+      path: PropTypes.string.isRequired,
+    }).isRequired,
   };
 
   constructor(props) {
@@ -30,6 +36,15 @@ class EntrySelector extends React.Component {
     this.activeLink = this.activeLink.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
     this.linkPath = this.linkPath.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    // If a new item has been added to the list, push it to history to gain focus
+    const entryDiffs = _.differenceBy(this.props.allEntries, prevProps.allEntries, 'id');
+    const newEntry = prevProps.allEntries.length > 0 && entryDiffs[0];
+    if (newEntry) {
+      this.props.history.push(`${this.props.match.path}/${newEntry.id}`);
+    }
   }
 
   activeLink(links) {
@@ -48,7 +63,7 @@ class EntrySelector extends React.Component {
   }
 
   render() {
-    const { addButtonTitle, allEntries, entryCreator, location, paneTitle, parentMutator } = this.props;
+    const { addButtonTitle, allEntries, entryCreator, paneTitle, parentMutator } = this.props;
 
     const links = _.sortBy(allEntries, ['name']).map(e => (
       <Link key={e.id} to={this.linkPath(e.id)}>{e.name}</Link>
