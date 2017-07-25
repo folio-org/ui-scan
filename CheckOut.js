@@ -53,10 +53,28 @@ function CheckOut(props, context) {
 
   const patronsListFormatter = {
     Active: user => user.active,
-    Name: user => `${_.get(user, ['personal', 'last_name'], '')}, ${_.get(user, ['personal', 'first_name'], '')}`,
+    Name: user => `${_.get(user, ['personal', 'lastName'], '')}, ${_.get(user, ['personal', 'firstName'], '')}`,
     Username: user => user.username,
     Email: user => _.get(user, ['personal', 'email']),
   };
+
+  const getRowURL = data =>
+    ((data.username) ?
+      `/users/view/${data.id}/${data.username}` :
+      `/items/view/${data.itemId}`);
+
+  const anchoredRowFormatter = row =>
+    (
+      <a
+        href={getRowURL(row.rowData)} key={`row-${row.rowIndex}`}
+        aria-label={row.labelStrings && row.labelStrings.join('...')}
+        role="listitem"
+        className={`${row.rowClass}`}
+        {...row.rowProps}
+      >
+        {row.cells}
+      </a>
+    );
 
   const onSelectPatronRow = (e, patron) => {
     const userId = patron.id;
@@ -95,7 +113,7 @@ function CheckOut(props, context) {
     if (user[userIdentifierPref.queryKey]) {
       props.change('patron.identifier', user[userIdentifierPref.queryKey]);
     } else {
-      user.error = `User ${user.username} does not have a ${userIdentifierPref.label}`;
+      Object.assign(user, { error: `User ${user.username} does not have a ${userIdentifierPref.label}` });
     }
   };
 
@@ -130,8 +148,10 @@ function CheckOut(props, context) {
               rowMetadata={['id', 'username']}
               formatter={patronsListFormatter}
               visibleColumns={['Active', 'Name', 'Username', 'Email']}
-              fullWidth
+              autosize
+              virtualize
               isEmptyMessage={'No patron selected'}
+              rowFormatter={anchoredRowFormatter}
               onRowClick={onSelectPatronRow}
             />
           </Pane>
@@ -162,7 +182,9 @@ function CheckOut(props, context) {
               contentData={props.scannedItems}
               formatter={itemListFormatter}
               isEmptyMessage="No items have been entered yet."
-              fullWidth
+              autosize
+              virtualize
+              rowFormatter={anchoredRowFormatter}
               onRowClick={onSelectItemRow}
             />
           </Pane>
