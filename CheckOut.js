@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react';
-
 import { Field, reduxForm } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
@@ -25,48 +24,65 @@ const propTypes = {
   onClickDone: React.PropTypes.func,
   userIdentifierPref: PropTypes.object,
   parentProps: PropTypes.object,
+  change: PropTypes.func,
 };
 
 const contextTypes = {
   history: PropTypes.object,
 };
 
-function CheckOut(props, context) {
-  const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-  };
+class CheckOut extends React.Component {
 
-  if (props.patrons.length !== 0 && props.scannedItems.length !== 0) {
-    containerStyle.height = '98.6%';
+  constructor(props, context) {
+    super(props, context);
+    this.context = context;
+    this.anchoredRowFormatter = this.anchoredRowFormatter.bind(this);
+    this.selectUser = this.selectUser.bind(this);
+    this.onSelectPatronRow = this.onSelectPatronRow.bind(this);
+    this.onSelectItemRow = this.onSelectItemRow.bind(this);
   }
 
-  const itemListFormatter = {
-    title: loan => `${_.get(loan, ['item', 'title'])}`,
-    barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
-    loanDate: loan => <td style={{ width: '18em' }}>{loan.loanDate.substr(0, 10)}</td>,
-  };
+  onSelectPatronRow(e, patron) {
+    const userId = patron.id;
+    const username = patron.username;
+    this.context.history.push(`/users/view/${userId}/${username}`);
+  }
 
-  const patronsListFormatter = {
-    Active: user => user.active,
-    Name: user => `${_.get(user, ['personal', 'lastName'], '')}, ${_.get(user, ['personal', 'firstName'], '')}`,
-    Username: user => user.username,
-    Email: user => _.get(user, ['personal', 'email']),
-  };
+  onSelectItemRow(e, item) {
+    this.context.history.push(`/items/view/${item.itemId}`);
+  }
 
-  const getRowURL = data =>
-    ((data.username) ?
+  handleKeyDown(e, handler) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      handler();
+    }
+  }
+
+  makeSH(values, source) {
+    this.props.submithandler({ ...values, SubmitMeta: { button: source } });
+  }
+
+  selectUser(user) {
+    const { userIdentifierPref } = this.props;
+
+    if (user[userIdentifierPref.queryKey]) {
+      this.props.change('patron.identifier', user[userIdentifierPref.queryKey]);
+    } else {
+      Object.assign(user, { error: `User ${user.username} does not have a ${userIdentifierPref.label}` });
+    }
+  }
+
+  getRowURL(data) {
+    return ((data.username) ?
       `/users/view/${data.id}/${data.username}` :
       `/items/view/${data.itemId}`);
+  }
 
-  const anchoredRowFormatter = row =>
-    (
+  anchoredRowFormatter(row) {
+    return (
       <a
-        href={getRowURL(row.rowData)} key={`row-${row.rowIndex}`}
+        href={this.getRowURL(row.rowData)} key={`row-${row.rowIndex}`}
         aria-label={row.labelStrings && row.labelStrings.join('...')}
         role="listitem"
         className={`${row.rowClass}`}
@@ -75,131 +91,134 @@ function CheckOut(props, context) {
         {row.cells}
       </a>
     );
+  }
 
-  const onSelectPatronRow = (e, patron) => {
-    const userId = patron.id;
-    const username = patron.username;
-    context.history.push(`/users/view/${userId}/${username}`);
-  };
-
-  const onSelectItemRow = (e, item) => {
-    context.history.push(`/items/view/${item.itemId}`);
-  };
-
-  const {
+  render() {
+    const {
       handleSubmit,
       reset,  // eslint-disable-line no-unused-vars
       pristine, // eslint-disable-line no-unused-vars
       submitting, // eslint-disable-line no-unused-vars
       onCancel, // eslint-disable-line no-unused-vars
-      submithandler,
       userIdentifierPref,
-  } = props;
+      modeSelector,
+      parentProps,
+      patrons,
+      scannedItems,
+      onClickDone,
+    } = this.props;
 
-  const handleKeyDown = (e, handler) => {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
-      handler();
+    console.log('props', patrons, patrons.length);
+
+    const patronsListFormatter = {
+      Active: user => user.active,
+      Name: user => `${_.get(user, ['personal', 'lastName'], '')}, ${_.get(user, ['personal', 'firstName'], '')}`,
+      Username: user => user.username,
+      Email: user => _.get(user, ['personal', 'email']),
+    };
+
+    const itemListFormatter = {
+      title: loan => `${_.get(loan, ['item', 'title'])}`,
+      barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
+      loanDate: loan => <td style={{ width: '18em' }}>{loan.loanDate.substr(0, 10)}</td>,
+    };
+
+    const containerStyle = {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      height: '100%',
+      width: '100%',
+      position: 'absolute',
+    };
+
+    if (patrons.length && scannedItems.length) {
+      containerStyle.height = '98.6%';
     }
-  };
 
-  const makeSH = (values, source) =>
-    submithandler({
-      ...values,
-      SubmitMeta: { button: source },
-    });
+    return (
+      <form>
+        <div style={containerStyle}>
+          <Paneset static>
+            <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={modeSelector}>
+              <Row>
+                <Col xs={9}>
+                  <Field
+                    name="patron.identifier"
+                    placeholder={`Enter Patron's ${userIdentifierPref.label}`}
+                    aria-label="Patron Identifier"
+                    fullWidth
+                    id="patron_identifier"
+                    component={TextField}
+                    startControl={<MaybeUserSearch {...parentProps} selectUser={this.selectUser} />}
+                    onKeyDown={(e) => { this.handleKeyDown(e, handleSubmit(values => this.makeSH(values, 'find_patron'))); }}
+                  />
+                </Col>
+                <Col xs={3}>
+                  <Button
+                    buttonStyle="primary noRadius"
+                    fullWidth
+                    onClick={handleSubmit(values => this.makeSH(values, 'find_patron'))}
+                  >Find Patron</Button>
+                </Col>
+              </Row>
+              <MultiColumnList
+                contentData={patrons}
+                rowMetadata={['id', 'username']}
+                formatter={patronsListFormatter}
+                visibleColumns={['Active', 'Name', 'Username', 'Email']}
+                autosize
+                virtualize
+                isEmptyMessage={'No patron selected'}
+                rowFormatter={this.anchoredRowFormatter}
+                onRowClick={this.onSelectPatronRow}
+              />
+            </Pane>
+            <Pane defaultWidth="50%" paneTitle="Scanned Items">
+              <Row>
+                <Col xs={9}>
+                  <Field
+                    name="item.barcode"
+                    placeholder="Enter Barcode"
+                    aria-label="Item ID"
+                    fullWidth
+                    id="barcode"
+                    component={TextField}
+                    onKeyDown={(e) => { this.handleKeyDown(e, handleSubmit(values => this.makeSH(values, 'add_item'))); }}
+                  />
+                </Col>
+                <Col xs={3}>
+                  <Button
+                    buttonStyle="primary noRadius"
+                    fullWidth
+                    onClick={handleSubmit(values => this.makeSH(values, 'add_item'))}
+                  >+ Add item</Button>
+                </Col>
+              </Row>
+              <MultiColumnList
+                visibleColumns={['title', 'barcode', 'loanDate']}
+                rowMetadata={['id']}
+                contentData={scannedItems}
+                formatter={itemListFormatter}
+                isEmptyMessage="No items have been entered yet."
+                autosize
+                virtualize
+                rowFormatter={this.anchoredRowFormatter}
+                onRowClick={this.onSelectItemRow}
+              />
+            </Pane>
 
-  const selectUser = (user) => {
-    if (user[userIdentifierPref.queryKey]) {
-      props.change('patron.identifier', user[userIdentifierPref.queryKey]);
-    } else {
-      Object.assign(user, { error: `User ${user.username} does not have a ${userIdentifierPref.label}` });
-    }
-  };
-
-  return (
-    <form>
-      <div style={containerStyle}>
-        <Paneset static>
-          <Pane defaultWidth="50%" paneTitle="Patron" firstMenu={props.modeSelector}>
-            <Row>
-              <Col xs={9}>
-                <Field
-                  name="patron.identifier"
-                  placeholder={`Enter Patron's ${userIdentifierPref.label}`}
-                  aria-label="Patron Identifier"
-                  fullWidth
-                  id="patron_identifier"
-                  component={TextField}
-                  startControl={<MaybeUserSearch {...props.parentProps} selectUser={selectUser} />}
-                  onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'find_patron'))); }}
-                />
-              </Col>
-              <Col xs={3}>
-                <Button
-                  buttonStyle="primary noRadius"
-                  fullWidth
-                  onClick={handleSubmit(values => makeSH(values, 'find_patron'))}
-                >Find Patron</Button>
-              </Col>
-            </Row>
-            <MultiColumnList
-              contentData={props.patrons}
-              rowMetadata={['id', 'username']}
-              formatter={patronsListFormatter}
-              visibleColumns={['Active', 'Name', 'Username', 'Email']}
-              autosize
-              virtualize
-              isEmptyMessage={'No patron selected'}
-              rowFormatter={anchoredRowFormatter}
-              onRowClick={onSelectPatronRow}
-            />
-          </Pane>
-          <Pane defaultWidth="50%" paneTitle="Scanned Items">
-            <Row>
-              <Col xs={9}>
-                <Field
-                  name="item.barcode"
-                  placeholder="Enter Barcode"
-                  aria-label="Item ID"
-                  fullWidth
-                  id="barcode"
-                  component={TextField}
-                  onKeyDown={(e) => { handleKeyDown(e, handleSubmit(values => makeSH(values, 'add_item'))); }}
-                />
-              </Col>
-              <Col xs={3}>
-                <Button
-                  buttonStyle="primary noRadius"
-                  fullWidth
-                  onClick={handleSubmit(values => makeSH(values, 'add_item'))}
-                >+ Add item</Button>
-              </Col>
-            </Row>
-            <MultiColumnList
-              visibleColumns={['title', 'barcode', 'loanDate']}
-              rowMetadata={['id']}
-              contentData={props.scannedItems}
-              formatter={itemListFormatter}
-              isEmptyMessage="No items have been entered yet."
-              autosize
-              virtualize
-              rowFormatter={anchoredRowFormatter}
-              onRowClick={onSelectItemRow}
-            />
-          </Pane>
-
-        </Paneset>
-        {props.patrons && props.patrons.length !== 0 ?
-          <Button buttonStyle="primary mega" onClick={() => { props.onClickDone(); reset(); }} >Done</Button> : null
-        }
-      </div>
-    </form>
-  );
+          </Paneset>
+          {patrons && patrons.length ?
+            <Button buttonStyle="primary mega" onClick={() => { onClickDone(); reset(); }} >Done</Button> : null
+          }
+        </div>
+      </form>
+    );
+  }
 }
 
 CheckOut.propTypes = propTypes;
-
 CheckOut.contextTypes = contextTypes;
 
 export default reduxForm({
