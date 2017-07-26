@@ -4,6 +4,7 @@
 * Click-through to item list/details (UIS-49)
 * New permission `settings.loan-policies.all`. Fixes UIS-50.
 * Add right click to open user and item in a new tab. Fixes UIS-67 and UIS-68.
+* Clear barcode input after item is scanned. Fixes UIS-60.
 
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.0.0...v1.1.0)
