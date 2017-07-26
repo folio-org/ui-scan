@@ -110,11 +110,7 @@ class Scan extends React.Component {
 
   onClickCheckin(data) {
     this.fetchItemByBarcode(data.item.barcode)
-      .then((item) => {
-        // eslint-disable-next-line no-param-reassign
-        item.status = { name: 'Available' };
-        return this.putItem(item);
-      })
+      .then(item => this.putItem(item, { status: { name: 'Available' } }))
       .then(item => this.fetchLoanByItemId(item.id))
       .then(loan => this.putReturn(loan))
       .then(loan => this.fetchLoan(loan.id))
@@ -127,11 +123,7 @@ class Scan extends React.Component {
     }
 
     return this.fetchItemByBarcode(barcode)
-      .then((item) => {
-        // eslint-disable-next-line no-param-reassign
-        item.status = { name: 'Checked out' };
-        return this.putItem(item);
-      })
+      .then(item => this.putItem(item, { status: { name: 'Checked out' } }))
       .then(item => this.postLoan(this.props.data.patrons[0].id, item.id))
       .then(loan => this.fetchLoan(loan.id))
       .then(() => this.clearField('CheckOut', 'item.barcode'));
@@ -165,16 +157,10 @@ class Scan extends React.Component {
           throw new SubmissionError({ load: { barcode: 'Loan with this item id does not exist', _error: 'Scan failed' } });
         } else {
           // PUT the loan with a returnDate and status 'Closed'
-          const loan = loansJson.loans[0];
-          const now = new Date();
-          loan.returnDate = dateFormat(now, "yyyy-mm-dd'T'HH:MM:ss'Z'");
-          loan.status = { name: 'Closed' };
-          loan.action = 'checkedin';
-          return loan;
+          return loansJson.loans[0];
         }
       });
   }
-
 
   clearField(formName, fieldName) {
     this.context.stripes.store.dispatch(change(formName, fieldName, ''));
@@ -233,6 +219,12 @@ class Scan extends React.Component {
   }
 
   putReturn(loan) {
+    Object.assign(loan, {
+      returnDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      status: { name: 'Closed' },
+      action: 'checkedin',
+    });
+
     return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
       method: 'PUT',
       headers: this.httpHeaders,
@@ -241,7 +233,8 @@ class Scan extends React.Component {
     .then(() => loan);
   }
 
-  putItem(item) {
+  putItem(item, attrs) {
+    Object.assign(item, attrs);
     return fetch(`${this.okapiUrl}/item-storage/items/${item.id}`, {
       method: 'PUT',
       headers: this.httpHeaders,
