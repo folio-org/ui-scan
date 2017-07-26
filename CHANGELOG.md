@@ -7,6 +7,7 @@
 * Clear barcode input after item is scanned. Fixes UIS-54.
 * Clear loans after new patron is scanned. Fixes UIS-56.
 * Clear text area after check in. Fixes UIS-60.
+* Generate loan due date. Fixes UIS-52.
 
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.0.0...v1.1.0)

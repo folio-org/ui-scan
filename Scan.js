@@ -193,13 +193,17 @@ class Scan extends React.Component {
       defaultPatronIdentifier;
   }
 
-  postLoan(userid, itemid) {
-    // today's date, userid, item id
+  postLoan(userId, itemId) {
+    const loanDate = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(loanDate.getDate() + 14);
+
     const loan = {
       id: uuid(),
-      userId: userid,
-      itemId: itemid,
-      loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      userId,
+      itemId,
+      loanDate: dateFormat(loanDate, "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      dueDate: dateFormat(dueDate, "yyyy-mm-dd'T'HH:MM:ss'Z'"),
       action: 'checkedout',
       status: {
         name: 'Open',
@@ -211,7 +215,7 @@ class Scan extends React.Component {
       body: JSON.stringify(loan),
     }).then((response) => {
       if (response.status >= 400) {
-        throw new SubmissionError({ item: { barcode: `Okapi Error ${response.status} storing loan ${itemid} for patron ${userid}`, _error: 'Scan failed' } });
+        throw new SubmissionError({ item: { barcode: `Okapi Error ${response.status} storing loan ${itemId} for patron ${userId}`, _error: 'Scan failed' } });
       } else {
         return response.json();
       }
