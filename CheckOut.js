@@ -149,7 +149,7 @@ class CheckOut extends React.Component {
                     fullWidth
                     id="patron_identifier"
                     component={TextField}
-                    startControl={<MaybeUserSearch {...parentProps} selectUser={this.selectUser} />}
+                    startControl={<MaybeUserSearch {...props.parentProps} selectUser={selectUser} visibleColumns={['Name', 'Patron Group', 'User ID', 'Barcode']} dissableUserCreation={true} />}
                     onKeyDown={e => this.handleAdd(e, 'find_patron')}
                   />
                 </Col>
