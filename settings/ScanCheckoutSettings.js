@@ -40,7 +40,6 @@ class ScanCheckoutSettings extends React.Component {
   }
 
   onChangeIdentifier(e) {
-    console.log('ID type selected', e.target.value);
     const prefRecord = this.props.data.userIdentifierPref[0];
     if (prefRecord) {
       // preference has been set previously, can proceed with update here
