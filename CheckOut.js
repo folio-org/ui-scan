@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react';
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, change } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -18,13 +18,11 @@ const propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   submithandler: PropTypes.func.isRequired,
   reset: PropTypes.func,
-  pristine: PropTypes.bool,
-  submitting: PropTypes.bool,
-  onCancel: PropTypes.func,
   onClickDone: React.PropTypes.func,
   userIdentifierPref: PropTypes.object,
   parentProps: PropTypes.object,
   change: PropTypes.func,
+  dispatch: PropTypes.func,
 };
 
 const contextTypes = {
@@ -40,6 +38,9 @@ class CheckOut extends React.Component {
     this.selectUser = this.selectUser.bind(this);
     this.onSelectPatronRow = this.onSelectPatronRow.bind(this);
     this.onSelectItemRow = this.onSelectItemRow.bind(this);
+    this.addItem = this.addItem.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   onSelectPatronRow(e, patron) {
@@ -52,15 +53,41 @@ class CheckOut extends React.Component {
     this.context.history.push(`/items/view/${item.itemId}`);
   }
 
-  handleKeyDown(e, handler) {
+  // eslint-disable-next-line class-methods-use-this
+  getRowURL(data) {
+    return ((data.username) ?
+      `/users/view/${data.id}/${data.username}` :
+      `/items/view/${data.itemId}`);
+  }
+  makeSH(values, source) {
+    this.props.submithandler({ ...values, SubmitMeta: { button: source } });
+  }
+
+  handleClick(e, source) {
+    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
+    handler();
+  }
+
+  handleKeyDown(e, source) {
+    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
       handler();
     }
   }
 
-  makeSH(values, source) {
-    this.props.submithandler({ ...values, SubmitMeta: { button: source } });
+  handleDone() {
+    const { onClickDone, reset } = this.props;
+    onClickDone();
+    reset();
+  }
+
+  addItem(e) {
+    const handler = (e.type === 'click') ?
+      this.handleClick :
+      this.handleKeyDown;
+    handler(e, 'add_item');
+    this.props.dispatch(change('CheckOut', 'item.barcode', ''));
   }
 
   selectUser(user) {
@@ -71,12 +98,6 @@ class CheckOut extends React.Component {
     } else {
       Object.assign(user, { error: `User ${user.username} does not have a ${userIdentifierPref.label}` });
     }
-  }
-
-  getRowURL(data) {
-    return ((data.username) ?
-      `/users/view/${data.id}/${data.username}` :
-      `/items/view/${data.itemId}`);
   }
 
   anchoredRowFormatter(row) {
@@ -95,20 +116,12 @@ class CheckOut extends React.Component {
 
   render() {
     const {
-      handleSubmit,
-      reset,  // eslint-disable-line no-unused-vars
-      pristine, // eslint-disable-line no-unused-vars
-      submitting, // eslint-disable-line no-unused-vars
-      onCancel, // eslint-disable-line no-unused-vars
       userIdentifierPref,
       modeSelector,
       parentProps,
       patrons,
       scannedItems,
-      onClickDone,
     } = this.props;
-
-    console.log('props', patrons, patrons.length);
 
     const patronsListFormatter = {
       Active: user => user.active,
@@ -120,7 +133,7 @@ class CheckOut extends React.Component {
     const itemListFormatter = {
       title: loan => `${_.get(loan, ['item', 'title'])}`,
       barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
-      loanDate: loan => <td style={{ width: '18em' }}>{loan.loanDate.substr(0, 10)}</td>,
+      loanDate: loan => loan.loanDate.substr(0, 10),
     };
 
     const containerStyle = {
@@ -151,14 +164,14 @@ class CheckOut extends React.Component {
                     id="patron_identifier"
                     component={TextField}
                     startControl={<MaybeUserSearch {...parentProps} selectUser={this.selectUser} />}
-                    onKeyDown={(e) => { this.handleKeyDown(e, handleSubmit(values => this.makeSH(values, 'find_patron'))); }}
+                    onKeyDown={e => this.handleKeyDown(e, 'find_patron')}
                   />
                 </Col>
                 <Col xs={3}>
                   <Button
                     buttonStyle="primary noRadius"
                     fullWidth
-                    onClick={handleSubmit(values => this.makeSH(values, 'find_patron'))}
+                    onClick={e => this.handleClick(e, 'find_patron')}
                   >Find Patron</Button>
                 </Col>
               </Row>
@@ -184,14 +197,14 @@ class CheckOut extends React.Component {
                     fullWidth
                     id="barcode"
                     component={TextField}
-                    onKeyDown={(e) => { this.handleKeyDown(e, handleSubmit(values => this.makeSH(values, 'add_item'))); }}
+                    onKeyDown={this.addItem}
                   />
                 </Col>
                 <Col xs={3}>
                   <Button
                     buttonStyle="primary noRadius"
                     fullWidth
-                    onClick={handleSubmit(values => this.makeSH(values, 'add_item'))}
+                    onClick={this.addItem}
                   >+ Add item</Button>
                 </Col>
               </Row>
@@ -209,8 +222,8 @@ class CheckOut extends React.Component {
             </Pane>
 
           </Paneset>
-          {patrons && patrons.length ?
-            <Button buttonStyle="primary mega" onClick={() => { onClickDone(); reset(); }} >Done</Button> : null
+          {scannedItems.length && patrons.length &&
+            <Button buttonStyle="primary mega" onClick={() => this.handleDone()} >Done</Button>
           }
         </div>
       </form>
