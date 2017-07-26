@@ -39,8 +39,7 @@ class CheckOut extends React.Component {
     this.onSelectPatronRow = this.onSelectPatronRow.bind(this);
     this.onSelectItemRow = this.onSelectItemRow.bind(this);
     this.addItem = this.addItem.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.findPatron = this.findPatron.bind(this);
   }
 
   onSelectPatronRow(e, patron) {
@@ -63,31 +62,36 @@ class CheckOut extends React.Component {
     this.props.submithandler({ ...values, SubmitMeta: { button: source } });
   }
 
-  handleClick(e, source) {
+  handleAdd(e, source) {
+    e.preventDefault();
     const handler = this.props.handleSubmit(values => this.makeSH(values, source));
     handler();
   }
 
-  handleKeyDown(e, source) {
-    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
-      handler();
+  // eslint-disable-next-line class-methods-use-this
+  isValidEvent(e) {
+    return (e.type === 'click' || (e.key === 'Enter' && e.shiftKey === false));
+  }
+
+  findPatron(e) {
+    const { parentProps } = this.props;
+
+    if (this.isValidEvent(e)) {
+      this.handleAdd(e, 'find_patron');
+      parentProps.mutator.scannedItems.replace([]);
+    }
+  }
+
+  addItem(e) {
+    if (this.isValidEvent(e)) {
+      this.handleAdd(e, 'add_item');
+      this.props.dispatch(change('CheckOut', 'item.barcode', ''));
     }
   }
 
   handleDone() {
-    const { onClickDone, reset } = this.props;
-    onClickDone();
-    reset();
-  }
-
-  addItem(e) {
-    const handler = (e.type === 'click') ?
-      this.handleClick :
-      this.handleKeyDown;
-    handler(e, 'add_item');
-    this.props.dispatch(change('CheckOut', 'item.barcode', ''));
+    this.props.onClickDone();
+    this.props.reset();
   }
 
   selectUser(user) {
@@ -164,14 +168,14 @@ class CheckOut extends React.Component {
                     id="patron_identifier"
                     component={TextField}
                     startControl={<MaybeUserSearch {...parentProps} selectUser={this.selectUser} />}
-                    onKeyDown={e => this.handleKeyDown(e, 'find_patron')}
+                    onKeyDown={this.findPatron}
                   />
                 </Col>
                 <Col xs={3}>
                   <Button
                     buttonStyle="primary noRadius"
                     fullWidth
-                    onClick={e => this.handleClick(e, 'find_patron')}
+                    onClick={this.findPatron}
                   >Find Patron</Button>
                 </Col>
               </Row>
