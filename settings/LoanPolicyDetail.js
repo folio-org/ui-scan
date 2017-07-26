@@ -70,7 +70,7 @@ class LoanPolicyDetail extends React.Component {
     }
     const altRenewPeriod = (allValues.renewalsPolicy && allValues.renewalsPolicy.period);
     if (altRenewPeriod && altRenewPeriod.duration && !altRenewPeriod.intervalId) {
-      this.props.change('renewalsPolicy.period.intervalId', 2);
+      this.props.change('renewalsPolicy.period.intervalId', 3);
     }
     if (altRenewPeriod && altRenewPeriod.intervalId && !altRenewPeriod.duration) {
       this.props.change('renewalsPolicy.period.duration', 1);
