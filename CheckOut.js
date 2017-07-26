@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react';
-import { Field, reduxForm, change } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -22,7 +22,6 @@ const propTypes = {
   userIdentifierPref: PropTypes.object,
   parentProps: PropTypes.object,
   change: PropTypes.func,
-  dispatch: PropTypes.func,
 };
 
 const contextTypes = {
@@ -74,18 +73,14 @@ class CheckOut extends React.Component {
   }
 
   findPatron(e) {
-    const { parentProps } = this.props;
-
     if (this.isValidEvent(e)) {
       this.handleAdd(e, 'find_patron');
-      parentProps.mutator.scannedItems.replace([]);
     }
   }
 
   addItem(e) {
     if (this.isValidEvent(e)) {
       this.handleAdd(e, 'add_item');
-      this.props.dispatch(change('CheckOut', 'item.barcode', ''));
     }
   }
 
