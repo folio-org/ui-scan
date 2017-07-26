@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
 import dateFormat from 'dateformat';
 import uuid from 'uuid';
-import { SubmissionError } from 'redux-form';
+import { SubmissionError, change } from 'redux-form';
 
 import PaneMenu from '@folio/stripes-components/lib/PaneMenu';
 import Select from '@folio/stripes-components/lib/Select';
@@ -20,11 +20,6 @@ class Scan extends React.Component {
 
   static propTypes = {
     data: PropTypes.shape({
-      items: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string,
-        }),
-      ),
       scannedItems: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string,
@@ -48,9 +43,6 @@ class Scan extends React.Component {
       patrons: PropTypes.shape({
         replace: PropTypes.func,
       }),
-      items: PropTypes.shape({
-        replace: PropTypes.func,
-      }),
       scannedItems: PropTypes.shape({
         replace: PropTypes.func,
       }),
@@ -65,7 +57,6 @@ class Scan extends React.Component {
   static manifest = Object.freeze({
     mode: { initialValue: 'CheckOut' },
     patrons: { initialValue: [] },
-    items: { initialValue: [] },
     scannedItems: { initialValue: [] },
     userIdentifierPref: {
       type: 'okapi',
@@ -77,8 +68,12 @@ class Scan extends React.Component {
   constructor(props, context) {
     super(props);
     this.okapiUrl = context.stripes.okapi.url;
-    this.httpHeaders = Object.assign({},
-      { 'X-Okapi-Tenant': context.stripes.okapi.tenant, 'X-Okapi-Token': context.stripes.store.getState().okapi.token, 'Content-Type': 'application/json' });
+    this.httpHeaders = Object.assign({}, {
+      'X-Okapi-Tenant': context.stripes.okapi.tenant,
+      'X-Okapi-Token': context.stripes.store.getState().okapi.token,
+      'Content-Type': 'application/json',
+    });
+
     this.componentMap = {
       CheckOut,
       CheckIn,
@@ -94,7 +89,6 @@ class Scan extends React.Component {
   onChangeMode(e) {
     const nextMode = e.target.value;
     this.props.mutator.mode.replace(nextMode);
-    this.props.mutator.items.replace([]);
     this.props.mutator.scannedItems.replace([]);
     this.props.mutator.patrons.replace([]);
   }
@@ -146,6 +140,10 @@ class Scan extends React.Component {
     });
   }
 
+  clearField(fieldName) {
+    this.context.stripes.store.dispatch(change('CheckOut', fieldName, ''));
+  }
+
   checkout(barcode) {
     if (this.props.data.patrons.length === 0) {
       throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
@@ -166,6 +164,7 @@ class Scan extends React.Component {
             // PUT the loan with a loanDate and status 'Open'
             return this.postLoan(this.props.data.patrons[0].id, item.id).then((loansJson) => {
               this.fetchLoan(loansJson.id);
+              this.clearField('item.barcode');
             });
           }
         });
@@ -175,7 +174,7 @@ class Scan extends React.Component {
 
   findPatron(patron) {
     const patronIdentifier = this.userIdentifierPref();
-    this.props.mutator.items.replace([]);
+    this.props.mutator.scannedItems.replace([]);
     return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
     .then((response) => {
       if (response.status >= 400) {
@@ -225,7 +224,6 @@ class Scan extends React.Component {
     });
   }
 
-
   putReturn(loan) {
     return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
       method: 'PUT',
@@ -268,6 +266,7 @@ class Scan extends React.Component {
 
   render() {
     const { data: { mode, scannedItems, patrons } } = this.props;
+
     if (!mode) return <div />;
     const modeOptions = [
       { label: 'Check items out', value: 'CheckOut' },

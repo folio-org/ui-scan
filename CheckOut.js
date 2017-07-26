@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { PropTypes } from 'react';
-import { Field, reduxForm, change } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 
 import Paneset from '@folio/stripes-components/lib/Paneset';
 import Pane from '@folio/stripes-components/lib/Pane';
@@ -22,7 +22,6 @@ const propTypes = {
   userIdentifierPref: PropTypes.object,
   parentProps: PropTypes.object,
   change: PropTypes.func,
-  dispatch: PropTypes.func,
 };
 
 const contextTypes = {
@@ -38,8 +37,6 @@ class CheckOut extends React.Component {
     this.selectUser = this.selectUser.bind(this);
     this.onSelectPatronRow = this.onSelectPatronRow.bind(this);
     this.onSelectItemRow = this.onSelectItemRow.bind(this);
-    this.addItem = this.addItem.bind(this);
-    this.findPatron = this.findPatron.bind(this);
   }
 
   onSelectPatronRow(e, patron) {
@@ -62,31 +59,16 @@ class CheckOut extends React.Component {
     this.props.submithandler({ ...values, SubmitMeta: { button: source } });
   }
 
-  handleAdd(e, source) {
-    e.preventDefault();
-    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
-    handler();
-  }
-
   // eslint-disable-next-line class-methods-use-this
   isValidEvent(e) {
     return (e.type === 'click' || (e.key === 'Enter' && e.shiftKey === false));
   }
 
-  findPatron(e) {
-    const { parentProps } = this.props;
-
-    if (this.isValidEvent(e)) {
-      this.handleAdd(e, 'find_patron');
-      parentProps.mutator.scannedItems.replace([]);
-    }
-  }
-
-  addItem(e) {
-    if (this.isValidEvent(e)) {
-      this.handleAdd(e, 'add_item');
-      this.props.dispatch(change('CheckOut', 'item.barcode', ''));
-    }
+  handleAdd(e, source) {
+    if (!this.isValidEvent(e)) return;
+    e.preventDefault();
+    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
+    handler();
   }
 
   handleDone() {
@@ -168,14 +150,14 @@ class CheckOut extends React.Component {
                     id="patron_identifier"
                     component={TextField}
                     startControl={<MaybeUserSearch {...parentProps} selectUser={this.selectUser} />}
-                    onKeyDown={this.findPatron}
+                    onKeyDown={e => this.handleAdd(e, 'find_patron')}
                   />
                 </Col>
                 <Col xs={3}>
                   <Button
                     buttonStyle="primary noRadius"
                     fullWidth
-                    onClick={this.findPatron}
+                    onClick={e => this.handleAdd(e, 'find_patron')}
                   >Find Patron</Button>
                 </Col>
               </Row>
@@ -201,14 +183,14 @@ class CheckOut extends React.Component {
                     fullWidth
                     id="barcode"
                     component={TextField}
-                    onKeyDown={this.addItem}
+                    onKeyDown={e => this.handleAdd(e, 'add_item')}
                   />
                 </Col>
                 <Col xs={3}>
                   <Button
                     buttonStyle="primary noRadius"
                     fullWidth
-                    onClick={this.addItem}
+                    onClick={e => this.handleAdd(e, 'add_item')}
                   >+ Add item</Button>
                 </Col>
               </Row>
