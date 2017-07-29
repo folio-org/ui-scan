@@ -56,7 +56,7 @@ class CheckOut extends React.Component {
       `/items/view/${data.itemId}`);
   }
   makeSH(values, source) {
-    this.props.submithandler({ ...values, SubmitMeta: { button: source } });
+    return this.props.submithandler({ ...values, SubmitMeta: { button: source } });
   }
 
   // eslint-disable-next-line class-methods-use-this

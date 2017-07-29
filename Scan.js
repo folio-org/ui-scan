@@ -174,13 +174,14 @@ class Scan extends React.Component {
       if (response.status >= 400) {
         throw new SubmissionError({ patron: { identifier: `Error ${response.status} retrieving patron by ${patronIdentifier.label}`, _error: 'Scan failed' } });
       } else {
-        return response.json().then((json) => {
-          if (json.users.length === 0) {
-            throw new SubmissionError({ patron: { identifier: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
-          }
-          return this.props.mutator.patrons.replace(json.users);
-        });
+        return response.json();
       }
+    })
+    .then((json) => {
+      if (json.users.length === 0) {
+        throw new SubmissionError({ patron: { identifier: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
+      }
+      return this.props.mutator.patrons.replace(json.users);
     });
   }
 
