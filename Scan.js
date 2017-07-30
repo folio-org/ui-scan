@@ -109,7 +109,11 @@ class Scan extends React.Component {
   }
 
   onClickCheckin(data) {
-    this.fetchItemByBarcode(data.item.barcode)
+    if (!data.item || !data.item.barcode) {
+      throw new SubmissionError({ item: { barcode: 'Please fill this out to continue' } });
+    }
+
+    return this.fetchItemByBarcode(data.item.barcode)
       .then(item => this.putItem(item, { status: { name: 'Available' } }))
       .then(item => this.fetchLoanByItemId(item.id))
       .then(loan => this.putReturn(loan))
