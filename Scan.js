@@ -102,7 +102,7 @@ class Scan extends React.Component {
     if (data.SubmitMeta.button === 'find_patron') {
       return this.findPatron(data.patron);
     } else if (data.SubmitMeta.button === 'add_item') {
-      return this.checkout(data.item.barcode);
+      return this.checkout(data);
     }
     throw new SubmissionError({ item: { barcode: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' },
       patron: { identifier: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' } });
@@ -121,15 +121,12 @@ class Scan extends React.Component {
       .then(() => this.clearField('CheckIn', 'item.barcode'));
   }
 
-  checkout(barcode) {
+  checkout (data) {
     if (this.props.data.patrons.length === 0) {
       throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
     }
-
-    return this.fetchItemByBarcode(barcode)
-      .then(item => this.putItem(item, { status: { name: 'Checked out' } }))
+    return this.fetchItemByBarcode(data.item.barcode)
       .then(item => this.postLoan(this.props.data.patrons[0].id, item.id))
-      .then(loan => this.fetchLoan(loan.id))
       .then(() => this.clearField('CheckOut', 'item.barcode'));
   }
 
@@ -218,7 +215,7 @@ class Scan extends React.Component {
         name: 'Open',
       },
     };
-    return fetch(`${this.okapiUrl}/loan-storage/loans`, {
+    return fetch(`${this.okapiUrl}/circulation/loans`, {
       method: 'POST',
       headers: this.httpHeaders,
       body: JSON.stringify(loan),
@@ -228,8 +225,14 @@ class Scan extends React.Component {
       } else {
         return response.json();
       }
+    }).then((loan) => {
+      const scannedItems = [];
+      scannedItems.push(loan);
+      scannedItems.concat(this.props.data.scannedItems);
+      return this.props.mutator.scannedItems.replace(scannedItems);
     });
   }
+
 
   putReturn(loan) {
     Object.assign(loan, {
