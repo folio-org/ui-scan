@@ -114,59 +114,13 @@ class Scan extends React.Component {
     }
 
     return this.fetchItemByBarcode(data.item.barcode)
-      .then(item => this.putItem(item, { status: { name: 'Available' } }))
       .then(item => this.fetchLoanByItemId(item.id))
       .then(loan => this.putReturn(loan))
       .then(loan => this.fetchLoan(loan.id))
       .then(() => this.clearField('CheckIn', 'item.barcode'));
   }
 
-  checkout (data) {
-    if (this.props.data.patrons.length === 0) {
-      throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
-    }
-    return this.fetchItemByBarcode(data.item.barcode)
-      .then(item => this.postLoan(this.props.data.patrons[0].id, item.id))
-      .then(() => this.clearField('CheckOut', 'item.barcode'));
-  }
-
-  fetchItemByBarcode(barcode) {
-    // fetch item by barcode to get item id
-    return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
-      .then((itemsResponse) => {
-        if (itemsResponse.status >= 400) {
-          throw new SubmissionError({ item: { barcode: `Error ${itemsResponse.status} retrieving item by barcode ${barcode}`, _error: 'Scan failed' } });
-        } else {
-          return itemsResponse.json();
-        }
-      })
-      .then((itemsJson) => {
-        if (itemsJson.items.length === 0) {
-          throw new SubmissionError({ item: { barcode: 'Item with this barcode does not exist', _error: 'Scan failed' } });
-        } else {
-          const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
-          return item;
-        }
-      });
-  }
-
-  fetchLoanByItemId(itemId) {
-    return fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemId} AND status="Open")`, { headers: this.httpHeaders })
-      .then(loansResponse => loansResponse.json())
-      .then((loansJson) => {
-        if (loansJson.loans.length === 0) {
-          throw new SubmissionError({ load: { barcode: 'Loan with this item id does not exist', _error: 'Scan failed' } });
-        } else {
-          // PUT the loan with a returnDate and status 'Closed'
-          return loansJson.loans[0];
-        }
-      });
-  }
-
-  clearField(formName, fieldName) {
-    this.context.stripes.store.dispatch(change(formName, fieldName, ''));
-  }
-
+  // Check-out functions
   findPatron(patron) {
     if (!patron) {
       throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
@@ -199,6 +153,35 @@ class Scan extends React.Component {
       defaultPatronIdentifier;
   }
 
+  checkout(data) {
+    if (this.props.data.patrons.length === 0) {
+      throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
+    }
+    return this.fetchItemByBarcode(data.item.barcode)
+      .then(item => this.postLoan(this.props.data.patrons[0].id, item.id))
+      .then(() => this.clearField('CheckOut', 'item.barcode'));
+  }
+
+  fetchItemByBarcode(barcode) {
+    // fetch item by barcode to get item id
+    return fetch(`${this.okapiUrl}/item-storage/items?query=(barcode="${barcode}")`, { headers: this.httpHeaders })
+      .then((itemsResponse) => {
+        if (itemsResponse.status >= 400) {
+          throw new SubmissionError({ item: { barcode: `Error ${itemsResponse.status} retrieving item by barcode ${barcode}`, _error: 'Scan failed' } });
+        } else {
+          return itemsResponse.json();
+        }
+      })
+      .then((itemsJson) => {
+        if (itemsJson.items.length === 0) {
+          throw new SubmissionError({ item: { barcode: 'Item with this barcode does not exist', _error: 'Scan failed' } });
+        } else {
+          const item = JSON.parse(JSON.stringify(itemsJson.items[0]));
+          return item;
+        }
+      });
+  }
+
   postLoan(userId, itemId) {
     const loanDate = new Date();
     const dueDate = new Date();
@@ -225,14 +208,28 @@ class Scan extends React.Component {
       } else {
         return response.json();
       }
-    }).then((loan) => {
+    }).then((loanresponse) => {
       const scannedItems = [];
-      scannedItems.push(loan);
+      scannedItems.push(loanresponse);
       scannedItems.concat(this.props.data.scannedItems);
       return this.props.mutator.scannedItems.replace(scannedItems);
     });
   }
+  // End of Check-out functions
 
+  // Check-in functions
+  fetchLoanByItemId(itemId) {
+    return fetch(`${this.okapiUrl}/circulation/loans?query=(itemId=${itemId} AND status="Open")`, { headers: this.httpHeaders })
+      .then(loansResponse => loansResponse.json())
+      .then((loansJson) => {
+        if (loansJson.loans.length === 0) {
+          throw new SubmissionError({ load: { barcode: 'Loan with this item id does not exist', _error: 'Scan failed' } });
+        } else {
+          // PUT the loan with a returnDate and status 'Closed'
+          return loansJson.loans[0];
+        }
+      });
+  }
 
   putReturn(loan) {
     Object.assign(loan, {
@@ -241,31 +238,12 @@ class Scan extends React.Component {
       action: 'checkedin',
     });
 
-    return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
+    return fetch(`${this.okapiUrl}/circulation/loans/${loan.id}`, {
       method: 'PUT',
       headers: this.httpHeaders,
       body: JSON.stringify(loan),
     })
     .then(() => loan);
-  }
-
-  putItem(item, attrs) {
-    Object.assign(item, attrs);
-    return fetch(`${this.okapiUrl}/item-storage/items/${item.id}`, {
-      method: 'PUT',
-      headers: this.httpHeaders,
-      body: JSON.stringify(item),
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw Error(response.statusText);
-      }
-      return response;
-    })
-    .then(() => item)
-    .catch((error) => {
-      console.log(error);
-    });
   }
 
   fetchLoan(loanid) {
@@ -277,6 +255,11 @@ class Scan extends React.Component {
         this.props.mutator.scannedItems.replace(scannedItems);
       });
     });
+  }
+  // End of check-in functions
+
+  clearField(formName, fieldName) {
+    this.context.stripes.store.dispatch(change(formName, fieldName, ''));
   }
 
   render() {
