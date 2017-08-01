@@ -21,7 +21,6 @@
       "configuration": "2.0",
       "item-storage": "3.0",
       "loan-policy-storage": "1.0",
-      "loan-storage": "3.0",
       "users": "14.0"
     },
     "permissionSets": [
