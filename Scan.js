@@ -212,8 +212,7 @@ class Scan extends React.Component {
     }).then((loanresponse) => {
       const scannedItems = [];
       scannedItems.push(loanresponse);
-      scannedItems.concat(this.props.data.scannedItems);
-      return this.props.mutator.scannedItems.replace(scannedItems);
+      return this.props.mutator.scannedItems.replace(scannedItems.concat(this.props.data.scannedItems));
     });
   }
   // End of Check-out functions
