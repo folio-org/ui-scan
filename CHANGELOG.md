@@ -1,6 +1,7 @@
 # Change history for ui-scan
 
-## 1.2.0 (IN PROGRESS)
+## [1.2.0](https://github.com/folio-org/ui-scan/tree/v1.2.0) (2017-08-02)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.2.0)
 * Click-through to item list/details (UIS-49)
 * New permission `settings.loan-policies.all`. Fixes UIS-50.
 * Add right click to open user and item in a new tab. Fixes UIS-67 and UIS-68.
