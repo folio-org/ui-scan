@@ -12,6 +12,7 @@
 * Remove `loan-storage` interface dependency, UIS-77.
 * Explicitly reset component state in onClearSearch. Fixes UIIT-53.
 * Move focus to item field after successful fetch of patron. UIS-58.
+* Formatting columns in check-in page. UIS-59.
 * Update stripes-components to 1.4.0.
 
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
