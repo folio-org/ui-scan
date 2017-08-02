@@ -201,8 +201,7 @@ class CheckOut extends React.Component {
                 contentData={scannedItems}
                 formatter={itemListFormatter}
                 isEmptyMessage="No items have been entered yet."
-                autosize
-                virtualize
+                fullwidth
                 rowFormatter={this.anchoredRowFormatter}
                 onRowClick={this.onSelectItemRow}
               />
