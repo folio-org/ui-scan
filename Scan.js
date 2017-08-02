@@ -102,30 +102,64 @@ class Scan extends React.Component {
     if (data.SubmitMeta.button === 'find_patron') {
       return this.findPatron(data.patron);
     } else if (data.SubmitMeta.button === 'add_item') {
-      return this.checkout(data.item.barcode);
+      return this.checkout(data);
     }
     throw new SubmissionError({ item: { barcode: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' },
       patron: { identifier: 'Internal UI error. Expected click on "Find patron" or "Add item" but could not determine, which were clicked.' } });
   }
 
   onClickCheckin(data) {
-    this.fetchItemByBarcode(data.item.barcode)
-      .then(item => this.putItem(item, { status: { name: 'Available' } }))
+    if (!data.item || !data.item.barcode) {
+      throw new SubmissionError({ item: { barcode: 'Please fill this out to continue' } });
+    }
+
+    return this.fetchItemByBarcode(data.item.barcode)
       .then(item => this.fetchLoanByItemId(item.id))
       .then(loan => this.putReturn(loan))
       .then(loan => this.fetchLoan(loan.id))
       .then(() => this.clearField('CheckIn', 'item.barcode'));
   }
 
-  checkout(barcode) {
-    if (this.props.data.patrons.length === 0) {
+  // Check-out functions
+  findPatron(patron) {
+    if (!patron) {
       throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
     }
 
-    return this.fetchItemByBarcode(barcode)
-      .then(item => this.putItem(item, { status: { name: 'Checked out' } }))
+    const patronIdentifier = this.userIdentifierPref();
+    this.props.mutator.scannedItems.replace([]);
+    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new SubmissionError({ patron: { identifier: `Error ${response.status} retrieving patron by ${patronIdentifier.label}`, _error: 'Scan failed' } });
+        } else {
+          return response.json();
+        }
+      })
+      .then((json) => {
+        if (json.users.length === 0) {
+          throw new SubmissionError({ patron: { identifier: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
+        }
+        document.getElementById('barcode').focus()
+        return this.props.mutator.patrons.replace(json.users);
+      });
+  }
+
+  // Return either the currently set user identifier preference or a default value
+  // (see constants.js for values)
+  userIdentifierPref() {
+    const { data: { userIdentifierPref: pref } } = this.props;
+    return (pref.length > 0 && pref[0].value != null) ?
+      _.find(patronIdentifierTypes, { key: pref[0].value }) :
+      defaultPatronIdentifier;
+  }
+
+  checkout(data) {
+    if (this.props.data.patrons.length === 0) {
+      throw new SubmissionError({ patron: { identifier: 'Please fill this out to continue' } });
+    }
+    return this.fetchItemByBarcode(data.item.barcode)
       .then(item => this.postLoan(this.props.data.patrons[0].id, item.id))
-      .then(loan => this.fetchLoan(loan.id))
       .then(() => this.clearField('CheckOut', 'item.barcode'));
   }
 
@@ -149,8 +183,43 @@ class Scan extends React.Component {
       });
   }
 
+  postLoan(userId, itemId) {
+    const loanDate = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(loanDate.getDate() + 14);
+
+    const loan = {
+      id: uuid(),
+      userId,
+      itemId,
+      loanDate: dateFormat(loanDate, "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      dueDate: dateFormat(dueDate, "yyyy-mm-dd'T'HH:MM:ss'Z'"),
+      action: 'checkedout',
+      status: {
+        name: 'Open',
+      },
+    };
+    return fetch(`${this.okapiUrl}/circulation/loans`, {
+      method: 'POST',
+      headers: this.httpHeaders,
+      body: JSON.stringify(loan),
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new SubmissionError({ item: { barcode: `Okapi Error ${response.status} storing loan ${itemId} for patron ${userId}`, _error: 'Scan failed' } });
+      } else {
+        return response.json();
+      }
+    }).then((loanresponse) => {
+      const scannedItems = [];
+      scannedItems.push(loanresponse);
+      return this.props.mutator.scannedItems.replace(scannedItems.concat(this.props.data.scannedItems));
+    });
+  }
+  // End of Check-out functions
+
+  // Check-in functions
   fetchLoanByItemId(itemId) {
-    return fetch(`${this.okapiUrl}/loan-storage/loans?query=(itemId=${itemId} AND status="Open")`, { headers: this.httpHeaders })
+    return fetch(`${this.okapiUrl}/circulation/loans?query=(itemId=${itemId} AND status="Open")`, { headers: this.httpHeaders })
       .then(loansResponse => loansResponse.json())
       .then((loansJson) => {
         if (loansJson.loans.length === 0) {
@@ -162,62 +231,6 @@ class Scan extends React.Component {
       });
   }
 
-  clearField(formName, fieldName) {
-    this.context.stripes.store.dispatch(change(formName, fieldName, ''));
-  }
-
-  findPatron(patron) {
-    const patronIdentifier = this.userIdentifierPref();
-    this.props.mutator.scannedItems.replace([]);
-    return fetch(`${this.okapiUrl}/users?query=(${patronIdentifier.queryKey}="${patron.identifier}")`, { headers: this.httpHeaders })
-    .then((response) => {
-      if (response.status >= 400) {
-        throw new SubmissionError({ patron: { identifier: `Error ${response.status} retrieving patron by ${patronIdentifier.label}`, _error: 'Scan failed' } });
-      } else {
-        return response.json().then((json) => {
-          if (json.users.length === 0) {
-            throw new SubmissionError({ patron: { identifier: `User with this ${patronIdentifier.label} does not exist`, _error: 'Scan failed' } });
-          }
-          return this.props.mutator.patrons.replace(json.users);
-        });
-      }
-    });
-  }
-
-  // Return either the currently set user identifier preference or a default value
-  // (see constants.js for values)
-  userIdentifierPref() {
-    const { data: { userIdentifierPref: pref } } = this.props;
-    return (pref.length > 0 && pref[0].value != null) ?
-      _.find(patronIdentifierTypes, { key: pref[0].value }) :
-      defaultPatronIdentifier;
-  }
-
-  postLoan(userid, itemid) {
-    // today's date, userid, item id
-    const loan = {
-      id: uuid(),
-      userId: userid,
-      itemId: itemid,
-      loanDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
-      action: 'checkedout',
-      status: {
-        name: 'Open',
-      },
-    };
-    return fetch(`${this.okapiUrl}/loan-storage/loans`, {
-      method: 'POST',
-      headers: this.httpHeaders,
-      body: JSON.stringify(loan),
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new SubmissionError({ item: { barcode: `Okapi Error ${response.status} storing loan ${itemid} for patron ${userid}`, _error: 'Scan failed' } });
-      } else {
-        return response.json();
-      }
-    });
-  }
-
   putReturn(loan) {
     Object.assign(loan, {
       returnDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'"),
@@ -225,31 +238,12 @@ class Scan extends React.Component {
       action: 'checkedin',
     });
 
-    return fetch(`${this.okapiUrl}/loan-storage/loans/${loan.id}`, {
+    return fetch(`${this.okapiUrl}/circulation/loans/${loan.id}`, {
       method: 'PUT',
       headers: this.httpHeaders,
       body: JSON.stringify(loan),
     })
     .then(() => loan);
-  }
-
-  putItem(item, attrs) {
-    Object.assign(item, attrs);
-    return fetch(`${this.okapiUrl}/item-storage/items/${item.id}`, {
-      method: 'PUT',
-      headers: this.httpHeaders,
-      body: JSON.stringify(item),
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw Error(response.statusText);
-      }
-      return response;
-    })
-    .then(() => item)
-    .catch((error) => {
-      console.log(error);
-    });
   }
 
   fetchLoan(loanid) {
@@ -261,6 +255,11 @@ class Scan extends React.Component {
         this.props.mutator.scannedItems.replace(scannedItems);
       });
     });
+  }
+  // End of check-in functions
+
+  clearField(formName, fieldName) {
+    this.context.stripes.store.dispatch(change(formName, fieldName, ''));
   }
 
   render() {

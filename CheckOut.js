@@ -56,7 +56,7 @@ class CheckOut extends React.Component {
       `/items/view/${data.itemId}`);
   }
   makeSH(values, source) {
-    this.props.submithandler({ ...values, SubmitMeta: { button: source } });
+    return this.props.submithandler({ ...values, SubmitMeta: { button: source } });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -120,6 +120,7 @@ class CheckOut extends React.Component {
       title: loan => `${_.get(loan, ['item', 'title'])}`,
       barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
       loanDate: loan => loan.loanDate.substr(0, 10),
+      dueDate: loan => loan.dueDate.substr(0, 10),
     };
 
     const containerStyle = {
@@ -195,13 +196,12 @@ class CheckOut extends React.Component {
                 </Col>
               </Row>
               <MultiColumnList
-                visibleColumns={['title', 'barcode', 'loanDate']}
+                visibleColumns={['title', 'barcode', 'loanDate', 'dueDate']}
                 rowMetadata={['id']}
                 contentData={scannedItems}
                 formatter={itemListFormatter}
                 isEmptyMessage="No items have been entered yet."
-                autosize
-                virtualize
+                fullwidth
                 rowFormatter={this.anchoredRowFormatter}
                 onRowClick={this.onSelectItemRow}
               />
