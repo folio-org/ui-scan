@@ -1,6 +1,9 @@
 # Change history for ui-scan
 
-## 1.2.0 (IN PROGRESS)
+## 1.3.0 (IN PROGRESS)
+
+## [1.2.0](https://github.com/folio-org/ui-scan/tree/v1.2.0) (2017-08-02)
+[Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.2.0)
 * Click-through to item list/details (UIS-49)
 * New permission `settings.loan-policies.all`. Fixes UIS-50.
 * Add right click to open user and item in a new tab. Fixes UIS-67 and UIS-68.
@@ -12,6 +15,7 @@
 * Remove `loan-storage` interface dependency, UIS-77.
 * Explicitly reset component state in onClearSearch. Fixes UIIT-53.
 * Move focus to item field after successful fetch of patron. UIS-58.
+* Formatting columns in check-in page. UIS-59.
 * Update stripes-components to 1.4.0.
 
 ## [1.1.0](https://github.com/folio-org/ui-scan/tree/v1.1.0) (2017-07-14)
