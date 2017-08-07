@@ -249,24 +249,24 @@ class Scan extends React.Component {
   fetchLoan(loanid) {
     return fetch(`${this.okapiUrl}/circulation/loans?query=(id=${loanid})`, {
       headers: this.httpHeaders,
-    }).then((response) => {
-      return response.json().then((json) => {
+    }).then(response =>
+      response.json().then((json) => {
         const loans = JSON.parse(JSON.stringify(json.loans));
-        this.fetchPatron(loans).
-         then((patron) => { 
-           const extLoans = loans[0];
-           extLoans.patron = `${patron.personal.lastName}, ${patron.personal.firstName}`;
-           return extLoans;
-         }).then ((extLoans) => {
-           const scannedItems = [];
-           scannedItems.push(extLoans);
-           return this.props.mutator.scannedItems.replace(scannedItems.concat(this.props.data.scannedItems));
-         });
-      });
-    });
+        return this.fetchPatron(loans)
+          .then((patron) => {
+            const extLoans = loans[0];
+            extLoans.patron = patron;
+            return extLoans;
+          }).then((extLoans) => {
+            const scannedItems = [];
+            scannedItems.push(extLoans);
+            return this.props.mutator.scannedItems.replace(scannedItems.concat(this.props.data.scannedItems));
+          });
+      }),
+    );
   }
 
-  fetchPatron (loans) {
+  fetchPatron(loans) {
     return fetch(`${this.okapiUrl}/users/${loans[0].userId}`, { headers: this.httpHeaders })
       .then((response) => {
         if (response.status >= 400) {
