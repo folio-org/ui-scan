@@ -34,8 +34,10 @@ function CheckIn(props) {
   const itemListFormatter = {
     barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
     title: loan => `${_.get(loan, ['item', 'title'])}`,
+    location: loan => `${_.get(loan, ['item', 'location', 'name'])}`,
     'Date Loaned': loan => loan.loanDate.substr(0, 10),
     'Date Returned': loan => loan.returnDate.substr(0, 10),
+    status: loan => `${_.get(loan, ['item', 'status', 'name'])}`,
   };
 
   const {
@@ -62,7 +64,7 @@ function CheckIn(props) {
                 </Col>
               </Row>
               <MultiColumnList
-                visibleColumns={['barcode', 'title', 'Date Loaned', 'Date Returned']}
+                visibleColumns={['barcode', 'title', 'location', 'Date Loaned', 'Date Returned', 'status']}
                 rowMetadata={['id']}
                 contentData={props.scannedItems}
                 formatter={itemListFormatter}
