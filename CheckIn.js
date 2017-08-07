@@ -35,6 +35,7 @@ function CheckIn(props) {
     barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
     title: loan => `${_.get(loan, ['item', 'title'])}`,
     location: loan => `${_.get(loan, ['item', 'location', 'name'])}`,
+    patron: loan => `${_.get(loan, ['patron'])}`,
     'Date Loaned': loan => loan.loanDate.substr(0, 10),
     'Date Returned': loan => loan.returnDate.substr(0, 10),
     status: loan => `${_.get(loan, ['item', 'status', 'name'])}`,
@@ -64,7 +65,7 @@ function CheckIn(props) {
                 </Col>
               </Row>
               <MultiColumnList
-                visibleColumns={['barcode', 'title', 'location', 'Date Loaned', 'Date Returned', 'status']}
+                visibleColumns={['barcode', 'title', 'location', 'patron', 'Date Loaned', 'Date Returned', 'status']}
                 rowMetadata={['id']}
                 contentData={props.scannedItems}
                 formatter={itemListFormatter}
