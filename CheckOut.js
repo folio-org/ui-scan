@@ -36,6 +36,7 @@ class CheckOut extends React.Component {
     this.context = context;
     this.anchoredRowFormatter = this.anchoredRowFormatter.bind(this);
     this.selectUser = this.selectUser.bind(this);
+    this.autoSelectUser = this.autoSelectUser.bind(this);
     this.onSelectPatronRow = this.onSelectPatronRow.bind(this);
     this.onSelectItemRow = this.onSelectItemRow.bind(this);
   }
@@ -68,7 +69,10 @@ class CheckOut extends React.Component {
   handleAdd(e, source) {
     if (!this.isValidEvent(e)) return;
     e.preventDefault();
-    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
+    const handler = this.props.handleSubmit(values => {
+      console.log(values);
+      this.makeSH(values, source)
+    });
     handler();
   }
 
@@ -77,14 +81,26 @@ class CheckOut extends React.Component {
     this.props.reset();
   }
 
-  selectUser(user) {
+  selectUser(user, autoSelect) {
     const { userIdentifierPref } = this.props;
 
     if (user[userIdentifierPref.queryKey]) {
       this.props.change('patron.identifier', user[userIdentifierPref.queryKey]);
+      if(autoSelect) {
+        let values = {
+          patron: {
+            identifier: user[userIdentifierPref.queryKey]
+          }
+        };
+        this.makeSH(values, 'find_patron');
+      }  
     } else {
       Object.assign(user, { error: `User ${user.username} does not have a ${userIdentifierPref.label}` });
     }
+  }
+
+  autoSelectUser(user) {
+    this.selectUser(user, true);
   }
 
   anchoredRowFormatter(row) {
@@ -152,7 +168,7 @@ class CheckOut extends React.Component {
                     fullWidth
                     id="patron_identifier"
                     component={TextField}
-                    startControl={<MaybeUserSearch {...this.props.parentProps} selectUser={this.selectUser} visibleColumns={['Name', 'Patron Group', 'User ID', 'Barcode']} dissableUserCreation={true} />}
+                    startControl={<MaybeUserSearch {...this.props.parentProps} selectUser={this.autoSelectUser} visibleColumns={['Name', 'Patron Group', 'User ID', 'Barcode']} dissableUserCreation={true} />}
                     onKeyDown={e => this.handleAdd(e, 'find_patron')}
                   />
                 </Col>
