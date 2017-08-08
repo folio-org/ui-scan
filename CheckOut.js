@@ -69,10 +69,7 @@ class CheckOut extends React.Component {
   handleAdd(e, source) {
     if (!this.isValidEvent(e)) return;
     e.preventDefault();
-    const handler = this.props.handleSubmit(values => {
-      console.log(values);
-      this.makeSH(values, source)
-    });
+    const handler = this.props.handleSubmit(values => this.makeSH(values, source));
     handler();
   }
 
