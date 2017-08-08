@@ -22,7 +22,6 @@ const propTypes = {
   userIdentifierPref: PropTypes.object,
   parentProps: PropTypes.object,
   change: PropTypes.func,
-  pristine: PropTypes.bool,
   submitting: PropTypes.bool,
 };
 
@@ -109,7 +108,6 @@ class CheckOut extends React.Component {
       parentProps,
       patrons,
       scannedItems,
-      pristine,
       submitting,
     } = this.props;
 

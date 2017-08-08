@@ -45,7 +45,7 @@ function CheckIn(props, context) {
     location: loan => `${_.get(loan, ['item', 'location', 'name'])}`,
     patron: (loan) => {
       const url = `/users/view/${_.get(loan, ['patron', 'id'])}/${_.get(loan, ['patron', 'username'])}`;
-      return <a href={url} onClick={(e) => { onClickPatron(url); }}>{ _.get(loan, ['patron', 'personal', 'lastName']) }, { _.get(loan, ['patron', 'personal', 'firstName']) }</a>;
+      return <a href={url} onClick={() => { onClickPatron(url); }}>{ _.get(loan, ['patron', 'personal', 'lastName']) }, { _.get(loan, ['patron', 'personal', 'firstName']) }</a>;
     },
     'Date Loaned': loan => loan.loanDate.substr(0, 10),
     'Date Returned': loan => loan.returnDate.substr(0, 10),
