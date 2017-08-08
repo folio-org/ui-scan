@@ -72,7 +72,7 @@ function CheckIn(props, context) {
                   <Field name="item.barcode" placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" component={TextField} />
                 </Col>
                 <Col xs={3}>
-                  <Button buttonStyle="primary noRadius" fullWidth type="submit">+ Add item</Button>
+                  <Button buttonStyle="primary noRadius" fullWidth type="submit" disabled={submitting}>+ Add item</Button>
                 </Col>
               </Row>
               <MultiColumnList
