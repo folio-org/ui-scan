@@ -119,8 +119,8 @@ class CheckOut extends React.Component {
     const itemListFormatter = {
       title: loan => `${_.get(loan, ['item', 'title'])}`,
       barcode: loan => `${_.get(loan, ['item', 'barcode'])}`,
-      loanDate: loan => loan.loanDate.substr(0, 10),
-      dueDate: loan => loan.dueDate.substr(0, 10),
+      'Date loaned': loan => loan.loanDate.substr(0, 10),
+      'Date due': loan => loan.dueDate.substr(0, 10),
     };
 
     const containerStyle = {
@@ -196,7 +196,7 @@ class CheckOut extends React.Component {
                 </Col>
               </Row>
               <MultiColumnList
-                visibleColumns={['title', 'barcode', 'loanDate', 'dueDate']}
+                visibleColumns={['title', 'barcode', 'Date loaned', 'Date due']}
                 rowMetadata={['id']}
                 contentData={scannedItems}
                 formatter={itemListFormatter}
