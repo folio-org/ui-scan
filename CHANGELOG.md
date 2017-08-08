@@ -3,6 +3,7 @@
 ## 1.3.0 (IN PROGRESS)
 * Add item location, item status, patron's name to check-in page. UIS-59.
 * Bump `circulation` interface dependency to v2.2 for new fields. UIS-59.
+* Change some column headings in check-out. UIS-52.
 
 ## [1.2.0](https://github.com/folio-org/ui-scan/tree/v1.2.0) (2017-08-02)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.2.0)
