@@ -22,6 +22,8 @@ const propTypes = {
   userIdentifierPref: PropTypes.object,
   parentProps: PropTypes.object,
   change: PropTypes.func,
+  pristine: PropTypes.bool,
+  submitting: PropTypes.bool,
 };
 
 const contextTypes = {
@@ -107,6 +109,8 @@ class CheckOut extends React.Component {
       parentProps,
       patrons,
       scannedItems,
+      pristine,
+      submitting,
     } = this.props;
 
     const patronsListFormatter = {
@@ -159,6 +163,7 @@ class CheckOut extends React.Component {
                     buttonStyle="primary noRadius"
                     fullWidth
                     onClick={e => this.handleAdd(e, 'find_patron')}
+                    disabled={submitting}
                   >Find Patron</Button>
                 </Col>
               </Row>
@@ -192,6 +197,7 @@ class CheckOut extends React.Component {
                     buttonStyle="primary noRadius"
                     fullWidth
                     onClick={e => this.handleAdd(e, 'add_item')}
+                    disabled={submitting}
                   >+ Add item</Button>
                 </Col>
               </Row>
