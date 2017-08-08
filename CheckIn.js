@@ -66,7 +66,7 @@ function CheckIn(props, context) {
       <div style={containerStyle}>
         <Paneset static>
           <Pane paneTitle="Scanned Items" defaultWidth="100%" firstMenu={props.modeSelector}>
-            <div style={{ width: '100%', maxWidth: '1024px', margin: 'auto' }}>
+            <div style={{ width: '100%', maxWidth: '1280px', margin: 'auto' }}>
               <Row>
                 <Col xs={9}>
                   <Field name="item.barcode" placeholder="Enter Barcode" aria-label="Item ID" fullWidth id="barcode" component={TextField} />
