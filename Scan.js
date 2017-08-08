@@ -249,13 +249,34 @@ class Scan extends React.Component {
   fetchLoan(loanid) {
     return fetch(`${this.okapiUrl}/circulation/loans?query=(id=${loanid})`, {
       headers: this.httpHeaders,
-    }).then((response) => {
+    }).then(response =>
       response.json().then((json) => {
-        const scannedItems = [].concat(this.props.data.scannedItems).concat(json.loans);
-        this.props.mutator.scannedItems.replace(scannedItems);
-      });
-    });
+        const loans = JSON.parse(JSON.stringify(json.loans));
+        return this.fetchPatron(loans)
+          .then((patron) => {
+            const extLoans = loans[0];
+            extLoans.patron = patron;
+            return extLoans;
+          }).then((extLoans) => {
+            const scannedItems = [];
+            scannedItems.push(extLoans);
+            return this.props.mutator.scannedItems.replace(scannedItems.concat(this.props.data.scannedItems));
+          });
+      }),
+    );
   }
+
+  fetchPatron(loans) {
+    return fetch(`${this.okapiUrl}/users/${loans[0].userId}`, { headers: this.httpHeaders })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new SubmissionError({ patron: { identifier: `Error ${response.status} retrieving patron by id`, _error: 'Scan failed' } });
+        } else {
+          return response.json();
+        }
+      });
+  }
+
   // End of check-in functions
 
   clearField(formName, fieldName) {
