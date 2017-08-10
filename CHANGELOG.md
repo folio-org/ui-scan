@@ -6,6 +6,7 @@
 * Change some column headings in check-out. UIS-52.
 * Prevent duplicate submits in check-out and check-in. UIS-88.
 * Made the diplay of the create new user button conditional (UIS-71). 
+* Rename 'Scan' to 'Circulation' in menu bar and under settings. UIS-17.
 
 ## [1.2.0](https://github.com/folio-org/ui-scan/tree/v1.2.0) (2017-08-02)
 [Full Changelog](https://github.com/folio-org/ui-scan/compare/v1.1.0...v1.2.0)
