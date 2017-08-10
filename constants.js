@@ -2,7 +2,7 @@ export const patronIdentifierTypes = [
   { key: 'BARCODE', label: 'Barcode', queryKey: 'barcode' },
   { key: 'EXTERNAL', label: 'External System ID', queryKey: 'externalSystemId' },
   { key: 'FOLIO', label: 'FOLIO Record Number', queryKey: 'id' },
-  { key: 'USER', label: 'User ID', queryKey: 'username' },
+  { key: 'USER', label: 'Username', queryKey: 'username' },
 ];
 
 export const defaultPatronIdentifier = { key: 'BARCODE', label: 'Barcode', queryKey: 'barcode' };
