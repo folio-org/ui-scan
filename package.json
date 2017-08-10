@@ -13,7 +13,7 @@
   "main": "index.js",
   "stripes": {
     "type": "app",
-    "displayName": "Scan",
+    "displayName": "Circulation",
     "route": "/scan",
     "hasSettings": true,
     "okapiInterfaces": {
