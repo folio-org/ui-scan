@@ -90,7 +90,7 @@ class CheckOut extends React.Component {
           }
         };
         this.makeSH(values, 'find_patron');
-      }  
+      }
     } else {
       Object.assign(user, { error: `User ${user.username} does not have a ${userIdentifierPref.label}` });
     }
@@ -165,6 +165,7 @@ class CheckOut extends React.Component {
                     fullWidth
                     id="patron_identifier"
                     component={TextField}
+                    validationEnabled={false}
                     startControl={<MaybeUserSearch {...this.props.parentProps} selectUser={this.autoSelectUser} visibleColumns={['Name', 'Patron Group', 'Username', 'Barcode']} dissableUserCreation={true} />}
                     onKeyDown={e => this.handleAdd(e, 'find_patron')}
                   />
@@ -200,6 +201,7 @@ class CheckOut extends React.Component {
                     fullWidth
                     id="barcode"
                     component={TextField}
+                    validationEnabled={false}
                     onKeyDown={e => this.handleAdd(e, 'add_item')}
                   />
                 </Col>
