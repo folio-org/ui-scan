@@ -1,6 +1,7 @@
+@Library(folio_jenkins_shared_libs@folio-927) _
 
 buildNPM {
-  publishModDescriptor = 'yes'
-  runLint = 'no'
+  publishModDescriptor = 'no'
+  runLint = 'yes'
   runTest = 'no'
 }  
