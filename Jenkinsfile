@@ -1,4 +1,4 @@
-@Library('folio_jenkins_shared_libs@folio-927') _
+@Library('folio_jenkins_shared_libs@jenkins-slave-nodejs') _
 
 buildNPM {
   publishModDescriptor = 'no'
