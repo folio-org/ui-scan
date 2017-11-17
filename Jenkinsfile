@@ -1,7 +1,7 @@
-@Library('folio_jenkins_shared_libs@jenkins-slave-nodejs') _
+@Library('folio_jenkins_shared_libs@modgql-1') _
 
 buildNPM {
-  publishModDescriptor = 'no'
+  publishModDescriptor = 'yes'
   runLint = 'yes'
   runTest = 'no'
 }  
